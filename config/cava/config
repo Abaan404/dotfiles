@@ -1,0 +1,10 @@
+[color]
+
+gradient = 1
+gradient_count = 6
+gradient_color_1 = '#$colors_color1'
+gradient_color_2 = '#$colors_color2'
+gradient_color_3 = '#$colors_color3'
+gradient_color_4 = '#$colors_color4'
+gradient_color_5 = '#$colors_color5'
+gradient_color_6 = '#$colors_color6'

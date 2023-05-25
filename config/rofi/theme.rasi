@@ -1,0 +1,187 @@
+@import "colors"
+
+#window {
+    border: 5px;
+    border-radius: 10px;
+    border-color: @border-color;
+    background-color: @background;
+    position: center;
+}
+
+#mainbox {
+    spacing: 0px;
+    orientation: horizontal;
+    children: [imageview, listview];
+}
+
+// ROFI LEFT
+
+#imageview {
+    spacing: 20px;
+    border-radius: 10px;
+    padding: 2.5ch 3.5ch 2.5ch;
+    background-image: url("image.png", height);
+    children: [inputbar, message];
+}
+
+#inputbar {
+    border-radius: 20px;
+    padding: 20px;
+    background-color: @background;
+    children: [textbox-prompt-colon, entry];
+}
+
+#textbox-prompt-colon {
+    str: " ";
+    expand: false;
+    margin: 0px 0.5em 0em;
+    background-color: inherit;
+}
+
+#entry {
+    spacing: 0;
+    background-color: inherit;
+}
+
+#message {
+    expand: true;
+    padding: inherit;
+    border-radius: 20px;
+    background-color: @message-background;
+}
+
+#textbox {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+// ROFI RIGHT
+
+#listview {
+    lines: 8;
+    scrollbar: false;
+    padding: 2.5ch 3.5ch 2.5ch;
+}
+
+#element {
+    border: 0;
+    border-radius: 20px;
+    padding: 10px;
+    background-color: #00FFFF;
+}
+
+#element-icon {
+    size: 2em;
+    padding: 0px 20px 0px 0px;
+    background-color: inherit;
+}
+
+#element-text {
+    size: 1em;
+    vertical-align: 0.5;
+    background-color: inherit;
+}
+
+#element.normal.normal {
+    background-color: @normal-background;
+    text-color: @normal-foreground;
+}
+
+#element.normal.urgent {
+    background-color: @urgent-background;
+    text-color: @urgent-foreground;
+}
+
+#element.normal.active {
+    background-color: @active-background;
+    text-color: @active-foreground;
+}
+
+#element.selected.normal {
+    background-color: @selected-normal-background;
+    text-color: @selected-normal-foreground;
+}
+
+#element.selected.urgent {
+    background-color: @selected-urgent-background;
+    text-color: @selected-urgent-foreground;
+}
+
+#element.selected.active {
+    background-color: @selected-active-background;
+    text-color: @selected-active-foreground;
+}
+
+#element.alternate.normal {
+    background-color: @alternate-normal-background;
+    text-color: @alternate-normal-foreground;
+}
+
+#element.alternate.urgent {
+    background-color: @alternate-urgent-background;
+    text-color: @alternate-urgent-foreground;
+}
+
+#element.alternate.active {
+    background-color: @alternate-active-background;
+    text-color: @alternate-active-foreground;
+}
+
+// unused
+
+#powermenu {
+
+    enabled: false; // TODO figure out how to exec scripts 
+
+    margin: 220px 0px 0px;
+    spacing: 20px;
+    background-color: transparent;
+    orientation: horizontal;
+
+	font: "JetBrainsMono Nerd Font Extra-Bold 20";
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+    border-radius: 20px;
+
+    children: ["button-logout", "button-suspend", "button-reboot", "button-shutdown"];
+}
+
+#button-logout {
+    content: "";
+    font: inherit;
+    vertical-align: inherit;
+    horizontal-align: inherit;
+    border-radius: inherit;
+    padding: 0px 8px 0px 0px;
+    background-color: @power-colors;
+}
+
+#button-suspend {
+    content: "";
+    font: inherit;
+    vertical-align: inherit;
+    horizontal-align: inherit;
+    border-radius: inherit;
+    padding: 0px 6px 0px 0px;
+    background-color: @power-colors;
+}
+
+#button-reboot {
+    content: "";
+    font: inherit;
+    vertical-align: inherit;
+    horizontal-align: inherit;
+    border-radius: inherit;
+    padding: 0px 7px 0px 0px;
+    background-color: @power-colors;
+}
+
+#button-shutdown {
+    content: "";
+    font: inherit;
+    vertical-align: inherit;
+    horizontal-align: inherit;
+    border-radius: inherit;
+    padding: 0px 7px 0px 0px;
+    background-color: @power-colors;
+}

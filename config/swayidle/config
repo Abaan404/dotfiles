@@ -1,0 +1,4 @@
+timeout 240 swaylock 
+before-sleep swaylock
+
+timeout 360 'hyprctl dispatch dpms off eDP-1' resume 'hyprctl dispatch dpms on eDP-1'

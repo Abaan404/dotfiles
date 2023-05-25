@@ -1,0 +1,16 @@
+@theme "theme"
+
+configuration {
+	modes: "drun,window,calc";
+	font: "JetBrainsMono Nerd Font Extra-Bold 12";
+
+	show-icons: true;
+	icon-theme: "Tela-circle-black";
+
+	drun-display-format: "{name}";
+	hover-select: true;
+	matching: "regex";
+
+	drun-use-desktop-cache: true;
+	drun-reload-desktop-cache: true;
+}

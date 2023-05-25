@@ -1,0 +1,89 @@
+# radio
+networkmanager
+dhcpcd
+bluez
+bluez-utils
+blueman
+
+# audio
+pipewire
+pipewire-alsa
+pipewire-audio
+pipewire-jack
+pipewire-pulse
+wireplumber
+
+# drivers n things
+nvidia
+nvidia-utils
+
+# display
+xdg-desktop-portal-hyprland
+tela-icon-theme
+sddm
+
+# desktop
+rofi
+dunst
+hyprland
+waybar-hyprland-git
+swaylock-effects
+swayidle
+swayimg
+wlogout
+swww
+
+# deco
+bibata-cursor-theme-bin
+ttf-jetbrains-mono-nerd
+otf-font-awesome
+
+# utils
+sway-audio-idle-inhibit-git
+polkit-kde-agent
+pyprland
+brightnessctl
+playerctl
+rofi-calc
+pamixer
+tlp
+
+# screenshot
+grim
+slurp
+swappy
+
+# tools
+wl-clipboard
+nwg-look
+qt5ct
+pywal
+tlpui
+wpgtk
+zsh
+jq
+
+# misc
+oh-my-zsh-git
+qt5-imageformats
+qt5-wayland
+qt6-wayland
+kvantum
+
+# apps
+firefox
+kitty
+neofetch
+dolphin
+zsh
+discord
+dolphin
+nvim
+vscodium
+kate
+cava
+neofetch
+obs-studio
+pavucontrol
+pavucontrol-qt
+spotify-launcher
