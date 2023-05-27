@@ -53,11 +53,7 @@ class Configs:
 
 
     def reload(self):
-        templates = set(CONFIG_TEMPLATE_PATH.iterdir())
-        if subprocess.check_output("echo $(pidof obs)", shell=True).strip(): # hyprland crashes if configs get updated while obs is running
-            templates -= {Path(CONFIG_TEMPLATE_PATH.joinpath("hypr"))}
-
-        for template in templates:
+        for template in CONFIG_TEMPLATE_PATH.iterdir():
             config = Path(CONFIG_PATH).joinpath(template.name)
 
             self.write(template, config)
@@ -65,6 +61,11 @@ class Configs:
 
     def swaylock(self):
         subprocess.Popen("echo $(killall swayidle) && swayidle", shell=True)
+
+    def hypr(self):
+        if subprocess.check_output("echo $(pidof obs)", shell=True).strip(): # hyprland crashes if configs get updated while obs is running
+            return
+        subprocess.Popen("hyprctl reload", shell=True)
 
     def waybar(self):
         subprocess.Popen("echo $(killall waybar) && waybar", shell=True)
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     image = pywal.image.get(wallpaper)
     colors = pywal.colors.get(image, backend=PYWAL_BACKEND)
     pywal.export.every(colors)
-    print(wallpaper)
+
     Configs({
         # load all colors from pywal (and remove the # symbol before each color)
         **{k: v[1:] for k, v in flatten_dict(colors).items()},
