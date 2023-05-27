@@ -20,21 +20,8 @@ class Configs:
         self.mappings = mappings
 
     def write(self, template_path: Path, config_path: Path):
-        # create a dir with the contents of config dir if not exist
-        if not template_path.exists():
-            template_path.mkdir()
-
-            for conf in config_path.iterdir():
-                if not conf.is_file():
-                    continue
-                with open(conf) as f:
-                    stream = f.read()
-                with open(template_path.joinpath(conf.name), "w") as f:
-                    f.write(stream)
-            return
-
         for conf in template_path.iterdir():
-            if not conf.is_file() and conf.is_dir():
+            if conf.is_dir() or not conf.exists():
                 config_path.joinpath(conf.name).mkdir(exist_ok=True)
                 self.write(template_path.joinpath(conf.name), config_path.joinpath(conf.name))
                 continue
@@ -53,10 +40,10 @@ class Configs:
 
 
     def reload(self):
-        for template in CONFIG_TEMPLATE_PATH.iterdir():
-            config = Path(CONFIG_PATH).joinpath(template.name)
+        self.write(CONFIG_TEMPLATE_PATH, CONFIG_PATH)
 
-            self.write(template, config)
+        # run post-reload scripts
+        for template in CONFIG_TEMPLATE_PATH.iterdir():
             getattr(self, template.name.lower(), lambda: None)()
 
     def swaylock(self):
