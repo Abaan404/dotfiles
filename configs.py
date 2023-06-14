@@ -12,8 +12,8 @@ from pathlib import Path
 
 CONFIG_TEMPLATE_PATH = Path("~/.dotfiles/config").expanduser()
 CONFIG_PATH = Path("~/.config").expanduser()
+WALLPAPER_FOLDER = Path("~/Pictures/wallpapers/").expanduser()
 PYWAL_BACKEND = "colorthief"
-WALLPAPER_FOLDER = Path(sys.argv[1]).absolute().expanduser() if len(sys.argv) > 1 else Path("~/Pictures/wallpapers/").expanduser()
 
 class Configs:
     def __init__(self, mappings: dict) -> None:
@@ -63,11 +63,6 @@ class Configs:
     def kvantum(self):
         subprocess.Popen("kvantummanager --set Layan-pywal", shell=True)
 
-        # weird hack to theme gtk and also to ignore it theming terminals
-        wpgtk.data.config.settings.setdefault("backend", "colortheif")
-        wpgtk.data.themer.pywal.sequences.send = lambda *args, **kwargs: None
-        wpgtk.data.themer.set_pywal_theme(str(Path("~/.cache/wal/colors").expanduser()), False)
-
     def wlogout(self):
         colors = tuple(int((self.mappings["accent"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
         path = CONFIG_PATH.joinpath("wlogout/icons")
@@ -75,7 +70,7 @@ class Configs:
 
         for file in Path("/usr/share/wlogout/icons").iterdir():
             img = Image.open(file).convert("RGBA")
-            img.putdata([colors if pixel[3] != 0 else pixel for pixel in img.getdata()])
+            img.putdata([colors if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore GeneralTypeIssues
             img.save(path.joinpath(f"pywal-{file.name}"))
 
     def rofi(self):
@@ -85,6 +80,31 @@ class Configs:
             *((ax - 512) // 2 for ax in img.size),
             *((ax + 512) // 2 for ax in img.size))
         img.crop(box).save(CONFIG_PATH.joinpath("rofi/image.png"))
+
+
+class Wallpaper:
+    def __init__(self, wallpaper_folder: Path) -> None:
+        file_types = (".gif", ".jpeg", ".png", ".tga", ".tiff", ".webp", ".bmp", ".jpg")
+        try:
+            current_wallpaper = str(subprocess.check_output(["swww", "query"])).split('"')[-2]
+        except IndexError:
+            current_wallpaper = None  # if no wallpaper is set
+
+        self.wallpapers = filter(
+            lambda wallpaper: wallpaper.name.endswith(file_types) and wallpaper.name != current_wallpaper,
+            wallpaper_folder.iterdir()
+        )
+
+    def __set(self, wallpaper: Path):
+        subprocess.Popen(["swww", "img", wallpaper,
+                "--transition-type=grow",
+                "--transition-fps=120",
+                "--transition-pos=top-right"])
+
+    def get_random(self):
+        wallpaper = random.choice(list(self.wallpapers))
+        self.__set(wallpaper)
+        return wallpaper
 
 
 # https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
@@ -98,28 +118,20 @@ def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
             items.append((new_key, value))
     return dict(items)
 
-def random_wallpaper(path: Path):
-    file_types = (".gif", ".jpeg", ".png", ".tga", ".tiff", ".webp", ".bmp", ".jpg")
-    if path.is_file():
-        return path  # a file was specified
-    try:
-        current_wallpaper = str(subprocess.check_output(["swww", "query"])).split('"')[-2]
-    except IndexError:
-        current_wallpaper = None  # if no wallpaper is set
-
-    wallpapers = list(filter(lambda wallpaper: wallpaper.name.endswith(file_types) and wallpaper.name != current_wallpaper, path.iterdir()))
-    return random.choice(wallpapers)
-
 if __name__ == "__main__":
-    wallpaper = random_wallpaper(WALLPAPER_FOLDER)
-    subprocess.Popen(["swww", "img", wallpaper,
-            "--transition-type=grow",
-            "--transition-fps=120",
-            "--transition-pos=top-right"])
+    if len(sys.argv) > 1:
+        wallpaper = Path(sys.argv[1]).absolute().expanduser()
+    else:
+        wallpaper = Wallpaper(WALLPAPER_FOLDER).get_random()
 
-    image = pywal.image.get(wallpaper)
+    image = pywal.image.get(str(wallpaper))
     colors = pywal.colors.get(image, backend=PYWAL_BACKEND)
     pywal.export.every(colors)
+
+    # weird hack to theme gtk and also to ignore it theming terminals
+    wpgtk.data.config.settings.setdefault("backend", "colortheif")
+    wpgtk.data.themer.pywal.sequences.send = lambda *args, **kwargs: None
+    wpgtk.data.themer.set_pywal_theme(str(Path("~/.cache/wal/colors").expanduser()), False)
 
     Configs({
         # load all colors from pywal (and remove the # symbol before each color)
@@ -127,7 +139,7 @@ if __name__ == "__main__":
 
         # dirs
         "HOME": str(Path("~").expanduser()),
-        "wallpaper": wallpaper,
+        "wallpaper": str(wallpaper),
 
         # colors
         "primary": colors["colors"]["color3"][1:],
