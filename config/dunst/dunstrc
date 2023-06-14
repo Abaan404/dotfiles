@@ -6,7 +6,7 @@
     offset = 20x24
 
     width = (0, 500)
-    corner_radius = 10 # corners have a weird blur oh well
+    corner_radius = 10
 
     timeout = 5
     show_age_threshold = 60
