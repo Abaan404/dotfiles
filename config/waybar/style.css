@@ -67,7 +67,7 @@ tooltip label {
 }
 
 #pulseaudio.bluetooth {
-    background-color: #$waybar_bluetooth;
+    background-color: #$bluetooth;
 }
 
 #pulseaudio.muted {

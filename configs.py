@@ -128,27 +128,29 @@ if __name__ == "__main__":
     colors = pywal.colors.get(image, backend=PYWAL_BACKEND)
     pywal.export.every(colors)
 
+    # load all colors from pywal (and remove the # symbol before each color)
+    colors = flatten_dict(colors)
+    colors.update({k: v[1:] for k, v in colors.items() if v.startswith("#")})
+
     # weird hack to theme gtk and also to ignore it theming terminals
     wpgtk.data.config.settings.setdefault("backend", "colortheif")
     wpgtk.data.themer.pywal.sequences.send = lambda *args, **kwargs: None
     wpgtk.data.themer.set_pywal_theme(str(Path("~/.cache/wal/colors").expanduser()), False)
 
     Configs({
-        # load all colors from pywal (and remove the # symbol before each color)
-        **{k: v[1:] for k, v in flatten_dict(colors).items()},
-
         # dirs
         "HOME": str(Path("~").expanduser()),
         "wallpaper": str(wallpaper),
 
         # colors
-        "primary": colors["colors"]["color3"][1:],
-        "secondary": colors["colors"]["color2"][1:],
-        "accent": colors["colors"]["color5"][1:],
+        **colors,
+        "primary": colors["colors_color3"],
+        "secondary": colors["colors_color2"],
+        "accent": colors["colors_color5"],
         "bad": "cc4f4f",
         "good": "26a65b",
         "text": "d2d2d2",
 
-        # waybar
-        "waybar_bluetooth": "0a3b8c",
+        # misc
+        "bluetooth": "0a3b8c",
     }).reload()
