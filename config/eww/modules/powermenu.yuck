@@ -1,0 +1,29 @@
+(defwindow powermenu
+    :monitor 0
+    :stacking "fg"
+    :namespace o_namespace
+
+    :geometry (geometry :anchor "right center")
+(w_powermenu))
+
+(defwidget w_powermenu []
+(box :class "w_powermenu"
+    (box :class "layout-box"
+            :spacing 20
+            :orientation "vertical"
+            :space-evenly false
+        (eventbox :class "power" (box
+            (label :text "Shutdown" :class "transition-text")
+            (button :onclick cmd_poweroff "󰐥")))
+        (eventbox :class "reboot" (box
+            (label :text "Reboot" :class "transition-text")
+            (button :onclick cmd_reboot "")))
+        (eventbox :class "logout" (box
+            (label :text "Log Out" :class "transition-text")
+            (button :onclick cmd_logout "")))
+        (eventbox :class "hibernate" (box
+            (label :text "Hibernate" :class "transition-text")
+            (button :onclick cmd_hibernate "󰏤")))
+        )
+    )
+)

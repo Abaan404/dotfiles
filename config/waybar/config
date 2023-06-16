@@ -121,6 +121,6 @@
     },
     "custom/logout": {
         "format": "",
-        "on-click": "wlogout"
+        "on-click": "!!HOME/.dotfiles/scripts/eww/toggle.sh powermenu"
     }
 }

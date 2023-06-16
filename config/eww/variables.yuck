@@ -1,0 +1,13 @@
+;; NAMESPACE STRINGS 
+(defvar e_namespace "eww-exclusive")
+(defvar o_namespace "eww-overlay")
+(defvar b_namespace "eww-background")
+
+;; WINDOW TOGGLE (~/.dotfiles/scripts/toggle.sh)
+(defvar tg_powermenu false)
+
+;; SHELL COMMANDS 
+(defvar cmd_poweroff "systemctl poweroff")
+(defvar cmd_reboot "systemctl reboot")
+(defvar cmd_logout "hyprctl dispatch exit")
+(defvar cmd_hibernate "systemctl hibernate")

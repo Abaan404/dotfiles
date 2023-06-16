@@ -66,16 +66,6 @@ class Configs:
     def kvantum(self):
         subprocess.Popen("kvantummanager --set Layan-pywal", shell=True)
 
-    def wlogout(self):
-        colors = tuple(int((self.mappings["accent"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
-        path = CONFIG_PATH.joinpath("wlogout/icons")
-        path.mkdir(exist_ok=True)
-
-        for file in Path("/usr/share/wlogout/icons").iterdir():
-            img = Image.open(file).convert("RGBA")
-            img.putdata([colors if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore GeneralTypeIssues
-            img.save(path.joinpath(f"pywal-{file.name}"))
-
     def rofi(self):
         # a 512x512 image centered on the wallpaper
         img = Image.open(self.mappings["wallpaper"])
