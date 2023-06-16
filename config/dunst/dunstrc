@@ -28,16 +28,16 @@
     browser = /usr/bin/firefox --new-tab
 
 [urgency_low]
-    background = "#${primary}88"
-    foreground = "#$text"
-    frame_color = "#$accent"
+    background = "#!!{primary}88"
+    foreground = "#!!text"
+    frame_color = "#!!accent"
 
 [urgency_normal]
-    background = "#${primary}88"
-    foreground = "#$text"
-    frame_color = "#$accent"
+    background = "#!!{primary}88"
+    foreground = "#!!text"
+    frame_color = "#!!accent"
 
 [urgency_critical]
-    background = "#${primary}88"
-    foreground = "#$text"
-    frame_color = "#$accent"
+    background = "#!!{primary}88"
+    foreground = "#!!text"
+    frame_color = "#!!accent"

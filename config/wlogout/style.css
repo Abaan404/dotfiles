@@ -10,9 +10,9 @@ button {
 	font-family: 'JetBrainsMono Nerd Font';
 	font-size: 20;
 	margin: 20px;
-    color: #$accent;
+    color: #!!accent;
 
-	background-color: #$primary;
+	background-color: #!!primary;
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 50px;
@@ -22,30 +22,30 @@ button {
 }
 
 button:focus, button:active, button:hover {
-	background-color: #$secondary;
+	background-color: #!!secondary;
 	/* outline-style: none; */
 }
 
 #logout {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-logout.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-logout.png"));
 }
 
 #hibernate {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-hibernate.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-hibernate.png"));
 }
 
 #lock {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-lock.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-lock.png"));
 }
 
 #suspend {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-suspend.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-suspend.png"));
 }
 
 #shutdown {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-shutdown.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-shutdown.png"));
 }
 
 #reboot {
-    background-image: image(url("$HOME/.config/wlogout/icons/pywal-reboot.png"));
+    background-image: image(url("!!HOME/.config/wlogout/icons/pywal-reboot.png"));
 }

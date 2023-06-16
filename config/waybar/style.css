@@ -6,12 +6,12 @@
 }
 
 window#waybar {
-    background: alpha(#$special_background, 0);
+    background: alpha(#!!special_background, 0);
 }
 
 tooltip {
-    border-color: #$primary;
-    background: alpha(#$primary, 0.8);
+    border-color: #!!primary;
+    background: alpha(#!!primary, 0.8);
     border-radius: 10px;
 }
 
@@ -32,8 +32,8 @@ tooltip label {
 #custom-logout,
 #custom-weather,
 #custom-media {
-    color: #$text;
-    background-color: #$primary;
+    color: #!!text;
+    background-color: #!!primary;
     padding: 0.5em 1em;
     margin: 10px 10px 0px;
     border-radius: 10px;
@@ -67,15 +67,15 @@ tooltip label {
 }
 
 #pulseaudio.bluetooth {
-    background-color: #$bluetooth;
+    background-color: #!!bluetooth;
 }
 
 #pulseaudio.muted {
-    background-color: #$bad;
+    background-color: #!!bad;
 }
 
 #workspaces {
-    background: #$primary;
+    background: #!!primary;
     padding-right: 5px;
     padding-left: 5px;
     border-radius: 10px;
@@ -86,7 +86,7 @@ tooltip label {
 }
 
 #workspaces button label {
-    color: #$text;
+    color: #!!text;
 }
 
 #workspaces button.active label {
@@ -99,7 +99,7 @@ tooltip label {
 
 #tray menu {
     padding: 0.5em;
-    background: alpha(#$primary, 0.8);
+    background: alpha(#!!primary, 0.8);
     border-radius: 10px;
 }
 
@@ -108,20 +108,20 @@ tooltip label {
 }
 
 #tray menu menuitem:hover {
-    background: alpha(#$accent, 0.8);
+    background: alpha(#!!accent, 0.8);
     border-radius: 10px;
 }
 
 #battery.charging,
 #battery.full {
-    background-color: #$good;
+    background-color: #!!good;
 }
 
 #battery.warning:not(.charging) {
-    background-color: #$bad;
+    background-color: #!!bad;
 }
 
 #network.disconnected,
 #network.disabled {
-    background-color: #$bad;
+    background-color: #!!bad;
 }

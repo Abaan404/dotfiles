@@ -60,11 +60,11 @@
        id="linearGradient1918">
       <stop
          id="stop1914"
-         stop-color="#$primary"
+         stop-color="#!!primary"
          offset="0" />
       <stop
          id="stop1916"
-         stop-color="#$primary"
+         stop-color="#!!primary"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -470,7 +470,7 @@
          id="path166"
          transform="translate(0 -20)"
          d="m105.5 220c-4.4064 0-8 3.5936-8 8 5e-6 4.4064 3.5936 8 8 8s8-3.5936 8-8-3.5936-8-8-8zm0 2c3.3257 0 6 2.6743 6 6s-2.6743 6-6 6-6-2.6743-6-6c3e-6 -3.3257 2.6743-6 6-6zm0 3a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"
-         fill="#$primary" />
+         fill="#!!primary" />
     </g>
   </g>
   <g
@@ -503,7 +503,7 @@
     <path
        id="path195"
        d="m398.59 91.086-23.414 23.414h26.828v-26.828l-3.4141 3.4141z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <path
      id="expand-progress-pattern-normal"
@@ -520,7 +520,7 @@
   <path
      id="lineedit-focused-bottom"
      d="m377.5 130h32v-2h-32z"
-     fill="#$primary" />
+     fill="#!!primary" />
   <rect
      id="expand-combo-normal"
      x="10"
@@ -530,7 +530,7 @@
   <path
      id="combo-pressed-bottom"
      d="m416 131h32v-2h-32z"
-     fill="#$primary" />
+     fill="#!!primary" />
   <path
      id="combo-focused-bottom"
      d="m416 127h32v-2h-32z"
@@ -646,7 +646,7 @@
     <path
        id="path432"
        d="m65.002 432.02a1 1 0 0 0-0.70703 0.29297l-2.293 2.293-2.2832-2.2832a1 1 0 0 0-0.01-0.01 1 1 0 0 0-0.70117-0.28906l-0.01 0.0137a1 1 0 0 0-1 1 1 1 0 0 0 0.29297 0.70703l2.293 2.293-2.293 2.293a1 1 0 0 0-0.28906 0.69922 1 1 0 0 0 1 1 1 1 0 0 0 0.70703-0.29297l2.293-2.293 2.2832 2.2832a1 1 0 0 0 0.7168 0.30274 1 1 0 0 0 1-1 1 1 0 0 0-0.29297-0.70703l-2.3008-2.2988 2.2832-2.2832a1 1 0 0 0 0.31055-0.72071 1 1 0 0 0-1-1z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-minimize-focused"
@@ -666,7 +666,7 @@
        height="2"
        rx="1"
        ry="1"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-maximize-focused"
@@ -681,7 +681,7 @@
     <path
        id="path442"
        d="m98 432.03c-0.554 0-1 0.446-1 1v2h-2c-0.554 0-1 0.446-1 1s0.446 1 1 1h2v2c0 0.554 0.446 1 1 1s1-0.446 1-1v-2h2c0.554 0 1-0.446 1-1s-0.446-1-1-1h-2v-2c0-0.554-0.446-1-1-1z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-restore-focused"
@@ -696,7 +696,7 @@
     <path
        id="path447"
        d="m116 432.03a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4zm0 2a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-close-pressed"
@@ -731,7 +731,7 @@
        height="2"
        rx="1"
        ry="1"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-maximize-pressed"
@@ -746,7 +746,7 @@
     <path
        id="path462"
        d="m98 432.03c-0.554 0-1 0.446-1 1v2h-2c-0.554 0-1 0.446-1 1s0.446 1 1 1h2v2c0 0.554 0.446 1 1 1s1-0.446 1-1v-2h2c0.554 0 1-0.446 1-1s-0.446-1-1-1h-2v-2c0-0.554-0.446-1-1-1z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-restore-pressed"
@@ -761,7 +761,7 @@
     <path
        id="path467"
        d="m116 432.03a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4zm0 2a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="mdi-close-disabled"
@@ -846,7 +846,7 @@
   <path
      id="header-toggled"
      d="m124 104h-6v6h6z"
-     fill="#$primary" />
+     fill="#!!primary" />
   <g
      id="slidercursor-tickless-normal"
      transform="translate(0,70)">
@@ -862,7 +862,7 @@
        cx="328"
        cy="416"
        r="5"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slidercursor-tickless-pressed"
@@ -879,14 +879,14 @@
        cx="372"
        cy="416"
        r="11"
-       fill="#$primary"
+       fill="#!!primary"
        opacity=".3" />
     <circle
        id="circle1217"
        cx="372"
        cy="416"
        r="5"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slidercursor-tickless-focused"
@@ -903,14 +903,14 @@
        cx="350"
        cy="416"
        r="11"
-       fill="#$primary"
+       fill="#!!primary"
        opacity=".2" />
     <circle
        id="circle1224"
        cx="350"
        cy="416"
        r="5"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slidercursor-normal"
@@ -925,7 +925,7 @@
     <path
        id="path1238"
        d="m335 438-3.3999-3.4717c-2e-3 -2e-3 -6e-3 -2e-3 -8e-3 -5e-3 -0.94165-0.97333-2.2378-1.5231-3.5921-1.5234-2.7614 0-5 2.2386-5 5s2.2386 5 5 5c1.3405-2e-3 2.6242-0.54194 3.5628-1.499 4e-3 -2e-3 9e-3 -4e-3 0.013-7e-3z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slidercursor-focused"
@@ -942,12 +942,12 @@
        cx="350"
        cy="438"
        r="11"
-       fill="#$primary"
+       fill="#!!primary"
        opacity=".2" />
     <path
        id="path1245"
        d="m357 438-3.3999-3.4717c-2e-3 -2e-3 -6e-3 -2e-3 -8e-3 -5e-3 -0.94165-0.97333-2.2378-1.5231-3.5921-1.5234-2.7614 0-5 2.2386-5 5s2.2386 5 5 5c1.3405-2e-3 2.6242-0.54194 3.5628-1.499 4e-3 -2e-3 9e-3 -4e-3 0.013-7e-3z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slidercursor-pressed"
@@ -964,12 +964,12 @@
        cx="372"
        cy="438"
        r="11"
-       fill="#$primary"
+       fill="#!!primary"
        opacity=".3" />
     <path
        id="path1252"
        d="m379 438-3.3999-3.4717c-2e-3 -2e-3 -6e-3 -2e-3 -8e-3 -5e-3 -0.94165-0.97333-2.2378-1.5231-3.5921-1.5234-2.7614 0-5 2.2386-5 5s2.2386 5 5 5c1.3405-2e-3 2.6242-0.54194 3.5628-1.499 4e-3 -2e-3 9e-3 -4e-3 0.013-7e-3z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="button-normal-bottom">
@@ -1098,42 +1098,42 @@
      y="167"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-pattern-normal-bottom"
      x="32"
      y="187"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-pattern-normal-topleft"
      x="20"
      y="167"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-pattern-normal-topright"
      x="44"
      y="167"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-pattern-normal-bottomleft"
      x="20"
      y="187"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-pattern-normal-bottomright"
      x="44"
      y="187"
      width="12"
      height="12"
-     style="fill:#$primary" />
+     style="fill:#!!primary" />
   <rect
      id="progress-normal-top"
      x="71"
@@ -1227,7 +1227,7 @@
        y="162"
        width="8"
        height="8"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="progress-pattern-normal-left"
@@ -1238,7 +1238,7 @@
        y="162"
        width="8"
        height="8"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="progress-pattern-normal-right"
@@ -1249,7 +1249,7 @@
        y="162"
        width="8"
        height="8"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="progress-normal-left"
@@ -1308,7 +1308,7 @@
   </g>
   <g
      id="g219"
-     fill="#$primary">
+     fill="#!!primary">
     <rect
        id="slider-toggled-topright"
        x="250"
@@ -1343,7 +1343,7 @@
        y="162"
        width="8"
        height="8"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="slider-toggled-left"
@@ -1354,7 +1354,7 @@
        y="162"
        width="8"
        height="8"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <path
      id="toolbar-handle"
@@ -1364,7 +1364,7 @@
   <path
      id="checkbox-tristate-normal"
      d="m349 220c-1.108 0-2 0.892-2 2v12c0 1.108 0.892 2 2 2h12c1.108 0 2-0.892 2-2v-12c0-1.108-0.892-2-2-2zm2.5996 7h6.8008c0.8864 0 1.5996 0.169 1.5996 1s-0.71321 1-1.5996 1h-6.8008c-0.8864 0-1.5996-0.169-1.5996-1s0.71321-1 1.5996-1z"
-     fill="#$primary" />
+     fill="#!!primary" />
   <g
      id="checkbox-checked-normal"
      transform="translate(-.5 20)">
@@ -1372,7 +1372,7 @@
        id="path1598"
        transform="translate(.5 -7)"
        d="m274 207c-1.108 0-2 0.892-2 2v12c0 1.108 0.892 2 2 2h12c1.108 0 2-0.892 2-2v-12c0-1.108-0.892-2-2-2zm10.051 3.9902a1.0001 1.0001 0 0 1 0.67578 1.6953l-5.6191 5.957-3.7168-2.8496a1.0001 1.0001 0 1 1 1.2188-1.5859l2.2832 1.75 4.3809-4.6426a1.0001 1.0001 0 0 1 0.77734-0.32422z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="checkbox-tristate-focused"
@@ -1381,7 +1381,7 @@
        id="path1601"
        transform="translate(-40,-9.5)"
        d="m389.5 207c-1.108 0-2 0.892-2 2v12c0 1.108 0.892 2 2 2h12c1.108 0 2-0.892 2-2v-12c0-1.108-0.892-2-2-2zm2.5996 7h6.8008c0.8864 0 1.5996 0.169 1.5996 1s-0.71321 1-1.5996 1h-6.8008c-0.8864 0-1.5996-0.169-1.5996-1s0.71321-1 1.5996-1z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="checkbox-checked-focused"
@@ -1390,7 +1390,7 @@
        id="path2415"
        transform="translate(.5 -7)"
        d="m274 207c-1.108 0-2 0.892-2 2v12c0 1.108 0.892 2 2 2h12c1.108 0 2-0.892 2-2v-12c0-1.108-0.892-2-2-2zm10.051 3.9902a1.0001 1.0001 0 0 1 0.67578 1.6953l-5.6191 5.957-3.7168-2.8496a1.0001 1.0001 0 1 1 1.2188-1.5859l2.2832 1.75 4.3809-4.6426a1.0001 1.0001 0 0 1 0.77734-0.32422z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="button-normal-topleft">
@@ -1994,7 +1994,7 @@
      cx="99.413"
      cy="845.51"
      r="5"
-     fill="#$primary" />
+     fill="#!!primary" />
   <g
      id="splitter-grip-normal"
      transform="matrix(1.1429 0 0 1 -47.631 -218.31)"
@@ -2173,21 +2173,21 @@
      height="10"
      opacity="0" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="10"
      width="10"
      y="718.51001"
      x="26.413"
      id="tab-toggled-bottom" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="10"
      width="10"
      y="718.51001"
      x="36.412998"
      id="tab-toggled-bottomright" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="10"
      width="10"
      y="718.51001"
@@ -2255,7 +2255,7 @@
     <path
        id="path398"
        d="m 391.23,418.23 h -18.461 v 5.769 h 18.462 z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="menubaritem-pressed-bottomleft"
@@ -2271,7 +2271,7 @@
        y="418.23001"
        width="5.7690001"
        height="5.7690001"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="menubaritem-pressed-bottomright"
@@ -2287,111 +2287,111 @@
        y="418.23001"
        width="5.7690001"
        height="5.7690001"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="4"
      width="8"
      y="966.51001"
      x="53.412998"
      id="itemview-pressed-top" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="4"
      width="8"
      y="978.51001"
      x="53.412998"
      id="itemview-pressed-bottom" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 53.413,970.51 h 8 v 8 h -8 z"
      id="itemview-pressed" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 61.413,966.51 c 4,0 4,4 4,4 h -4 z"
      id="itemview-pressed-topright" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 61.413,978.51 h 4 c 0,0 0,4 -4,4 z"
      id="itemview-pressed-bottomright" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="8"
      width="4"
      y="970.51001"
      x="61.412998"
      id="itemview-pressed-right" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="8"
      width="4"
      y="970.51001"
      x="49.412998"
      id="itemview-pressed-left" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 53.413,966.51 v 4 h -4 c 0,0 0,-4 4,-4 z"
      id="itemview-pressed-topleft" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 49.413,978.51 h 4 v 4 c -4,0 -4,-4 -4,-4 z"
      id="itemview-pressed-bottomleft" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="4"
      width="8"
      y="966.51001"
      x="72.413002"
      id="itemview-toggled-top" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="4"
      width="8"
      y="978.51001"
      x="72.413002"
      id="itemview-toggled-bottom" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 72.413,970.51 h 8 v 8 h -8 z"
      id="itemview-toggled" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="8"
      width="4"
      y="970.51001"
      x="80.413002"
      id="itemview-toggled-right" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 80.413,966.51 c 4,0 4,4 4,4 h -4 z"
      id="itemview-toggled-topright" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 80.413,978.51 h 4 c 0,0 0,4 -4,4 z"
      id="itemview-toggled-bottomright" />
   <rect
-     style="fill:#$primary"
+     style="fill:#!!primary"
      height="8"
      width="4"
      y="970.51001"
      x="68.413002"
      id="itemview-toggled-left" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 72.413,966.51 v 4 h -4 c 0,0 0,-4 4,-4 z"
      id="itemview-toggled-topleft" />
   <path
-     style="fill:#$primary"
+     style="fill:#!!primary"
      inkscape:connector-curvature="0"
      d="m 68.413,978.51 h 4 v 4 c -4,0 -4,-4 -4,-4 z"
      id="itemview-toggled-bottomleft" />
@@ -2728,7 +2728,7 @@
      y="757.73"
      width="15"
      height="15"
-     fill="#$primary" />
+     fill="#!!primary" />
   <g
      id="menuitem-tearoff-focused"
      transform="translate(95.675 -62.227)">
@@ -2743,7 +2743,7 @@
     <path
        id="path151"
        d="m227.24 689h-2.2462v2h2.2462zm-4.4924 0h-2.2461v2h2.2461z"
-       fill="#$primary" />
+       fill="#!!primary" />
   </g>
   <g
      id="menuitem-tearoff-normal"
@@ -5793,7 +5793,7 @@
     <path
        d="m 24.342,15.875 c -1.7589,0 -3.175,1.416 -3.175,3.175 h 3.175 z"
        id="path1812"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-top"
@@ -5804,7 +5804,7 @@
        width="3.175"
        height="3.175"
        id="rect1815"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-topright"
@@ -5819,7 +5819,7 @@
     <path
        d="m 24.342,15.875 c -1.7589,0 -3.175,1.416 -3.175,3.175 h 3.175 z"
        id="path1820"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-bottomright"
@@ -5834,7 +5834,7 @@
     <path
        d="m 24.342,15.875 c -1.7589,0 -3.175,1.416 -3.175,3.175 h 3.175 z"
        id="path1825"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-bottomleft"
@@ -5849,7 +5849,7 @@
     <path
        d="m 24.342,15.875 c -1.7589,0 -3.175,1.416 -3.175,3.175 h 3.175 z"
        id="path1830"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-bottom"
@@ -5860,7 +5860,7 @@
        width="3.175"
        height="3.175"
        id="rect1833"
-       style="fill:#$primary;fill-opacity:1" />
+       style="fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-pressed-topleft"
@@ -6043,7 +6043,7 @@
        y="-35"
        width="16"
        height="1"
-       style="paint-order:markers stroke fill;fill:#$primary;fill-opacity:1"
+       style="paint-order:markers stroke fill;fill:#!!primary;fill-opacity:1"
        id="rect1880" />
   </g>
   <g
@@ -6055,7 +6055,7 @@
        width="16"
        height="1"
        id="rect1883"
-       style="paint-order:markers stroke fill;fill:#$primary;fill-opacity:1" />
+       style="paint-order:markers stroke fill;fill:#!!primary;fill-opacity:1" />
   </g>
   <g
      id="flatbutton-toggled-right"
@@ -6065,7 +6065,7 @@
        y="-35"
        width="16"
        height="1"
-       style="paint-order:markers stroke fill;fill:#$primary;fill-opacity:1"
+       style="paint-order:markers stroke fill;fill:#!!primary;fill-opacity:1"
        id="rect1886" />
   </g>
   <g
@@ -6424,7 +6424,7 @@
     <path
        id="path1264-5-4"
        d="m 9,68.999998 v 3.999989 h 26 v -3.999989 z"
-       style="opacity:1;fill:#$primary;fill-opacity:1;stroke-width:0.894427" />
+       style="opacity:1;fill:#!!primary;fill-opacity:1;stroke-width:0.894427" />
     <path
        id="path13193"
        d="m 9,67.999998 v 2 h 26 v -2 z"
@@ -6503,7 +6503,7 @@
     <path
        id="path1942-9-6"
        d="m 4,40.999995 1.26e-5,-3.999989 H 9 v 3.999989 z"
-       style="opacity:1;fill:#$primary;fill-opacity:1;stroke-width:0.894427" />
+       style="opacity:1;fill:#!!primary;fill-opacity:1;stroke-width:0.894427" />
   </g>
   <use
      id="tbutton-toggled-bottomright"

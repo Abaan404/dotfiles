@@ -15,6 +15,9 @@ CONFIG_PATH = Path("~/.config").expanduser()
 WALLPAPER_FOLDER = Path("~/Pictures/wallpapers/").expanduser()
 PYWAL_BACKEND = "colorthief"
 
+class CustomTemplate(Template):
+	delimiter = '!!'
+
 class Configs:
     def __init__(self, mappings: dict) -> None:
         self.mappings = mappings
@@ -29,7 +32,7 @@ class Configs:
             with open(conf, "r") as f:
                 try:
                     # use the built-in template module to replace strings
-                    stream = Template(f.read()).substitute(self.mappings)
+                    stream = CustomTemplate(f.read()).substitute(self.mappings)
                 except KeyError as e:
                     print(f"Invalid key {e.args[0]} in {conf}. Skipping...")
                     continue

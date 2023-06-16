@@ -117,7 +117,7 @@
         "smooth-scrolling-threshold": 10,
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous",
-        "exec": "$HOME/.dotfiles/scripts/mediaplayer.py 2> /dev/null"
+        "exec": "!!HOME/.dotfiles/scripts/mediaplayer.py 2> /dev/null"
     },
     "custom/logout": {
         "format": "",
