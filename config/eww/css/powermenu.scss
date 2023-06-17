@@ -1,9 +1,11 @@
+@include kf-flyin-back("right", 100px, 0.1);
+
 .w_powermenu {
-    animation: 100ms flyin-right linear;
     background-color: transparent;
     margin-right: 40px;
 
     .layout-box {
+        animation: 200ms flyin-back-right-100px linear;
         button {
             padding: 35px;
             border-radius: 10px;
@@ -29,23 +31,22 @@
             }
 
             .#{$selector}:hover button {
-                transition: 100ms $ease-in-quad padding;
+                transition: 100ms linear padding;
                 padding: 25px 35px;
             }
             
             .#{$selector}:not(:hover) button {
-                transition: 100ms $ease-in-quad padding;
+                transition: 100ms linear padding;
                 padding: 35px 35px;
             }
 
             .#{$selector}:hover .transition-text {
-                animation: 200ms flyin-right $ease-in-cubic;
+                animation: 200ms flyin-back-right-100px linear;
                 transition: 200ms linear color;
                 color: $accent;
             }
 
             .#{$selector}:not(:hover) .transition-text {
-                // animation: 200ms flyin-right $ease-in-cubic reverse;
                 transition: 200ms linear color;
                 color: transparent;
             }

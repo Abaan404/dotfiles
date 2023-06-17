@@ -3,7 +3,10 @@
     :stacking "fg"
     :namespace o_namespace
 
-    :geometry (geometry :anchor "right center")
+    :geometry (geometry 
+        :anchor "right center"
+        :width "15%"
+    )
 (w_powermenu))
 
 (defwidget w_powermenu []
