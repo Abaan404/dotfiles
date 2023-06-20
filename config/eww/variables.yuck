@@ -5,29 +5,34 @@
 
 ;; SHELL COMMANDS
 (defvar cmd_toggle_powermenu "eww open --toggle powermenu")
-(defvar cmd_poweroff "systemctl poweroff")
-(defvar cmd_reboot "systemctl reboot")
-(defvar cmd_logout "hyprctl dispatch exit")
+
+(defvar cmd_poweroff  "systemctl poweroff")
+(defvar cmd_reboot    "systemctl reboot")
+(defvar cmd_logout    "hyprctl dispatch exit")
 (defvar cmd_hibernate "systemctl hibernate")
 
 (defvar cmd_launcher "pkill rofi || rofi -show drun &")
-(defvar cmd_player_next "playerctl next")
-(defvar cmd_player_toggle "playerctl play-pause")
+
+(defvar cmd_player_next     "playerctl next")
+(defvar cmd_player_toggle   "playerctl play-pause")
 (defvar cmd_player_previous "playerctl previous")
-(defvar cmd_sink_mute "pamixer -t")
+
+(defvar cmd_sink_mute            "pamixer -t")
 (defvar cmd_sink_volume_increase "pamixer -i 5")
 (defvar cmd_sink_volume_decrease "pamixer -d 5")
-(defvar cmd_source_mute "pamixer --default-source -t")
+
+(defvar cmd_source_mute            "pamixer --default-source -t")
 (defvar cmd_source_volume_increase "pamixer --default-source -i 5")
 (defvar cmd_source_volume_decrease "pamixer --default-source -d 5")
+
 (defvar cmd_brightness_increase "brightnessctl set 10%+")
 (defvar cmd_brightness_decrease "brightnessctl set 10%-")
 
 ;; LISTENERS
-(deflisten audio             :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
-(deflisten player            :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
-(deflisten network           :initial "{}" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
-(deflisten workspaces        :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
+(deflisten audio      :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
+(deflisten player     :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
+(deflisten network    :initial "{}" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
+(deflisten workspaces :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
 
 ;; POLLING
 (defpoll time :interval "0.5s" :initial "00:00" "date +\"%H:%M\"")

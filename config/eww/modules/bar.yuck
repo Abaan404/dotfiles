@@ -27,18 +27,19 @@
         (clock)
         (power)
         )
-    )
-)
+))
 
 ;; BAR MODULES
 (defwidget launcher[] (eventbox :class "launcher"
-    :onclick cmd_launcher :timeout "10s"
-(box :width 38)
-))
+    :onclick cmd_launcher
+    :timeout "10s"
+    (box :class "wrapper"
+(box :width 10)
+)))
 
 ;; http://wiki.hyprland.org/Useful-Utilities/Status-Bars/#eww
-(defwidget workspaces [] (eventbox :class "workspaces"
-(box :space-evenly true :spacing 20
+(defwidget workspaces[] (eventbox :class "workspaces" (box :class "wrapper"
+(box :spacing 20 :space-evenly true
     (for workspace in "[1, 2, 3, 4]"
         (eventbox :class "${workspace == workspaces.active ? "active" : "inactive"}" :width 24
                 :onclick "hyprctl dispatch workspace ${workspace}"
@@ -47,56 +48,52 @@
                     "${workspace == 2 ? "" :
                     "${workspace == 3 ? "" :
                     "${workspace == 4 ? "" :
-                    ""}"}"}"}"
-                )
-            )
-        )
-    )
-))
+                    ""}"}"}"}"))))
+)))
 
 
-(defwidget sysinfo[] (eventbox :class "sysinfo"
+(defwidget sysinfo[] (eventbox :class "sysinfo" (box :class "wrapper"
 (box :spacing 12 :space-evenly false
     (label :text " ${round((EWW_RAM.used_mem) / (1024 * 1024 * 1024), 1)}G")
     (label :text " ${round(EWW_CPU.avg, 1)}%"))
-))
+)))
 
 ;; (defwidget tray[] (eventbox :class "tray"
 ;; (box 
 ;;     )
 ;; ))
 
-(defwidget player[] (eventbox :class "player" :visible {"${player != "[]"}"}
+(defwidget player[] (eventbox :class "player"
+    :visible {"${player != "[]"}"}
     :onclick cmd_player_next
     :onrightclick cmd_player_previous
-    :onmiddleclick cmd_player_toggle
+    :onmiddleclick cmd_player_toggle 
+    (box :class "wrapper"
 (box :spacing 20 :space-evenly false
     (label :text "${player[0].glyph}")
     (label :limit-width 35 :text
             "${player[0].artist == "" ? "${player[0].title}" :
-            "${player[0].artist} - ${player[0].title}"}")
-    )
-))
+            "${player[0].artist} - ${player[0].title}"}"))
+)))
 
-(defwidget media[] (eventbox :class "media ${audio.sink[0].bus} ${audio.sink[0].mute ? "muted" : "unmuted"}"
-(box :spacing 14 :space-evenly false
+(defwidget media[] (eventbox :class "media ${audio.sink[0].bus} ${audio.sink[0].mute ? "muted" : "unmuted"}" (box :class "wrapper"
+(box :spacing 10 :space-evenly false
     (eventbox :onclick cmd_sink_mute :onscroll "[ {} == 'up' ] && (${cmd_sink_volume_increase}) || (${cmd_sink_volume_decrease})"
         (box :class "sink" :spacing 10 :space-evenly false
-            (label :text
-                "${audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
-                "${audio.sink[0].port == "Headphones"              ? " " :
-                "${audio.sink[0].volume >= 50                      ? " " :
-                ""}"}"}")
+            (label :text "${audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
+                    "${audio.sink[0].port == "Headphones" ? " " :
+                    "${audio.sink[0].volume >= 50         ? " " :
+                    ""}"}"}")
             (label :text "${audio.sink[0].volume}%" :visible "${!(audio.sink[0].mute)}")))
     (eventbox :onclick cmd_source_mute :onscroll "[ {} == 'up' ] && (${cmd_source_volume_increase}) || (${cmd_source_volume_decrease})"
         (box :class "source" :spacing 10 :space-evenly false
             (label :text "${audio.source[0].mute || audio.source[0].volume == 0 ? " " : ""}")
-            (label :text "${audio.source[0].volume}%" :visible "${!audio.source[0].mute}")))
-    )
-))
+            (label :text "${audio.source[0].volume}%" :visible "${!audio.source[0].mute}"))))
+)))
 
 (defwidget battery[] (eventbox :class "battery"
     :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
+    (box :class "wrapper"
 (box :spacing 10 :space-evenly false
     (label :text
         "${EWW_BATTERY.BAT0.capacity >= 80 ? " " :
@@ -105,9 +102,9 @@
         "${EWW_BATTERY.BAT0.capacity >= 20 ? " " :
         " "}"}"}"}")
     (label :text "${EWW_BATTERY.BAT0.capacity}%"))
-))
+)))
 
-(defwidget network[] (eventbox :class "network ${network.connectivity}"
+(defwidget network[] (eventbox :class "network ${network.connectivity}" (box :class "wrapper"
 (box :spacing 10 :space-evenly false
     (label :text
         "${network.connectivity == "full" ?
@@ -126,15 +123,16 @@
             ""}" :
         "󰤭 "}"}")
     (label :text "${network.ssid}"))
-))
+)))
 
-(defwidget clock[] (eventbox :class "clock"
-(box 
+(defwidget clock[] (eventbox :class "clock" (box :class "wrapper"
+(box :space-evenly false
     (label :text time))
-))
+)))
 
 (defwidget power[] (eventbox :class "power"
     :onclick cmd_toggle_powermenu
-(box 
+    (box :class "wrapper"
+(box :spacing 10 :space-evenly false
     (label :text ""))
-))
+)))
