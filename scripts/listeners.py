@@ -210,4 +210,4 @@ if __name__ == "__main__":
         case "bluetooth":
             Bluetooth().execute()
         case _:
-            BaseListener(None, None).dispatch({"error": "you dumbass"})
+            BaseListener([], "").dispatch({"error": "you dumbass"})
