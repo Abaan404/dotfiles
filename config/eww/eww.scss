@@ -28,5 +28,35 @@ $easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1);
     }
 }
 
+@mixin kf-fade ($from, $to, $property, $id) {
+    @keyframes fade-#{$id} {
+    from {
+        #{$property}: $from;
+    }
+    to {
+        #{$property}: $to;
+    }
+
+    }
+}
+
+@mixin animate-active ($selector, $color, $color-hover, $duration: 200ms) {
+    #{$selector}:active {
+        $unique: unique-id();
+        @include kf-fade($color, $color-hover, "background-color", $id: $unique);
+        animation: $duration fade-#{$unique};
+        background-color: $color-hover;
+    }
+}
+
+@mixin animate-hover ($selector, $color, $color-hover, $duration: 200ms) {
+    #{$selector}:hover {
+        $unique: unique-id();
+        @include kf-fade($color, $color-hover, "background-color", $id: $unique);
+        animation: $duration fade-#{$unique};
+        background-color: $color-hover;
+    }
+}
+
 @import 'colors';
 @import 'css/powermenu';

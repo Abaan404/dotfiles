@@ -3,7 +3,7 @@
     :stacking "fg"
     :namespace o_namespace
 
-    :geometry (geometry 
+    :geometry (geometry
         :anchor "right center"
         :width "15%"
     )

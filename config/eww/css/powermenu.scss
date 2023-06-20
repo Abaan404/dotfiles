@@ -11,10 +11,7 @@
             border-radius: 10px;
             background-color: $primary;
 
-            &:hover {
-                transition: 200ms linear background-color;
-                background-color: $secondary;
-            }
+            @include animate-hover("&", $primary, $secondary);
 
             label {
                 color: $accent;
@@ -34,7 +31,7 @@
                 transition: 100ms linear padding;
                 padding: 25px 35px;
             }
-            
+
             .#{$selector}:not(:hover) button {
                 transition: 100ms linear padding;
                 padding: 35px 35px;
