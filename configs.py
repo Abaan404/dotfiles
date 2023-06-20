@@ -49,6 +49,18 @@ class Configs:
         for template in CONFIG_TEMPLATE_PATH.iterdir():
             getattr(self, template.name.lower(), lambda: None)()
 
+    def eww(self):
+        color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
+        path = CONFIG_PATH.joinpath("eww/images/")
+        path.mkdir(exist_ok=True)
+
+        for file in Path("~/.dotfiles/images/eww").expanduser().iterdir():
+            img = Image.open(file).convert("RGBA")
+            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
+            img.save(path.joinpath(file.name))
+
+        subprocess.Popen("eww reload", shell=True)
+
     def swaylock(self):
         subprocess.Popen("echo $(killall swayidle) && swayidle", shell=True)
 
@@ -56,9 +68,6 @@ class Configs:
         if subprocess.check_output("echo $(pidof obs)", shell=True).strip(): # hyprland crashes if configs get updated while obs is running
             return
         subprocess.Popen("hyprctl reload", shell=True)
-
-    def waybar(self):
-        subprocess.Popen("echo $(killall waybar) && waybar", shell=True)
 
     def dunst(self):
         subprocess.Popen("echo $(killall dunst) && dunst", shell=True)
@@ -142,6 +151,7 @@ if __name__ == "__main__":
         "accent": colors["colors_color5"],
         "bad": "cc4f4f",
         "good": "26a65b",
+        "warning": "d3980f",
         "text": "d2d2d2",
 
         # misc

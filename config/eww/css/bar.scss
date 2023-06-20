@@ -1,0 +1,70 @@
+@use "sass:list";
+
+.w_bar {
+    margin: 10px { bottom: 0px }
+
+    $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "network", "media", "battery", "clock", "power";
+    @each $modules in $all-modules {
+
+        .#{$modules} {
+            @if not list.index("workspaces", $modules) {
+                @include animate-hover("&", $primary, $accent);
+                @include animate-active("&", $accent, $primary);
+            }
+            border-radius: 10px;
+            background-color: $primary;
+
+            & > box {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+
+            label {
+                font: {
+                    size: 14px;
+                    weight: bold;
+                }
+                color: $text;
+            }
+        }
+    }
+
+    .launcher {
+        background: {
+            image: url("!!HOME/.config/eww/images/launcher.png");
+            size: 16px 16px;
+            repeat: no-repeat;
+            position: center;
+        }
+    }
+
+    .workspaces {
+        .active label {
+            color: white;
+        }
+
+        .inactive:hover label {
+            color: white;
+            $unique: unique_id();
+            @include kf-fade($text, white, "color", $id: $unique);
+            animation: 400ms fade-#{$unique};
+        }
+    }
+
+    // media
+    .bluetooth {
+        background-color: $bluetooth;
+    }
+    .muted {
+        background-color: $bad;
+    }
+
+    // network
+    .limited {
+        background-color: $warning;
+    }
+    .none {
+        background-color: gray;
+    }
+}

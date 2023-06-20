@@ -3,3 +3,9 @@
 
 ;; WINDOWS
 (include "./modules/powermenu.yuck")
+
+;; DEBUG
+(include "./modules/debug.yuck")
+
+;; BAR
+(include "./modules/bar.yuck")
