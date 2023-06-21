@@ -10,5 +10,5 @@
 
 (defwidget w_debug[]
 (box :class "debug" :style "background-color: black"
-    (label :wrap true :text "${network}"))
+    (label :wrap true :text "${audio ?: audio}"))
 )

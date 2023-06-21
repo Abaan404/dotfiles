@@ -53,7 +53,7 @@
 (defwidget workspaces[] (eventbox :class "workspaces" (box :class "wrapper"
 (box :spacing 20 :space-evenly true
     (for workspace in "[1, 2, 3, 4]"
-        (eventbox :class "${workspace == workspaces.active ? "active" : "inactive"}" :width 24
+        (eventbox :class "${workspace == workspaces?.active ? "active" : "inactive"}" :width 24
                 :onclick "hyprctl dispatch workspace ${workspace}"
             (label :text
                     "${workspace == 1 ? "" :
@@ -76,31 +76,31 @@
 ;; ))
 
 (defwidget player[] (eventbox :class "player"
-    :visible {"${player != "[]"}"}
+    :visible {"${player != "null" && player?.[0] != "null"}"}
     :onclick cmd_player_next
     :onrightclick cmd_player_previous
     :onmiddleclick cmd_player_toggle
     (box :class "wrapper"
 (box :spacing 20 :space-evenly false
-    (label :text "${player[0].glyph}")
+    (label :text "${player?.[0]?.glyph}")
     (label :limit-width 35 :text
-            "${player[0].artist == "" ? "${player[0].title}" :
-            "${player[0].artist} - ${player[0].title}"}"))
+            "${player?.[0]?.artist == "" ? "${player?.[0]?.title}" :
+            "${player?.[0]?.artist} - ${player?.[0]?.title}"}"))
 )))
 
-(defwidget media[] (eventbox :class "media ${audio.sink[0].bus} ${audio.sink[0].mute ? "muted" : "unmuted"}" (box :class "wrapper"
+(defwidget media[] (eventbox :class "media ${audio != "null" ? audio.sink[0].bus : "disconnected"} ${audio == "null" || audio.sink[0].mute ? "muted" : "unmuted"}" (box :class "wrapper"
 (box :spacing 10 :space-evenly false
     (eventbox :onclick cmd_sink_mute :onscroll "[ {} == 'up' ] && (${cmd_sink_volume_increase}) || (${cmd_sink_volume_decrease})"
         (box :class "sink" :spacing 10 :space-evenly false
-            (label :text "${audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
+            (label :text "${audio == "null" || audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
                     "${audio.sink[0].port == "Headphones" ? " " :
                     "${audio.sink[0].volume >= 50         ? " " :
                     ""}"}"}")
-            (label :text "${audio.sink[0].volume}%" :visible "${!(audio.sink[0].mute)}")))
+            (label :text "${audio?.sink?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.sink[0].mute)}")))
     (eventbox :onclick cmd_source_mute :onscroll "[ {} == 'up' ] && (${cmd_source_volume_increase}) || (${cmd_source_volume_decrease})"
         (box :class "source" :spacing 10 :space-evenly false
-            (label :text "${audio.source[0].mute || audio.source[0].volume == 0 ? " " : ""}")
-            (label :text "${audio.source[0].volume}%" :visible "${!audio.source[0].mute}"))))
+            (label :text "${audio == "null" || audio.source[0].mute || audio.source[0].volume == 0 ? " " : ""}")
+            (label :text "${audio?.source?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.source[0].mute)}"))))
 )))
 
 (defwidget battery[] (eventbox :class "battery"
@@ -116,30 +116,30 @@
     (label :text "${EWW_BATTERY.BAT0.capacity}%"))
 )))
 
-(defwidget network[] (eventbox :class "network ${network.connectivity}"
+(defwidget network[] (eventbox :class "network ${network?.connectivity}"
     :onhover "eww update r_bar_ssid=true"
     :onhoverlost "eww update r_bar_ssid=false"
     (box :class "wrapper"
 (box :space-evenly false
     (label :text
-        "${network.connectivity == "full" ?
-            "${network.type == "wifi" ?
-                "${network.strength > 80 ? "󰤥 " :
-                "${network.strength > 40 ? "󰤢 " :
-                "${network.strength > 20 ? "󰤟 " :
+        "${network?.connectivity == "full" ?
+            "${network?.type == "wifi" ?
+                "${network?.strength > 80 ? "󰤥 " :
+                "${network?.strength > 40 ? "󰤢 " :
+                "${network?.strength > 20 ? "󰤟 " :
                 "󰤯 "}"}"}" :
             ""}" :
-        "${network.connectivity == "limited" ?
-            "${network.type == "wifi" ?
-                "${network.strength > 80 ? "󰤦 " :
-                "${network.strength > 40 ? "󰤣 " :
-                "${network.strength > 20 ? "󰤠 " :
+        "${network?.connectivity == "limited" ?
+            "${network?.type == "wifi" ?
+                "${network?.strength > 80 ? "󰤦 " :
+                "${network?.strength > 40 ? "󰤣 " :
+                "${network?.strength > 20 ? "󰤠 " :
                 "󰤫 "}"}"}" :
             ""}" :
         "󰤭 "}"}")
     (revealer :reveal r_bar_ssid
         :transition "slideleft"
-        (label :text "${network.ssid}" :style "padding-left: 10px")))
+        (label :text "${network?.ssid}" :style "padding-left: 10px")))
 )))
 
 (defwidget clock[] (eventbox :class "clock"

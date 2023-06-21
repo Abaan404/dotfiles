@@ -25,10 +25,10 @@
 (defvar cmd_brightness_decrease "brightnessctl set 10%-")
 
 ;; LISTENERS
-(deflisten audio      :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
-(deflisten player     :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
-(deflisten network    :initial "{}" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
-(deflisten workspaces :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
+(deflisten audio      :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
+(deflisten player     :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
+(deflisten network    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
+(deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
 
 ;; POLLING
 (defpoll time :interval "0.5s" :initial "00:00" "date +\"%H:%M\"")
