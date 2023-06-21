@@ -1,0 +1,23 @@
+// for future me reference https://gist.github.com/dharmx/24d7c69bb7ebc7cca72f0855a9f00117 legendary
+// also gtk3 is pain
+
+.w_calendar {
+    margin: 10px;
+
+    calendar {
+        background: $secondary;
+        border-radius: 10px;
+        padding: 10px;
+        color: $text;
+        
+        @include animate-fade(":hover", $text, white, $property: "color");
+
+        &:selected {
+            color: white;
+        }
+
+        &:indeterminate {
+            color: #888888;
+        }
+    }
+}

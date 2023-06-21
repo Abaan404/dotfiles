@@ -5,6 +5,7 @@
 
 ;; SHELL COMMANDS
 (defvar cmd_toggle_powermenu "eww open --toggle powermenu")
+(defvar cmd_toggle_calendar "eww open --toggle calendar")
 
 (defvar cmd_poweroff  "systemctl poweroff")
 (defvar cmd_reboot    "systemctl reboot")

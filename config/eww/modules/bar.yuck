@@ -143,6 +143,7 @@
 )))
 
 (defwidget clock[] (eventbox :class "clock"
+    :onclick "eww open --toggle calendar"
     :onhover "eww update r_bar_date=true"
     :onhoverlost "eww update r_bar_date=false"
     (box :class "wrapper"

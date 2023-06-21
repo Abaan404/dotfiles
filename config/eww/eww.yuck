@@ -3,6 +3,7 @@
 
 ;; WINDOWS
 (include "./modules/powermenu.yuck")
+(include "./modules/calendar.yuck")
 
 ;; DEBUG
 (include "./modules/debug.yuck")
