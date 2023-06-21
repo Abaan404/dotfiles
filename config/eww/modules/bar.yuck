@@ -9,7 +9,7 @@
         :height "40px")
 (w_bar))
 
-(defwidget w_bar []
+(defwidget w_bar[]
 (centerbox :class "w_bar"
     (box :class "start" :halign "start" :spacing "10" :space-evenly false
         (launcher)
@@ -29,12 +29,24 @@
         )
 ))
 
+;; REVEAL BOOLEAN
+(defvar r_bar_launcher false)
+(defvar r_bar_exit false)
+(defvar r_bar_date false)
+(defvar r_bar_ssid false)
+
 ;; BAR MODULES
 (defwidget launcher[] (eventbox :class "launcher"
     :onclick cmd_launcher
     :timeout "10s"
+    :onhover "eww update r_bar_launcher=true"
+    :onhoverlost "eww update r_bar_launcher=false"
     (box :class "wrapper"
-(box :width 10)
+(box :space-evenly false
+    (box :class "image" :width 16)
+    (revealer :reveal r_bar_launcher
+        :transition "slideleft"
+        (label :text "Launcher" :style "padding-left: 10px")))
 )))
 
 ;; http://wiki.hyprland.org/Useful-Utilities/Status-Bars/#eww
@@ -59,7 +71,7 @@
 )))
 
 ;; (defwidget tray[] (eventbox :class "tray"
-;; (box 
+;; (box
 ;;     )
 ;; ))
 
@@ -67,7 +79,7 @@
     :visible {"${player != "[]"}"}
     :onclick cmd_player_next
     :onrightclick cmd_player_previous
-    :onmiddleclick cmd_player_toggle 
+    :onmiddleclick cmd_player_toggle
     (box :class "wrapper"
 (box :spacing 20 :space-evenly false
     (label :text "${player[0].glyph}")
@@ -104,8 +116,11 @@
     (label :text "${EWW_BATTERY.BAT0.capacity}%"))
 )))
 
-(defwidget network[] (eventbox :class "network ${network.connectivity}" (box :class "wrapper"
-(box :spacing 10 :space-evenly false
+(defwidget network[] (eventbox :class "network ${network.connectivity}"
+    :onhover "eww update r_bar_ssid=true"
+    :onhoverlost "eww update r_bar_ssid=false"
+    (box :class "wrapper"
+(box :space-evenly false
     (label :text
         "${network.connectivity == "full" ?
             "${network.type == "wifi" ?
@@ -122,17 +137,30 @@
                 "󰤫 "}"}"}" :
             ""}" :
         "󰤭 "}"}")
-    (label :text "${network.ssid}"))
+    (revealer :reveal r_bar_ssid
+        :transition "slideleft"
+        (label :text "${network.ssid}" :style "padding-left: 10px")))
 )))
 
-(defwidget clock[] (eventbox :class "clock" (box :class "wrapper"
+(defwidget clock[] (eventbox :class "clock"
+    :onhover "eww update r_bar_date=true"
+    :onhoverlost "eww update r_bar_date=false"
+    (box :class "wrapper"
 (box :space-evenly false
-    (label :text time))
+    (label :text time)
+    (revealer :reveal r_bar_date
+        :transition "slideleft"
+        (label :text date :style "padding-left: 10px")))
 )))
 
 (defwidget power[] (eventbox :class "power"
+    :onhover "eww update r_bar_exit=true"
+    :onhoverlost "eww update r_bar_exit=false"
     :onclick cmd_toggle_powermenu
     (box :class "wrapper"
-(box :spacing 10 :space-evenly false
-    (label :text ""))
+(box :space-evenly false
+    (label :text "")
+    (revealer :reveal r_bar_exit
+        :transition "slideleft"
+        (label :text "exit" :style "padding-left: 10px")))
 )))
