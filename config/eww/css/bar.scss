@@ -8,8 +8,8 @@
 
         .#{$modules} {
             @if not list.index("workspaces", $modules) {
-                @include animate-hover("&", $primary, $accent);
-                @include animate-active("&", $accent, $primary);
+                @include animate-fade("&:hover", $primary, $accent);
+                @include animate-fade("&:active", $accent, $primary);
             }
             border-radius: 10px;
             background-color: $primary;
@@ -40,15 +40,9 @@
     }
 
     .workspaces {
+        @include animate-fade(".inactive:hover label", $text, white, $property: "color");
         .active label {
             color: white;
-        }
-
-        .inactive:hover label {
-            color: white;
-            $unique: unique_id();
-            @include kf-fade($text, white, "color", $id: $unique);
-            animation: 400ms fade-#{$unique};
         }
     }
 
