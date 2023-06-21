@@ -1,8 +1,7 @@
 (defwindow calendar
     :monitor 0
     :stacking "fg"
-    :exclusive true
-    :namespace e_namespace
+    :namespace "eww_overlay"
 
     :geometry (geometry :anchor "top right")
 (w_calendar))

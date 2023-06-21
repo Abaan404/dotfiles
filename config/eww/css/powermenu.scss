@@ -11,7 +11,7 @@
             border-radius: 10px;
             background-color: $primary;
 
-            @include animate-fade("&", $primary, $secondary);
+            @include animate-fade("&:hover", $primary, $secondary);
 
             label {
                 color: $accent;

@@ -2,7 +2,7 @@
     :monitor 0
     :stacking "fg"
     :exclusive true
-    :namespace e_namespace
+    :namespace "eww_exclusive"
 
     :geometry (geometry :anchor "bottom center"
         :width "100%")

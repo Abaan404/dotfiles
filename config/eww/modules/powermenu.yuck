@@ -1,7 +1,7 @@
 (defwindow powermenu
     :monitor 0
     :stacking "fg"
-    :namespace o_namespace
+    :namespace "eww_overlay"
 
     :geometry (geometry
         :anchor "right center"

@@ -1,8 +1,3 @@
-;; NAMESPACE STRINGS
-(defvar e_namespace "eww-exclusive")
-(defvar o_namespace "eww-overlay")
-(defvar b_namespace "eww-background")
-
 ;; SHELL COMMANDS
 (defvar cmd_toggle_powermenu "eww open --toggle powermenu")
 (defvar cmd_toggle_calendar "eww open --toggle calendar")
