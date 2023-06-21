@@ -4,20 +4,25 @@
 .w_calendar {
     margin: 10px;
 
-    calendar {
-        background: $secondary;
-        border-radius: 10px;
-        padding: 10px;
-        color: $text;
-        
-        @include animate-fade(":hover", $text, white, $property: "color");
+    .wrapper {
+        @include animate-flyin("&", "top");
+        calendar {
+            background: $secondary;
+            border-radius: 10px;
+            padding: 10px;
+            color: $text;
 
-        &:selected {
-            color: white;
-        }
+            &:hover {
+                color: white;
+            }
 
-        &:indeterminate {
-            color: #888888;
+            &:selected {
+                color: white;
+            }
+
+            &:indeterminate {
+                color: #888888;
+            }
         }
     }
 }

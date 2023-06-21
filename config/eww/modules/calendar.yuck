@@ -8,5 +8,5 @@
 
 (defwidget w_calendar[]
 (box :class "w_calendar"
-    (calendar)
+    (box :class "wrapper" (calendar))
 ))

@@ -10,17 +10,17 @@
 $easeOutBack: cubic-bezier(0.34, 1.2, 0.64, 1);
 $easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1);
 
-@mixin kf-flyin-back ($direction, $i, $push) {
-    @keyframes flyin-back-#{$direction}-#{$i} {
+@mixin kf-flyin ($direction, $offset, $push, $id) {
+    @keyframes flyin-#{$id} {
     0% {
-        margin-#{$direction}: -$i;
+        margin-#{$direction}: -$offset;
     }
     50% {
         margin-#{$direction}: 0px;
     }
 
     75% {
-        margin-#{$direction}: $i * $push;
+        margin-#{$direction}: $offset * $push;
     }
 
     100% {
@@ -40,6 +40,12 @@ $easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     }
+}
+
+@mixin animate-flyin ($selector, $direction, $offset: 100px, $push: 0.1, $duration: 500ms) {
+    $unique: unique-id();
+    @include kf-flyin($direction, $offset, $push, $id: $unique);
+    animation: $duration flyin-#{$unique}; // bezier is kinda buggy?
 }
 
 @mixin animate-fade ($selector, $color, $color-hover, $duration: 200ms, $property: "background-color") {
