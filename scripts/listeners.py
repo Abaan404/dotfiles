@@ -9,10 +9,14 @@ from time import sleep
 def read_shell(command: list | str, shell: bool = False, ignore_error: bool = False, retry: bool = False, _attempts: int = 0) -> str:
     p = subprocess.run(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    if (p.returncode != 0 or p.stderr) and not ignore_error:
+    if p.returncode != 0:
+        print(f"ERROR: {p.stderr.decode('utf-8').strip()}", file=sys.stderr)
+        if ignore_error:
+            return ""
+
         if retry and _attempts < 5:
             sleep(1)
-            print(f"Attempt {_attempts}: {p.stderr.decode('utf-8').strip()}", file=sys.stderr)
+            print(f"Retrying {command if isinstance(command, str) else ' '.join(command)} ... {_attempts}", file=sys.stderr)
             return read_shell(command, shell=shell, ignore_error=ignore_error, retry=retry, _attempts = _attempts + 1)
         exit(1)
 
@@ -95,26 +99,28 @@ class Player(BaseListener):
         super().__init__(["dbus-monitor"], ".+(\\/org\\/mpris\\/MediaPlayer2.+PropertiesChanged)")
 
     def read(self) -> dict | list:
-        buff = []
+        buff = {
+            "status": read_shell(["playerctl", "status"]),
+            "alive": []
+        }
         if not (players := [args.player] if args.player else read_shell(["playerctl", "--list-all"], ignore_error=True).split()):
             return buff
 
         for player in players:
             title, artist, album, url, art_url, length = read_shell(
                 ["playerctl", f"--player={player}", "metadata", "--format",
-                 "{{xesam:title}},{{xesam:artist}},{{xesam:album}},{{xesam:url}},{{mpris:artUrl}},{{mpris:length}}"],
+                 "{{xesam:title}}:!:{{xesam:artist}}:!:{{xesam:album}}:!:{{xesam:url}}:!:{{mpris:artUrl}}:!:{{duration(mpris:length)}}"],
                 retry=True # idk why but it fails randomly woo
-            ).split(",")
-            glyph = self.glyph(player)
+            ).split(":!:")
 
-            buff.append({
+            buff["alive"].append({
                 "name": player,
-                "glyph": glyph,
+                "glyph": self.glyph(player),
                 "title": title,
                 "artist": artist,
                 "album": album,
                 "url": url,
-                "art_url": art_url,
+                "art_url": art_url or f'file://{os.path.expanduser("~/.config/eww/images/playerart-default.png")}',
                 "length": length
             })
 

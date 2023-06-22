@@ -1,0 +1,31 @@
+(defwindow player
+    :monitor 0
+    :stacking "fg"
+    :namespace "eww_overlay"
+
+    :geometry (geometry :anchor "top center"
+        :width "20%")
+(w_player))
+
+;; (defpoll player_percent :interval "0.5s" :initial "100" {"playerctl --player=$(playerctl --list-all | sed '1q') metadata --format \"print(int({{position}}/int('{{mpris:length}}' or {{position}})*100))\" | python3"})
+
+(defpoll player_position :interval "0.5s" :initial "0:00" "playerctl --player=$(playerctl --list-all | sed '1q') metadata --format '{{duration(position)}}'")
+
+(defwidget w_player[] (box :class "w_player"
+(box :class "layout-box" :space-evenly false :spacing 10
+    (box :class "left" :halign "start" :space-evenly false :spacing 10
+        ;; background style tag instead of image widget to allow custom css on image
+        (box :class "image" :style "background: url('${player?.alive?.[0]?.art_url}'); background-size: 180px 180px;" :width 180 :height 180)
+        (box :class "controls" :orientation "vertical"
+            (button :class "previous" :onclick cmd_player_previous " ")
+            (button :class "pause" :onclick cmd_player_toggle {player?.status == "Paused" ? " " : " "})
+            (button :class "next" :onclick cmd_player_next " ")))
+
+    (box :class "right" :space-evenly false :spacing 10 :orientation "vertical"
+        (label :class "name" :halign "start" :valign "start" :text
+            "${player?.alive?.[0]?.glyph ?: ""} ${player?.alive?.[0]?.name ?: "No Player Active"} ${player?.alive?.[0]?.length != "null" && player?.alive?.[0]?.length != "" ? "(${player_position} / ${player?.alive?.[0]?.length})" : ""}")
+        (box :vexpand true :orientation "vertical" :valign "center" :space-evenly false
+            (label :class "title" :halign "start" :text {player?.alive?.[0]?.artist ?: "No Title"})
+            (label :class "artist" :halign "start" :text {player?.alive?.[0]?.title ?: "No Artist"})
+            (progress :value 100 :height 20)))
+)))

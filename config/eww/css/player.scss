@@ -1,0 +1,46 @@
+.w_player {
+    margin: 20px;
+    .layout-box {
+        @include animate-flyin("&", "top");
+        background-color: $primary;
+        border-radius: 10px;
+
+        * label {
+            color: $text;
+        }
+
+        .left {
+            border-radius: 10px;
+            background-color: $secondary;
+
+            .image {
+                border-radius: 10px;
+            }
+
+            .controls {
+                @include animate-fade("button:hover label", $text, white, $property: "color");
+                @include animate-fade("button:active label", white, $text, $property: "color");
+                padding: 10px;
+            }
+        }
+
+        .right {
+            padding: 10px;
+            padding-right: 40px;
+
+            .duration {
+                font-size: 1em;
+            }
+
+            .title {
+                font-size: 2.5em;
+                font-weight: bolder;
+            }
+
+            .artist {
+                font-size: 1.5em;
+                font-weight: bold;
+            }
+        }
+    }
+}

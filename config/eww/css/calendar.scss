@@ -2,7 +2,7 @@
 // also gtk3 is pain
 
 .w_calendar {
-    margin: 10px;
+    margin: 20px;
 
     .wrapper {
         @include animate-flyin("&", "top");

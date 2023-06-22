@@ -76,16 +76,14 @@
 ;; ))
 
 (defwidget player[] (eventbox :class "player"
-    :visible {"${player != "null" && player?.[0] != "null"}"}
-    :onclick cmd_player_next
-    :onrightclick cmd_player_previous
+    :visible {"${player != "null" && player.active != []}"}
+    :onclick "eww open --toggle player"
+    :onrightclick cmd_player_next
     :onmiddleclick cmd_player_toggle
     (box :class "wrapper"
 (box :spacing 20 :space-evenly false
-    (label :text "${player?.[0]?.glyph}")
-    (label :limit-width 35 :text
-            "${player?.[0]?.artist == "" ? "${player?.[0]?.title}" :
-            "${player?.[0]?.artist} - ${player?.[0]?.title}"}"))
+    (label :text "${player?.alive?.[0]?.glyph}")
+    (label :limit-width 35 :text "${player?.alive?.[0]?.artist == "" ? "${player?.alive?.[0]?.title}" : "${player?.alive?.[0]?.artist} - ${player?.alive?.[0]?.title}"}"))
 )))
 
 (defwidget media[] (eventbox :class "media ${audio != "null" ? audio.sink[0].bus : "disconnected"} ${audio == "null" || audio.sink[0].mute ? "muted" : "unmuted"}" (box :class "wrapper"
