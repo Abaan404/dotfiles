@@ -3,7 +3,7 @@
 .w_bar {
     margin: 10px { bottom: 0px }
 
-    $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "network", "media", "battery", "clock", "power";
+    $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "info", "clock", "media", "power";
     @each $modules in $all-modules {
 
         .#{$modules} {
@@ -55,10 +55,10 @@
     }
 
     // network
-    .limited {
-        background-color: $warning;
+    .limited label {
+        color: $warning;
     }
-    .none {
-        background-color: gray;
+    .none label {
+        color: $bad;
     }
 }

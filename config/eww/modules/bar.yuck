@@ -22,14 +22,14 @@
         )
     (box :class "end" :halign "end" :spacing "10" :space-evenly false
         (media)
-        (battery)
-        (network)
+        (info)
         (clock)
         (power)
         )
 ))
 
 ;; REVEAL BOOLEAN
+(defvar r_bar_battery false)
 (defvar r_bar_launcher false)
 (defvar r_bar_exit false)
 (defvar r_bar_date false)
@@ -89,55 +89,56 @@
 (defwidget media[] (eventbox :class "media ${audio != "null" ? audio.sink[0].bus : "disconnected"} ${audio == "null" || audio.sink[0].mute ? "muted" : "unmuted"}" (box :class "wrapper"
 (box :spacing 10 :space-evenly false
     (eventbox :onclick cmd_sink_mute :onscroll "[ {} == 'up' ] && (${cmd_sink_volume_increase}) || (${cmd_sink_volume_decrease})"
-        (box :class "sink" :spacing 10 :space-evenly false
+        (box :class "sink" :space-evenly false
             (label :text "${audio == "null" || audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
                     "${audio.sink[0].port == "Headphones" ? " " :
                     "${audio.sink[0].volume >= 50         ? " " :
                     ""}"}"}")
-            (label :text "${audio?.sink?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.sink[0].mute)}")))
+            (label :text "${audio?.sink?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.sink[0].mute)}" :style "padding-left: 10px")))
     (eventbox :onclick cmd_source_mute :onscroll "[ {} == 'up' ] && (${cmd_source_volume_increase}) || (${cmd_source_volume_decrease})"
-        (box :class "source" :spacing 10 :space-evenly false
+        (box :class "source" :space-evenly false
             (label :text "${audio == "null" || audio.source[0].mute || audio.source[0].volume == 0 ? " " : ""}")
-            (label :text "${audio?.source?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.source[0].mute)}"))))
+            (label :text "${audio?.source?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.source[0].mute)}" :style "padding-left: 10px"))))
 )))
 
-(defwidget battery[] (eventbox :class "battery"
-    :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
-    (box :class "wrapper"
-(box :spacing 10 :space-evenly false
-    (label :text
-        "${EWW_BATTERY.BAT0.capacity >= 80 ? " " :
-        "${EWW_BATTERY.BAT0.capacity >= 60 ? " " :
-        "${EWW_BATTERY.BAT0.capacity >= 40 ? " " :
-        "${EWW_BATTERY.BAT0.capacity >= 20 ? " " :
-        " "}"}"}"}")
-    (label :text "${EWW_BATTERY.BAT0.capacity}%"))
-)))
-
-(defwidget network[] (eventbox :class "network ${network?.connectivity}"
-    :onhover "eww update r_bar_ssid=true"
-    :onhoverlost "eww update r_bar_ssid=false"
-    (box :class "wrapper"
-(box :space-evenly false
-    (label :text
-        "${network?.connectivity == "full" ?
-            "${network?.type == "wifi" ?
-                "${network?.strength > 80 ? "󰤥 " :
-                "${network?.strength > 40 ? "󰤢 " :
-                "${network?.strength > 20 ? "󰤟 " :
-                "󰤯 "}"}"}" :
-            ""}" :
-        "${network?.connectivity == "limited" ?
-            "${network?.type == "wifi" ?
-                "${network?.strength > 80 ? "󰤦 " :
-                "${network?.strength > 40 ? "󰤣 " :
-                "${network?.strength > 20 ? "󰤠 " :
-                "󰤫 "}"}"}" :
-            ""}" :
-        "󰤭 "}"}")
-    (revealer :reveal r_bar_ssid
-        :transition "slideleft"
-        (label :text "${network?.ssid}" :style "padding-left: 10px")))
+(defwidget info[] (eventbox :class "info" (box :class "wrapper" :spacing 10 :space-evenly false
+    (eventbox :class "battery ${EWW_BATTERY.BAT0.status}"
+        :onhover "eww update r_bar_battery=true"
+        :onhoverlost "eww update r_bar_battery=false"
+        :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
+        (box :space-evenly false :spacing 2
+            (label :text
+                "${EWW_BATTERY.BAT0.capacity >= 80 ? " " :
+                "${EWW_BATTERY.BAT0.capacity >= 60 ? " " :
+                "${EWW_BATTERY.BAT0.capacity >= 40 ? " " :
+                "${EWW_BATTERY.BAT0.capacity >= 20 ? " " :
+                " "}"}"}"}")
+            (revealer :reveal r_bar_battery
+                :transition "slideleft"
+                (label :text "${EWW_BATTERY.BAT0.capacity}%" :style "padding-left: 10px"))))
+    (eventbox :class "network ${network?.connectivity}" 
+        :onhover "eww update r_bar_ssid=true"
+        :onhoverlost "eww update r_bar_ssid=false"
+        (box :space-evenly false
+            (label :text
+                "${network?.connectivity == "full" ?
+                    "${network?.type == "wifi" ?
+                        "${network?.strength > 80 ? "󰤥 " :
+                        "${network?.strength > 40 ? "󰤢 " :
+                        "${network?.strength > 20 ? "󰤟 " :
+                        "󰤯 "}"}"}" :
+                    ""}" :
+                "${network?.connectivity == "limited" ?
+                    "${network?.type == "wifi" ?
+                        "${network?.strength > 80 ? "󰤦 " :
+                        "${network?.strength > 40 ? "󰤣 " :
+                        "${network?.strength > 20 ? "󰤠 " :
+                        "󰤫 "}"}"}" :
+                    ""}" :
+                "󰤭 "}"}")
+            (revealer :reveal r_bar_ssid
+                :transition "slideleft"
+                (label :text "${network?.ssid ?: "Disconnected"}" :style "padding-left: 10px"))))
 )))
 
 (defwidget clock[] (eventbox :class "clock"
