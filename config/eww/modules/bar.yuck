@@ -142,15 +142,15 @@
 )))
 
 (defwidget clock[] (eventbox :class "clock"
-    :onclick "eww open --toggle calendar"
+    :onclick "eww open --toggle glance"
     :onhover "eww update r_bar_date=true"
     :onhoverlost "eww update r_bar_date=false"
     (box :class "wrapper"
 (box :space-evenly false
-    (label :text time)
+    (label :text "${time?.hour}:${time?.minute}")
     (revealer :reveal r_bar_date
         :transition "slideleft"
-        (label :text date :style "padding-left: 10px")))
+        (label :text "${time?.sweek}, ${time?.day} ${time?.lmonth} ${time?.year}" :style "padding-left: 10px")))
 )))
 
 (defwidget power[] (eventbox :class "power"

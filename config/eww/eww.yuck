@@ -3,7 +3,7 @@
 
 ;; WINDOWS
 (include "./modules/powermenu.yuck")
-(include "./modules/calendar.yuck")
+(include "./modules/glance.yuck")
 (include "./modules/player.yuck")
 
 ;; DEBUG

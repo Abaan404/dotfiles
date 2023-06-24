@@ -1,7 +1,7 @@
 .w_player {
-    margin: 20px;
+    @include animate-flyin("&", "top");
     .layout-box {
-        @include animate-flyin("&", "top");
+        margin: 20px;
         background-color: $primary;
         border-radius: 10px;
 

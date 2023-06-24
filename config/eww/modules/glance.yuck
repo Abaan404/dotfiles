@@ -1,0 +1,20 @@
+(defwindow glance
+    :monitor 0
+    :stacking "fg"
+    :namespace "eww_overlay"
+
+    :geometry (geometry :anchor "top right")
+(w_glance))
+
+(defwidget w_glance[]
+(box :class "w_glance"
+    (box :class "layout-box" :orientation "vertical"
+        (box :class "time" :space-evenly false
+            (box :class "clock" :orientation "vertical"
+                (label :valign "end" :text {time?.hour})
+                (label :text {time?.minute})
+                (label :valign "start":text {time?.second}))
+            (calendar)))
+
+    ;; TODO quote? username? todo list?
+))

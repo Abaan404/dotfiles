@@ -31,5 +31,4 @@
 (deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
 
 ;; POLLING
-(defpoll time :interval "0.5s" :initial "00:00" "date +\"%H:%M\"")
-(defpoll date :interval "0.5s" :initial "https://www.youtube.com/watch?v=thKsAWJjD8Y" "date +\"%A, %d %b %Y\"")
+(defpoll time :interval "0.5s" :initial "null" "date +'{\"year\":\"%Y\",\"month\":\"%m\",\"day\":\"%d\",\"hour\":\"%H\",\"minute\":\"%M\",\"second\":\"%S\",\"lmonth\":\"%B\",\"smonth\":\"%b\",\"lweek\":\"%A\",\"sweek\":\"%a\"}'")
