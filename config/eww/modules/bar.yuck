@@ -23,7 +23,6 @@
     (box :class "end" :halign "end" :spacing "10" :space-evenly false
         (media)
         (info)
-        (clock)
         (power)
         )
 ))
@@ -101,7 +100,9 @@
             (label :text "${audio?.source?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.source[0].mute)}" :style "padding-left: 10px"))))
 )))
 
-(defwidget info[] (eventbox :class "info" (box :class "wrapper" :spacing 10 :space-evenly false
+(defwidget info[] (eventbox :class "info"
+    :onclick "eww open --toggle glance"
+    (box :class "wrapper" :spacing 10 :space-evenly false
     (eventbox :class "battery ${EWW_BATTERY.BAT0.status}"
         :onhover "eww update r_bar_battery=true"
         :onhoverlost "eww update r_bar_battery=false"
@@ -139,18 +140,14 @@
             (revealer :reveal r_bar_ssid
                 :transition "slideleft"
                 (label :text "${network?.ssid ?: "Disconnected"}" :style "padding-left: 10px"))))
-)))
-
-(defwidget clock[] (eventbox :class "clock"
-    :onclick "eww open --toggle glance"
-    :onhover "eww update r_bar_date=true"
-    :onhoverlost "eww update r_bar_date=false"
-    (box :class "wrapper"
-(box :space-evenly false
-    (label :text "${time?.hour}:${time?.minute}")
-    (revealer :reveal r_bar_date
-        :transition "slideleft"
-        (label :text "${time?.sweek}, ${time?.day} ${time?.lmonth} ${time?.year}" :style "padding-left: 10px")))
+    (eventbox :class "clock"
+        :onhover "eww update r_bar_date=true"
+        :onhoverlost "eww update r_bar_date=false"
+        (box :space-evenly false
+            (label :text "${time?.hour}:${time?.minute}")
+            (revealer :reveal r_bar_date
+                :transition "slideleft"
+                (label :text "${time?.sweek}, ${time?.day} ${time?.lmonth} ${time?.year}" :style "padding-left: 10px"))))
 )))
 
 (defwidget power[] (eventbox :class "power"

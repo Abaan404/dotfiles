@@ -6,15 +6,29 @@
     :geometry (geometry :anchor "top right")
 (w_glance))
 
-(defwidget w_glance[]
-(box :class "w_glance"
-    (box :class "layout-box" :orientation "vertical"
-        (box :class "time" :space-evenly false
-            (box :class "clock" :orientation "vertical"
-                (label :valign "end" :text {time?.hour})
-                (label :text {time?.minute})
-                (label :valign "start":text {time?.second}))
-            (calendar)))
+(defwidget w_glance[] (box :class "w_glance"
+(box :class "layout-box" :orientation "vertical" :spacing 10 :space-evenly false
+    (box :class "one" :spacing 20 :space-evenly false :hexpand false
+        (w_glance_time)
+        (w_glame_quick_settings))
+    ;; (box :class "two" :spacing 20 :space-evenly false :hexpand false)
+)))
 
-    ;; TODO quote? username? todo list?
+(defwidget w_glance_time[]
+(box :class "time" :orientation "vertical" :space-evenly false
+    (label :halign "center" :text "${time?.hour} : ${time?.minute} : ${time?.second}")
+    (calendar)
+))
+
+(defwidget w_glame_quick_settings[]
+(box :class "quick-settings" :orientation "vertical" :spacing 20
+    ;; TODO events
+    (eventbox
+        (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 100} (label :text "󰤥 " :style "padding-left: 27px")))
+    (eventbox 
+        (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))
+    (eventbox 
+        (circular-progress :thickness 7 :class "bluetooth" :value 77 (label :text " " :style "padding-left: 30px")))
+    (eventbox
+        (circular-progress :thickness 7 :class "brightness" :value 77 (label :text " " :style "padding-left: 27px")))
 ))

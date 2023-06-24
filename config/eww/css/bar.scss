@@ -3,7 +3,7 @@
 .w_bar {
     margin: 10px { bottom: 0px }
 
-    $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "info", "clock", "media", "power";
+    $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "info", "media", "power";
     @each $modules in $all-modules {
 
         .#{$modules} {

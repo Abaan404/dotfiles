@@ -31,4 +31,6 @@
 (deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
 
 ;; POLLING
-(defpoll time :interval "0.5s" :initial "null" "date +'{\"year\":\"%Y\",\"month\":\"%m\",\"day\":\"%d\",\"hour\":\"%H\",\"minute\":\"%M\",\"second\":\"%S\",\"lmonth\":\"%B\",\"smonth\":\"%b\",\"lweek\":\"%A\",\"sweek\":\"%a\"}'")
+(defpoll username :interval "24h" "whoami")
+(defpoll uptime :interval "1m" "echo $(uptime -p | sed 's/up\s//g')")
+(defpoll time :interval "0.5s" :initial "null" 'date +\'{"year":"%Y","month":"%m","day":"%d","hour":"%H","minute":"%M","second":"%S","lmonth":"%B","smonth":"%b","lweek":"%A","sweek":"%a"}\'')
