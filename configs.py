@@ -59,8 +59,6 @@ class Configs:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
-        subprocess.Popen("eww reload", shell=True)
-
     def swaylock(self):
         subprocess.Popen("echo $(killall swayidle) && swayidle", shell=True)
 

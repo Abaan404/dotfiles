@@ -1,25 +1,23 @@
 // for future me reference https://gist.github.com/dharmx/24d7c69bb7ebc7cca72f0855a9f00117 legendary
 // also gtk3 is pain
+@use 'css/animations';
+@use 'css/colors';
 
 .w_glance {
-    @include animate-flyin("&", "top");
+    @include animations.flyin("&", "top");
 
-    * label {
-        color: $text;
-    }
-    
     .layout-box {
         margin: 20px;
     }
 
     .one, .two {
         padding: 10px;
-        background-color: $secondary;
+        background-color: colors.$secondary;
         border-radius: 20px;
     }
 
     .time {
-        background-color: $primary;
+        background-color: colors.$primary;
         padding: 10px;
         border-radius: 20px;
 
@@ -31,7 +29,7 @@
 
         calendar {
             padding: 10px;
-            color: $text;
+            color: colors.$text;
             font-weight: bold;
 
             &:hover {
@@ -52,7 +50,7 @@
     .quick-settings {
         padding: 20px;
         border-radius: 20px;
-        background-color: $primary;
+        background-color: colors.$primary;
 
         label {
             padding: 20px;
@@ -60,8 +58,8 @@
         }
 
         circular-progress {
-            background: $secondary;
-            color: $text;
+            background: colors.$secondary;
+            color: colors.$text;
         }
     }
 }

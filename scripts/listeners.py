@@ -11,13 +11,14 @@ def read_shell(command: list | str, shell: bool = False, ignore_error: bool = Fa
 
     if p.returncode != 0:
         print(f"ERROR: {p.stderr.decode('utf-8').strip()}", file=sys.stderr)
-        if ignore_error:
-            return ""
-
         if retry and _attempts < 5:
             sleep(1)
             print(f"Retrying {command if isinstance(command, str) else ' '.join(command)} ... {_attempts}", file=sys.stderr)
             return read_shell(command, shell=shell, ignore_error=ignore_error, retry=retry, _attempts = _attempts + 1)
+        
+        if ignore_error:
+            return ""
+        
         exit(1)
 
     return p.stdout.decode("utf-8").strip()
@@ -60,9 +61,31 @@ class Workspaces(BaseListener):
     def __init__(self) -> None:
         super().__init__(["socat", "-u", f"UNIX-CONNECT:/tmp/hypr/{os.environ['HYPRLAND_INSTANCE_SIGNATURE']}/.socket2.sock", "-"], "(workspace)")
 
+        # persistent
+        self.persistent = [
+            {"id": 1, "glyph": ""},
+            {"id": 2, "glyph": ""},
+            {"id": 3, "glyph": ""},
+            {"id": 4, "glyph": ""}
+        ]
+
     def read(self):
+        sleep(0.1) # weird bug in hyprctl causes same pinned windows to show up twice in `hyprctl workspaces` yeeeeeeee
+        current = json.loads(read_shell(["hyprctl", "activeworkspace", "-j"]))["id"]
+        workspaces = json.loads(read_shell(["hyprctl", "workspaces", "-j"]))
+        active = [*self.persistent] # avoid referencing
+
+        for workspace in workspaces:
+            id = workspace.get("id")
+            if id not in (x["id"] for x in active) and id > 0: # ignore scratchpad
+                active.append({"id": id, "glyph": ""})
+
+        if current not in (x["id"] for x in active):
+            active.append({"id": current, "glyph": ""})
+
         return {
-            "active": json.loads(read_shell(["hyprctl", "activeworkspace", "-j"]))["id"]
+            "active": active,
+            "current": current
         }
 
 class Network(BaseListener):
@@ -100,7 +123,7 @@ class Player(BaseListener):
 
     def read(self) -> dict | list:
         buff = {
-            "status": read_shell(["playerctl", "status"]),
+            "status": read_shell(["playerctl", "status"], ignore_error=True),
             "alive": []
         }
         if not (players := [args.player] if args.player else read_shell(["playerctl", "--list-all"], ignore_error=True).split()):

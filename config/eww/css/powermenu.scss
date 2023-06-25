@@ -1,18 +1,21 @@
+@use 'css/animations';
+@use 'css/colors';
+
 .w_powermenu {
     background-color: transparent;
     margin-right: 40px;
 
     .layout-box {
-        @include animate-flyin("&", "right");
-        @include animate-fade("button:hover", $primary, $secondary);
+        @include animations.flyin("&", "right");
+        @include animations.fade("button:hover", colors.$primary, colors.$secondary);
         button {
             padding: 35px;
             border-radius: 10px;
-            background-color: $primary;
+            background-color: colors.$primary;
 
 
             label {
-                color: $accent;
+                color: colors.$accent;
                 font-size: 40px;
             }
         }
@@ -36,9 +39,9 @@
             }
 
             .#{$selector}:hover .transition-text {
-                @include animate-flyin("&", "right");
+                @include animations.flyin("&", "right");
                 transition: 200ms linear color;
-                color: $accent;
+                color: colors.$accent;
             }
 
             .#{$selector}:not(:hover) .transition-text {
@@ -48,7 +51,7 @@
         }
 
         .power button label {
-            color: $bad;
+            color: colors.$bad;
             font-size: 45px;
         }
     }

@@ -1,4 +1,6 @@
 @use "sass:list";
+@use 'css/animations';
+@use 'css/colors';
 
 .w_bar {
     margin: 10px { bottom: 0px }
@@ -8,24 +10,15 @@
 
         .#{$modules} {
             @if not list.index("workspaces", $modules) {
-                @include animate-fade("&:hover", $primary, $accent);
-                @include animate-fade("&:active", $accent, $primary);
+                @include animations.fade("&:hover", colors.$primary, colors.$accent);
+                @include animations.fade("&:active", colors.$accent, colors.$primary);
             }
             border-radius: 10px;
-            background-color: $primary;
+            background-color: colors.$primary;
 
-            .wrapper {
+            .widget {
                 padding-left: 14px;
                 padding-right: 14px;
-            }
-
-
-            label {
-                font: {
-                    size: 14px;
-                    weight: bold;
-                }
-                color: $text;
             }
         }
     }
@@ -40,7 +33,7 @@
     }
 
     .workspaces {
-        @include animate-fade(".inactive:hover label", $text, white, $property: "color");
+        @include animations.fade(".inactive:hover label", colors.$text, white, $property: "color");
         .active label {
             color: white;
         }
@@ -48,17 +41,17 @@
 
     // media
     .bluetooth {
-        background-color: $bluetooth;
+        background-color: colors.$bluetooth;
     }
     .muted {
-        background-color: $bad;
+        background-color: colors.$bad;
     }
 
     // network
     .limited label {
-        color: $warning;
+        color: colors.$warning;
     }
     .none label {
-        color: $bad;
+        color: colors.$bad;
     }
 }
