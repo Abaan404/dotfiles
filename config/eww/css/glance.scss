@@ -10,56 +10,97 @@
         margin: 20px;
     }
 
-    .one, .two {
-        padding: 10px;
-        background-color: colors.$secondary;
-        border-radius: 20px;
-    }
-
-    .time {
-        background-color: colors.$primary;
-        padding: 10px;
-        border-radius: 20px;
-
-        label {
-            font-size: 2em;
-            font-weight: bolder;
-            padding: 5px;
-        }
-
-        calendar {
-            padding: 10px;
-            color: colors.$text;
-            font-weight: bold;
-
-            &:hover {
-                color: white;
-            }
-
-            &:selected {
-                color: white;
-                font-weight: bolder;
-            }
-
-            &:indeterminate {
-                color: #888888;
-            }
-        }
-    }
-
     .quick-settings {
         padding: 20px;
-        border-radius: 20px;
         background-color: colors.$primary;
+        border-radius: 20px;
 
-        label {
-            padding: 20px;
-            font-size: 1.25em;
+        .time {
+            background-color: colors.$color1;
+            padding: 10px 0px;
+            border-radius: 20px;
+
+            label {
+                font-size: 2em;
+                font-weight: bolder;
+                padding: 5px;
+            }
+
+            calendar {
+                padding: 10px;
+                color: colors.$text;
+                font-weight: bold;
+
+                &:hover {
+                    color: white;
+                }
+
+                &:selected {
+                    color: white;
+                    font-weight: bolder;
+                }
+
+                &:indeterminate {
+                    color: #888888;
+                }
+            }
         }
 
-        circular-progress {
-            background: colors.$secondary;
-            color: colors.$text;
+        .battery .profile {
+            background-color: colors.$color1;
+            border-radius: 10px;
+
+            .glyph {
+                font-size: 7em;
+            }
+
+            .status {
+                font-size: 3em;
+            }
+        }
+
+        .bluetooth, .wifi {
+            .entry {
+                @include animations.fade("&:hover", colors.$secondary, colors.$accent);
+                @include animations.fade("&:active", colors.$accent, colors.$secondary);
+
+                border-radius: 10px;
+                background-color: colors.$secondary;
+
+                label {
+                    font-size: 1.5em;
+                }
+
+                .icon {
+                    font-size: 3em;
+                    padding: 10px 20px;
+                }
+            }
+        }
+
+        .controls {
+            padding: 20px;
+            border-radius: 20px;
+            background-color: colors.$color1;
+
+            & > widget {
+                @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
+                @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
+
+                @include animations.fade("&:hover circular-progress", colors.$text, colors.$accent, $property: "color");
+                @include animations.fade("&:active circular-progress", colors.$accent, colors.$text, $property: "color");
+            }
+
+
+            label {
+                padding: 20px;
+                font-size: 1.25em;
+            }
+
+            circular-progress {
+                background-color: colors.$color4;
+                color: colors.$text;
+            }
         }
     }
 }

@@ -36,6 +36,7 @@
 
 (defwidget w_bar_widget[class ?visible ?onleftclick ?onhover ?onhoverlost ?onclick ?onrightclick ?onmiddleclick ?onscroll ?spacing ?space-evenly]
 (eventbox :class class
+    :visible {visible ?: true}
     :onhover onhover
     :onhoverlost onhoverlost
     :onclick onleftclick

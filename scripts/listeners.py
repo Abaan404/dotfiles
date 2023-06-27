@@ -4,10 +4,15 @@ import re
 import subprocess, sys, os
 import json
 
+import bluetooth as bluez
 from time import sleep
 
-def read_shell(command: list | str, shell: bool = False, ignore_error: bool = False, retry: bool = False, _attempts: int = 0) -> str:
-    p = subprocess.run(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def read_shell(command: list | str, shell: bool = False, ignore_error: bool = False, retry: bool = False, _attempts: int = 0, timeout: float | None = None) -> str:
+
+    try:
+        p = subprocess.run(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return ""
 
     if p.returncode != 0:
         print(f"ERROR: {p.stderr.decode('utf-8').strip()}", file=sys.stderr)
@@ -24,9 +29,10 @@ def read_shell(command: list | str, shell: bool = False, ignore_error: bool = Fa
     return p.stdout.decode("utf-8").strip()
 
 class BaseListener:
-    def __init__(self, follower_command: list, follower_pattern: str) -> None:
+    def __init__(self, follower_command: list | str, follower_pattern: str, shell: bool = False) -> None:
         self.follower_command = follower_command
         self.follower_pattern = follower_pattern
+        self.shell = shell
 
     def execute(self) -> None:
         if not args.listen:
@@ -34,7 +40,7 @@ class BaseListener:
         self.listen()
 
     def listen(self) -> None:
-        with subprocess.Popen(self.follower_command, stdout=subprocess.PIPE) as p: # TODO maybe use this to get info than just a hook? meh
+        with subprocess.Popen(self.follower_command, stdout=subprocess.PIPE, shell=self.shell) as p: # TODO maybe use this to get info than just a hook? meh
             self.dispatch(self.read()) # send initial output
             while not p.poll() and p.stdout:
                 output = p.stdout.readline().decode("utf-8")
@@ -50,12 +56,79 @@ class BaseListener:
     def read(self) -> dict | list:
         ...
 
-class Bluetooth(BaseListener):
+class SignalListener(BaseListener):
+    def __init__(self, signal: str, cooldown: int, interval: int = 1) -> None:
+        self.signal = signal
+        self.cooldown = cooldown
+        self.interval = interval
+
+    def listen(self) -> None:
+        while True:
+            if read_shell(["eww", "get", self.signal]) == "true":
+                self.dispatch(self.read())
+                sleep(self.cooldown)
+            else:
+                sleep(5)
+
+class Wifi(SignalListener):
     def __init__(self) -> None:
-        super().__init__(["journalctl", "-fu", "bluetooth.service"], ".+")
+        super().__init__(args.var, cooldown=10)
+        self.dispatch(self.read())
+
+    def read(self) -> list:
+        buff = []
+        # TODO no password wifi check
+        read_shell(["nmcli", "device", "wifi", "rescan"])
+        for device in dict.fromkeys(read_shell(["nmcli", "-t", "-f", "SSID", "dev", "wifi", "list"]).split("\n")):
+            buff.append({
+                "ssid": device
+            })
+
+        return buff
+
+class Bluetooth(SignalListener):
+    def __init__(self) -> None:
+        super().__init__(args.var, cooldown=5)
+        self.socket = bluez.BluetoothSocket()
 
     def read(self) -> list | dict:
-        return {"error": "aaaaaaaaAAAAAAAAAAAAAAAAa"}
+        buff = []
+
+        try:
+            devices = bluez.discover_devices(lookup_names=True)
+        except OSError:
+            return buff
+
+        for addr, name in devices:
+            buff.append({
+                "addr": addr,
+                "name": name
+            })
+
+        return buff
+
+class Power(BaseListener):
+    def __init__(self) -> None:
+        super().__init__(["journalctl", "-fu", "lenovo-profile.service"], "(.+lenovo-profile)")
+
+    def read(self) -> dict | list:
+        status = read_shell(["journalctl", "-u", "lenovo-profile.service", "-n", "1"]).split()[-1]
+
+        return {
+            "status": status,
+            "glyph": self.glyph(status)
+        }
+
+    def glyph(self, data) -> str:
+        match data:
+            case "Performance":
+                return "󰓅 "
+            case "Cooling":
+                return " "
+            case "Balanced":
+                return "󰈐 "
+            case _:
+                return "󰈐 "
 
 class Workspaces(BaseListener):
     def __init__(self) -> None:
@@ -90,10 +163,11 @@ class Workspaces(BaseListener):
 
 class Network(BaseListener):
     def __init__(self) -> None:
-        super().__init__(["nmcli", "monitor"], "(.+\\sconnected|.+\\sdisconnected|Connectivity)")
+        super().__init__("nmcli monitor & journalctl -fu bluetooth.service", "(.+\\sconnected|.+\\sdisconnected|Connectivity|.+bluetoothd)", shell=True)
 
     def read(self) -> list | dict:
         buff = {}
+        buff["bluetooth"] = read_shell("bluetoothctl info | grep 'Name' | sed 's/\\sName:\\s//g'", shell=True) or None
         buff["ssid"] = None
         buff["type"] = None
         buff["strength"] = None
@@ -223,8 +297,14 @@ if __name__ == "__main__":
     network.add_argument("-t", "--types", help="Select device type", nargs="+", default=[])
 
     workspaces = subparser.add_parser("workspaces")
+    
+    power = subparser.add_parser("power")
 
-    network = subparser.add_parser("bluetooth")
+    bluetooth = subparser.add_parser("bluetooth")
+    bluetooth.add_argument("-v", "--var", help="A boolean eww variable", required=True)
+
+    wifi = subparser.add_parser("wifi")
+    wifi.add_argument("-v", "--var", help="A boolean eww variable", required=True)
 
     args = parser.parse_args()
     match args.command:
@@ -236,6 +316,10 @@ if __name__ == "__main__":
             Network().execute()
         case "workspaces":
             Workspaces().execute()
+        case "power":
+            Power().execute()
+        case "wifi":
+            Wifi().execute()
         case "bluetooth":
             Bluetooth().execute()
         case _:

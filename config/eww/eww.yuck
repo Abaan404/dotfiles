@@ -29,10 +29,19 @@
 (deflisten player     :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
 (deflisten network    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
 (deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
+(deflisten power      :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen power")
 
 ;; POLLING
 (defpoll username :interval "24h" "whoami")
 (defpoll time :interval "0.5s" :initial "null" 'date +\'{"year":"%Y","month":"%m","day":"%d","hour":"%H","minute":"%M","second":"%S","lmonth":"%B","smonth":"%b","lweek":"%A","sweek":"%a"}\'')
+(defpoll day_percent :interval "10m" :initial "0" "date +\"print((int('%H') + int('%M')/60) / 24 * 100)\" | python3")
+
+;; SIGNAL LISTENERS
+(defvar sig_bluetooth_scan false)
+(deflisten bluetooth :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen bluetooth -v sig_bluetooth_scan")
+
+(defvar sig_wifi_scan false)
+(deflisten wifi :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen wifi -v sig_wifi_scan")
 
 ;; WINDOWS
 (include "./modules/glance.yuck")

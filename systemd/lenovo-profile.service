@@ -1,0 +1,9 @@
+[Unit]
+Description=Get the current power profile for Lenovo Ideapad 3 Laptops
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/lenovo-profile
+
+[Install]
+WantedBy=multi-user.target
