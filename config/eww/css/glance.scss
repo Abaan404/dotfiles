@@ -11,18 +11,43 @@
     }
 
     .weather {
-        padding: 10px;
+        @include animations.fade("&:hover", colors.$color1, colors.$accent);
+        @include animations.fade("&:active", colors.$accent, colors.$color1);
+
+        & > box {
+            padding: 10px {
+                right: 20px
+            }
+        }
+
         border-radius: 10px;
         background-color: colors.$color1;
 
         .description {
-            padding-top: 10px;
             font-size: 1.5em;
             font-weight: bolder;
         }
 
         .temperature {
             font-size: 1.25em;
+        }
+    }
+
+    .battery {
+        padding: 10px {
+            left: 20px
+        }
+
+        border-radius: 10px;
+        background-color: colors.$color1;
+
+        .glyph {
+            font-size: 3em;
+        }
+
+        .status {
+            font-size: 1.5em;
+            font-weight: bolder;
         }
     }
 

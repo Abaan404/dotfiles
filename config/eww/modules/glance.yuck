@@ -12,36 +12,53 @@
 (defvar r_glance_bluetooth false)
 (defvar r_glance_time true)
 
-(defvar cmd_glance_closeall "eww update r_glance_wifi=false r_glance_battery=false r_glance_bluetooth=false r_glance_time=false sig_wifi_scan=false sig_bluetooth_scan=false")
+(defvar r_glance_weather_footer false)
+
+(defvar cmd_glance_closeall "eww update r_glance_wifi=false r_glance_bluetooth=false r_glance_time=false sig_wifi_scan=false sig_bluetooth_scan=false")
 
 (defwidget w_glance[] (box :class "w_glance"
 (box :class "layout-box" :orientation "vertical" :spacing 10 :space-evenly false
     (box :class "one" :spacing 20 :space-evenly false
-        (box :class "dummy" :orientation "vertical" :space-evenly false
-            (w_glance_weather))
+        (box :class "dummy" :orientation "vertical" :space-evenly false :spacing 20
+            (w_glance_weather)
+            (w_glance_power))
         (box :class "quick-settings" :width 460 :space-evenly false
             (box :class "page" :hexpand true :space-evenly false ;; halign doesnt work when space-evenly is false, hexpand workaround
                 (w_glance_page :reveal r_glance_wifi (w_page_wifi))
-                (w_glance_page :reveal r_glance_battery (w_page_battery))
                 (w_glance_page :reveal r_glance_bluetooth (w_page_bluetooth))
                 (w_glance_page :reveal r_glance_time (w_page_time)))
             (box :halign "end" (w_glance_controls))))
     ;; (box :class "two" :spacing 20 :space-evenly false :hexpand false)
 )))
 
-(defwidget w_glance_weather[] (box :class "weather" :orientation "vertical" :space-evenly false
-    (box :class "header" :valign "start" :halign "center" :spacing 10 :space-evenly false
+(defwidget w_glance_weather[] (eventbox :class "weather"
+    :onhover "eww update r_glance_weather_footer=true"
+    :onhoverlost "eww update r_glance_weather_footer=false"
+    :onclick "xdg-open https://openweathermap.com"
+(box :space-evenly false :orientation "vertical"
+    (box :valign "start" :halign "center" :spacing 10 :space-evenly false :halign "start"
         (box :class "image"
             :style "background: url('${weather?.image}'); background-size: 72px 72px; background-repeat: no-repeat; background-position: center;"
             :width 72
             :height 72)
         (box :orientation "vertical"
-            (label :class "description" :halign "start" :text "${weather?.description}")
-            (label :class "temperature" :halign "start" :text {weather?.temperature})))
-    (box :class "footer"
-        (label :halign "start" :text "${weather?.windspeed} km/h")
-        (label :halign "end" :text "~${weather?.feelslike}"))
-))
+            (label :class "description" :halign "start" :valign "end" :text "${weather?.description}")
+            (label :class "temperature" :halign "start" :valign "start" :text {weather?.temperature})))
+    (revealer
+        :reveal r_glance_weather_footer
+        :transition "slidebottom"
+        (box :class "footer"
+            (label :halign "start" :text "${weather?.windspeed} km/h")
+            (label :halign "end" :text "~${weather?.feelslike}")))
+)))
+
+(defwidget w_glance_power[] (box :class "battery"
+(box :halign "end" :space-evenly false
+    (box :orientation "vertical" :valign "center"
+        (label :halign "end" :valign "end" :class "status" :text {power?.status})
+        (label :halign "end" :valign "start" :class "uptime" :text "uptime ${uptime}"))
+    (label :halign "end" :vexpand true :class "glyph" :text {power?.glyph} :style "padding-left: 20px")
+)))
 
 (defwidget w_glance_page[reveal] (revealer
     :reveal reveal
@@ -62,12 +79,6 @@
             (box :space-evenly false
                 (label :class "icon" :text "󰤥 ")
                 (label :class "ssid" :text {device.ssid} :wrap true))))))
-))
-
-(defwidget w_page_battery[] (box :class "battery" :orientation "vertical" :spacing 10 :space-evenly false
-(box :class "profile" :hexpand true :vexpand true :orientation "vertical"
-    (label :valign "end" :class "glyph" :text {power?.glyph} :style "padding-left: 20px")
-    (label :valign "start" :class "status" :text {power?.status}))
 ))
 
 ;; why? because i can
@@ -95,7 +106,6 @@
         :onmiddleclick "wifi toggle"
         (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
     (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_battery=true"
         :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
         (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))
     (eventbox

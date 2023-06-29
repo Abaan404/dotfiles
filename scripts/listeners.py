@@ -149,7 +149,7 @@ class Weather(CachedIntervalListener):
             "image": f'https://openweathermap.org/img/wn/{data["weather"][0]["icon"]}@2x.png',
             "temperature": f'{data["main"]["temp"] - 273.15:.1f}°C',
             "feelslike": f'{data["main"]["feels_like"] - 273.15:.1f}°C',
-            "description": data["weather"][0]["description"].capitalize(),
+            "description": data["weather"][0]["main"].capitalize(),
             "windspeed": data["wind"]["speed"],
             "visibility": data["visibility"]
         }
