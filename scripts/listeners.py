@@ -2,10 +2,12 @@
 
 import re
 import subprocess, sys, os
-import json
-
+import json, requests
+import time
 import bluetooth as bluez
-from time import sleep
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def read_shell(command: list | str, shell: bool = False, ignore_error: bool = False, retry: bool = False, _attempts: int = 0, timeout: float | None = None) -> str:
 
@@ -17,7 +19,7 @@ def read_shell(command: list | str, shell: bool = False, ignore_error: bool = Fa
     if p.returncode != 0:
         print(f"ERROR: {p.stderr.decode('utf-8').strip()}", file=sys.stderr)
         if retry and _attempts < 5:
-            sleep(1)
+            time.sleep(1)
             print(f"Retrying {command if isinstance(command, str) else ' '.join(command)} ... {_attempts}", file=sys.stderr)
             return read_shell(command, shell=shell, ignore_error=ignore_error, retry=retry, _attempts = _attempts + 1)
         
@@ -66,9 +68,91 @@ class SignalListener(BaseListener):
         while True:
             if read_shell(["eww", "get", self.signal]) == "true":
                 self.dispatch(self.read())
-                sleep(self.cooldown)
+                time.sleep(self.cooldown)
             else:
-                sleep(5)
+                time.sleep(5)
+
+# caches at each interval, hence making it different from defpoll, useful for web requests
+class CachedIntervalListener(BaseListener):
+    def __init__(self, identifier: str, interval: int) -> None:
+        self.interval = interval
+        self.identifier = identifier
+        self.cache_path = os.path.expanduser("~/.dotfiles/cache.json")
+
+        if not os.path.exists(self.cache_path):
+            with open(self.cache_path, "w") as fw: fw.write('{}')
+
+    def listen(self) -> None:
+        timestamp, cache = self.read_cache()
+        self.dispatch(cache)
+        while True:
+            time.sleep(1)
+            if timestamp < time.time():
+                timestamp, cache = self.write_cache()
+                self.dispatch(cache)
+
+    def write_cache(self) -> tuple[float, dict | list]:
+        with open(self.cache_path, "r") as fr:
+            try:
+                content = json.load(fr)
+            except json.decoder.JSONDecodeError:
+                content = {}
+
+        with open(self.cache_path, "w") as fw:
+            timestamp = time.time() + self.interval
+            cache = self.read()
+            content[self.identifier] = {
+                "timestamp": timestamp,
+                "cache": cache
+            }
+            json.dump(content, fw, indent=2)
+
+        return timestamp, cache
+
+    def read_cache(self) -> tuple[float, dict | list]:
+        with open(self.cache_path, "r") as f:
+            try:
+                data = json.load(f).get(self.identifier)
+            except json.decoder.JSONDecodeError:
+                data = {}
+
+        if data:
+            return data["timestamp"], data["cache"]
+        else:
+            return self.write_cache()
+
+class Weather(CachedIntervalListener):
+    def __init__(self) -> None:
+        super().__init__(identifier="weather", interval=3600)
+        self.location = args.location
+        self.api = os.getenv("OPENWEATHER_API_KEY")
+
+    def read(self) -> dict:
+        # https://openweathermap.org/api/geocoding-api
+        with requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={self.location}&limit=1&appid={self.api}") as r:
+            if r.status_code == 200 and (data := r.json()):
+                lat, lon = data[0]["lat"], data[0]["lon"]
+            else:
+                print(f"could not find the location {self.location}", file=sys.stderr)
+                return {}
+
+        # https://openweathermap.org/current
+        with requests.get(f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={self.api}") as r:
+            if r.status_code == 200:
+                data = r.json()
+            else:
+                print(f"Could not fetch weather info", file=sys.stderr)
+                return {}
+
+        return {
+            "location": data["name"],
+            "image": f'https://openweathermap.org/img/wn/{data["weather"][0]["icon"]}@2x.png',
+            "temperature": f'{data["main"]["temp"] - 273.15:.1f}°C',
+            "feelslike": f'{data["main"]["feels_like"] - 273.15:.1f}°C',
+            "description": data["weather"][0]["description"].capitalize(),
+            "windspeed": data["wind"]["speed"],
+            "visibility": data["visibility"]
+        }
 
 class Wifi(SignalListener):
     def __init__(self) -> None:
@@ -143,7 +227,7 @@ class Workspaces(BaseListener):
         ]
 
     def read(self):
-        sleep(0.1) # weird bug in hyprctl causes same pinned windows to show up twice in `hyprctl workspaces` yeeeeeeee
+        time.sleep(0.1) # weird bug in hyprctl causes same pinned windows to show up twice in `hyprctl workspaces` yeeeeeeee
         current = json.loads(read_shell(["hyprctl", "activeworkspace", "-j"]))["id"]
         workspaces = json.loads(read_shell(["hyprctl", "workspaces", "-j"]))
         active = [*self.persistent] # avoid referencing
@@ -306,8 +390,13 @@ if __name__ == "__main__":
     wifi = subparser.add_parser("wifi")
     wifi.add_argument("-v", "--var", help="A boolean eww variable", required=True)
 
+    weather = subparser.add_parser("weather")
+    weather.add_argument("-l", "--location", help="The location to fetch data for", required=True)
+
     args = parser.parse_args()
     match args.command:
+        case "weather":
+            Weather().execute()
         case "audio":
             Audio().execute()
         case "player":
@@ -323,4 +412,4 @@ if __name__ == "__main__":
         case "bluetooth":
             Bluetooth().execute()
         case _:
-            BaseListener([], "").dispatch({"error": "you dumbass"})
+            print("you dumbass", file=sys.stdout)

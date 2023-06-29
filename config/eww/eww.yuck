@@ -26,6 +26,7 @@
 
 ;; LISTENERS
 (deflisten audio      :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
+(deflisten weather    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen weather --location Doha")
 (deflisten player     :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
 (deflisten network    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
 (deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")

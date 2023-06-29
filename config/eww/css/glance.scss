@@ -10,11 +10,23 @@
         margin: 20px;
     }
 
-    .quick-settings {
-        padding: 20px;
-        background-color: colors.$primary;
-        border-radius: 20px;
+    .weather {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: colors.$color1;
 
+        .description {
+            padding-top: 10px;
+            font-size: 1.5em;
+            font-weight: bolder;
+        }
+
+        .temperature {
+            font-size: 1.25em;
+        }
+    }
+
+    .quick-settings {
         .time {
             background-color: colors.$color1;
             padding: 10px 0px;
@@ -60,6 +72,9 @@
         }
 
         .bluetooth, .wifi {
+            background-color: colors.$color1;
+            border-radius: 10px;
+            padding: 10px;
             .entry {
                 @include animations.fade("&:hover", colors.$secondary, colors.$accent);
                 @include animations.fade("&:active", colors.$accent, colors.$secondary);

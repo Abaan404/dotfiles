@@ -16,23 +16,38 @@
 
 (defwidget w_glance[] (box :class "w_glance"
 (box :class "layout-box" :orientation "vertical" :spacing 10 :space-evenly false
-    (box :class "one" :spacing 20
-        (box :class "quick-settings" :width 520 :space-evenly false
+    (box :class "one" :spacing 20 :space-evenly false
+        (box :class "dummy" :orientation "vertical" :space-evenly false
+            (w_glance_weather))
+        (box :class "quick-settings" :width 460 :space-evenly false
             (box :class "page" :hexpand true :space-evenly false ;; halign doesnt work when space-evenly is false, hexpand workaround
-                (w_page :reveal r_glance_wifi (w_page_wifi))
-                (w_page :reveal r_glance_battery (w_page_battery))
-                (w_page :reveal r_glance_bluetooth (w_page_bluetooth))
-                (w_page :reveal r_glance_time (w_page_time)))
+                (w_glance_page :reveal r_glance_wifi (w_page_wifi))
+                (w_glance_page :reveal r_glance_battery (w_page_battery))
+                (w_glance_page :reveal r_glance_bluetooth (w_page_bluetooth))
+                (w_glance_page :reveal r_glance_time (w_page_time)))
             (box :halign "end" (w_glance_controls))))
     ;; (box :class "two" :spacing 20 :space-evenly false :hexpand false)
 )))
 
-(defwidget w_page[reveal]
-(revealer
+(defwidget w_glance_weather[] (box :class "weather" :orientation "vertical" :space-evenly false
+    (box :class "header" :valign "start" :halign "center" :spacing 10 :space-evenly false
+        (box :class "image"
+            :style "background: url('${weather?.image}'); background-size: 72px 72px; background-repeat: no-repeat; background-position: center;"
+            :width 72
+            :height 72)
+        (box :orientation "vertical"
+            (label :class "description" :halign "start" :text "${weather?.description}")
+            (label :class "temperature" :halign "start" :text {weather?.temperature})))
+    (box :class "footer"
+        (label :halign "start" :text "${weather?.windspeed} km/h")
+        (label :halign "end" :text "~${weather?.feelslike}"))
+))
+
+(defwidget w_glance_page[reveal] (revealer
     :reveal reveal
     :transition "slideright"
     :style "padding-right: 20px"
-    (box :width 350 ;; cant figure out how to make it hexpand
+    (box :width 335 ;; cant figure out how to make it hexpand
         (children))
 ))
 
