@@ -1,2 +1,7 @@
 .env
-cache.json
+
+/images/*
+!/images/playerart-default.png
+!/images/launcher.png
+
+/data

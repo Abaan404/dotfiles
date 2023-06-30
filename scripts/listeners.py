@@ -6,6 +6,7 @@ import json, requests
 import time
 import bluetooth as bluez
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
@@ -77,9 +78,10 @@ class CachedIntervalListener(BaseListener):
     def __init__(self, identifier: str, interval: int) -> None:
         self.interval = interval
         self.identifier = identifier
-        self.cache_path = os.path.expanduser("~/.dotfiles/cache.json")
+        self.cache_path = Path("~/.dotfiles/data/cache.json").expanduser()
 
-        if not os.path.exists(self.cache_path):
+        if not self.cache_path.exists():
+            self.cache_path.parent.mkdir(exist_ok=True)
             with open(self.cache_path, "w") as fw: fw.write('{}')
 
     def listen(self) -> None:
@@ -130,24 +132,30 @@ class Weather(CachedIntervalListener):
     def read(self) -> dict:
         # https://openweathermap.org/api/geocoding-api
         with requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={self.location}&limit=1&appid={self.api}") as r:
-            if r.status_code == 200 and (data := r.json()):
-                lat, lon = data[0]["lat"], data[0]["lon"]
-            else:
+            if r.status_code != 200 or not (data := r.json()):
                 print(f"could not find the location {self.location}", file=sys.stderr)
                 return {}
+            lat, lon = data[0]["lat"], data[0]["lon"]
 
         # https://openweathermap.org/current
         with requests.get(f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={self.api}") as r:
-            if r.status_code == 200:
-                data = r.json()
-            else:
+            if r.status_code != 200:
                 print(f"Could not fetch weather info", file=sys.stderr)
                 return {}
+            data = r.json()
+
+        image = Path("~/.dotfiles/images/weather.png").expanduser()
+        with requests.get(f"https://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png") as r:
+            if r.status_code != 200:
+                print(f"Could not fetch weather image", file=sys.stderr)
+
+            with open(image, "wb") as f:
+                f.write(r.content)
 
         return {
             "location": data["name"],
-            "image": f'https://openweathermap.org/img/wn/{data["weather"][0]["icon"]}@2x.png',
             "temperature": f'{data["main"]["temp"] - 273.15:.1f}°C',
+            "image": f'file://{image}',
             "feelslike": f'{data["main"]["feels_like"] - 273.15:.1f}°C',
             "description": data["weather"][0]["main"].capitalize(),
             "windspeed": data["wind"]["speed"],
@@ -301,11 +309,26 @@ class Player(BaseListener):
                 "artist": artist,
                 "album": album,
                 "url": url,
-                "art_url": art_url or f'file://{os.path.expanduser("~/.config/eww/images/playerart-default.png")}',
+                "art_url": self.playerart(art_url) or f'file://{Path("~/.config/eww/images/playerart-default.png").expanduser()}',
                 "length": length
             })
 
         return buff
+
+    def playerart(self, url) -> str | None:
+        if not url:
+            return
+
+        with requests.get(url) as r:
+            if r.status_code != 200:
+                print("Could not find playerart", file=sys.stderr)
+                return
+
+            path = Path("~/.dotfiles/images/playerart.png").expanduser()
+            with open(path, "wb") as f:
+                f.write(r.content)
+
+        return f"file://{path}"
 
     def glyph(self, player: str) -> str:
         if player.startswith("firefox"):
@@ -412,4 +435,4 @@ if __name__ == "__main__":
         case "bluetooth":
             Bluetooth().execute()
         case _:
-            print("you dumbass", file=sys.stdout)
+            print("you dumbass", file=sys.stderr)

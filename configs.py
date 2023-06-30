@@ -54,8 +54,12 @@ class Configs:
         path = CONFIG_PATH.joinpath("eww/images/")
         path.mkdir(exist_ok=True)
 
-        for file in Path("~/.dotfiles/images/eww").expanduser().iterdir():
-            img = Image.open(file).convert("RGBA")
+        # change all non-transparent colors in the image to "color"
+        for file in [
+            Path("~/.dotfiles/images/launcher.png"),
+            Path("~/.dotfiles/images/playerart.png")
+        ]:
+            img = Image.open(file.expanduser()).convert("RGBA")
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
