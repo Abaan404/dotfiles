@@ -14,7 +14,7 @@
 
 (defvar r_glance_weather_footer false)
 
-(defvar cmd_glance_closeall "eww update r_glance_wifi=false r_glance_bluetooth=false r_glance_time=false sig_wifi_scan=false sig_bluetooth_scan=false")
+(defvar cmd_glance_closeall "eww update r_glance_wifi=false r_glance_bluetooth=false r_glance_time=false s_wifi_scan=false s_bluetooth_scan=false")
 
 (defwidget w_glance[] (box :class "w_glance"
 (box :class "layout-box" :orientation "vertical" :spacing 10 :space-evenly false
@@ -46,7 +46,7 @@
             (label :class "temperature" :halign "start" :valign "start" :text {weather?.temperature})))
     (revealer
         :reveal r_glance_weather_footer
-        :transition "slidebottom"
+        :transition "slidedown"
         (box :class "footer"
             (label :halign "start" :text "${weather?.windspeed} km/h")
             (label :halign "end" :text "~${weather?.feelslike}")))
@@ -75,7 +75,7 @@
     (box :orientation "vertical" :spacing 10 :space-evenly false
     (for device in wifi
         (eventbox :class "entry"
-            :onclick "nmcli device wifi connect ${device.ssid} password $(kdialog --password 'connecting to ${device.ssid}') &" ;; input widget kinda wacky
+            :onclick "eww update s_wifi_connect=\"${device.ssid}\""
             (box :space-evenly false
                 (label :class "icon" :text "󰤥 ")
                 (label :class "ssid" :text {device.ssid} :wrap true))))))
@@ -102,14 +102,14 @@
 (defwidget w_glance_controls[]
 (box :class "controls" :orientation "vertical" :spacing 20
     (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_wifi=true && eww update sig_wifi_scan=true"
+        :onclick "${cmd_glance_closeall} && eww update r_glance_wifi=true && eww update s_wifi_scan=true"
         :onmiddleclick "wifi toggle"
         (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
     (eventbox
         :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
         (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))
     (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_bluetooth=true && eww update sig_bluetooth_scan=true"
+        :onclick "${cmd_glance_closeall} && eww update r_glance_bluetooth=true && eww update s_bluetooth_scan=true"
         :onmiddleclick "bluetooth toggle"
         (circular-progress :thickness 7 :class "bluetooth" :value {network?.bluetooth != "null" ? 100 : 0} (label :text " " :style "padding-left: 30px")))
     (eventbox

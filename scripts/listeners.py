@@ -23,10 +23,10 @@ def read_shell(command: list | str, shell: bool = False, ignore_error: bool = Fa
             time.sleep(1)
             print(f"Retrying {command if isinstance(command, str) else ' '.join(command)} ... {_attempts}", file=sys.stderr)
             return read_shell(command, shell=shell, ignore_error=ignore_error, retry=retry, _attempts = _attempts + 1)
-        
+
         if ignore_error:
             return ""
-        
+
         exit(1)
 
     return p.stdout.decode("utf-8").strip()
@@ -60,18 +60,41 @@ class BaseListener:
         ...
 
 class SignalListener(BaseListener):
-    def __init__(self, signal: str, cooldown: int, interval: int = 1) -> None:
-        self.signal = signal
-        self.cooldown = cooldown
+    def __init__(self, interval: int) -> None:
         self.interval = interval
+        self.registered = []
+
+    @staticmethod
+    def on_enable(var: str):
+        def decorator(func):
+            setattr(func, 'eww_variable', var)
+            setattr(func, 'reset', False)
+            return func
+        return decorator
+
+    @staticmethod
+    def on_signal(var: str):
+        def decorator(func):
+            setattr(func, 'eww_variable', var)
+            return func
+        return decorator
 
     def listen(self) -> None:
         while True:
-            if read_shell(["eww", "get", self.signal]) == "true":
-                self.dispatch(self.read())
-                time.sleep(self.cooldown)
-            else:
-                time.sleep(5)
+            for func in self.registered:
+                var = getattr(func, 'eww_variable', None)
+                data = read_shell(["eww", "get", var])
+
+                if var is not None and data not in ["null", "false"]:
+                    func(data)
+                    if getattr(func, 'reset', True):
+                        read_shell(["eww", "update", f"{var}=null"])
+
+            time.sleep(self.interval)
+
+    def read(self) -> dict | list:
+        print("Invalid Operation", file=sys.stderr)
+        return {}
 
 # caches at each interval, hence making it different from defpoll, useful for web requests
 class CachedIntervalListener(BaseListener):
@@ -164,40 +187,55 @@ class Weather(CachedIntervalListener):
 
 class Wifi(SignalListener):
     def __init__(self) -> None:
-        super().__init__(args.var, cooldown=10)
-        self.dispatch(self.read())
+        super().__init__(interval=5)
+        self.registered.extend([
+            self.connect,
+            self.scan
+        ])
 
-    def read(self) -> list:
-        buff = []
-        # TODO no password wifi check
+    @SignalListener.on_signal("s_wifi_connect")
+    def connect(self, ssid) -> None:
+        # TODO handle remembering wifi and open connections
+        password = read_shell(["kdialog", "--password", ssid, "2>/dev/null"], ignore_error=True)
+        if read_shell(["nmcli", "device", "wifi", "connect", ssid, "password", password], ignore_error=True):
+            read_shell(["notify-send", f"Successfully connected to network {ssid}"])
+        else:
+            read_shell(["notify-send", f"Could not connect to network {ssid}"])
+
+    @SignalListener.on_enable("s_wifi_scan")
+    def scan(self, _) -> None:
         read_shell(["nmcli", "device", "wifi", "rescan"])
+
+        buff = []
         for device in dict.fromkeys(read_shell(["nmcli", "-t", "-f", "SSID", "dev", "wifi", "list"]).split("\n")):
             buff.append({
                 "ssid": device
             })
-
-        return buff
+        self.dispatch(buff)
 
 class Bluetooth(SignalListener):
     def __init__(self) -> None:
-        super().__init__(args.var, cooldown=5)
+        super().__init__(interval=5)
         self.socket = bluez.BluetoothSocket()
+        self.registered.extend([
+            self.scan
+        ])
 
-    def read(self) -> list | dict:
+    @SignalListener.on_enable("s_bluetooth_scan")
+    def scan(self, _) -> None:
         buff = []
 
         try:
             devices = bluez.discover_devices(lookup_names=True)
+            for addr, name in devices:
+                buff.append({
+                    "addr": addr,
+                    "name": name
+                })
         except OSError:
-            return buff
+            pass
 
-        for addr, name in devices:
-            buff.append({
-                "addr": addr,
-                "name": name
-            })
-
-        return buff
+        self.dispatch(buff)
 
 class Power(BaseListener):
     def __init__(self) -> None:
@@ -403,18 +441,13 @@ if __name__ == "__main__":
     network = subparser.add_parser("network")
     network.add_argument("-t", "--types", help="Select device type", nargs="+", default=[])
 
-    workspaces = subparser.add_parser("workspaces")
-    
-    power = subparser.add_parser("power")
-
-    bluetooth = subparser.add_parser("bluetooth")
-    bluetooth.add_argument("-v", "--var", help="A boolean eww variable", required=True)
-
-    wifi = subparser.add_parser("wifi")
-    wifi.add_argument("-v", "--var", help="A boolean eww variable", required=True)
-
     weather = subparser.add_parser("weather")
     weather.add_argument("-l", "--location", help="The location to fetch data for", required=True)
+
+    workspaces = subparser.add_parser("workspaces")
+    power = subparser.add_parser("power")
+    bluetooth = subparser.add_parser("bluetooth")
+    wifi = subparser.add_parser("wifi")
 
     args = parser.parse_args()
     match args.command:
