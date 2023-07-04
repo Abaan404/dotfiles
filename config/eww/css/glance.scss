@@ -52,15 +52,89 @@
     }
 
     .quick-settings {
+        .schedule {
+            padding: 10px;
+
+            .header {
+                .event-incoming {
+                    background-color: colors.$secondary;
+                    border-radius: 20px;
+                    padding: 2px 10px;
+                }
+
+                .event-add {
+                    @include animations.fade("&:hover", colors.$secondary, colors.$good, $property: "background-color");
+
+                    background-color: colors.$secondary;
+                    padding: 0px 10px;
+                    border-radius: 20px;
+
+                    label {
+                        font-size: 1.5em;
+                    }
+                }
+
+            }
+
+            .entry {
+                background-color: colors.$secondary;
+                padding: 10px;
+                border-radius: 10px;
+
+                .event-name {
+                    padding: 0px 5px;
+                    font-size: 1.25em;
+                }
+
+                .footer {
+                    margin-top: 2px;
+                    label {
+                        font-size: 0.8em;
+                    }
+                }
+
+                .event-remove {
+                    @include animations.fade("&:hover label", colors.$text, colors.$bad, $property: "color");
+                    padding-left: 5px;
+                }
+
+                .event-time {
+                    background-color: colors.$color1;
+                    border-radius: 20px;
+                    padding: 0px 10px;
+                }
+            }
+
+
+
+            .seperator {
+                margin: 2px;
+                padding: 2.5px;
+                border-radius: 10px;
+                background-color: colors.$color4;
+            }
+        }
         .time {
             background-color: colors.$color1;
             padding: 10px 0px;
             border-radius: 20px;
 
-            label {
+            .clock {
                 font-size: 2em;
                 font-weight: bolder;
                 padding: 5px;
+            }
+
+            .controls {
+                padding-right: 0px;
+
+                button {
+                    @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
+                    @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
+                    label {
+                        padding: 0px;
+                    }
+                }
             }
 
             calendar {

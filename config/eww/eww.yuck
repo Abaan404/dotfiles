@@ -8,6 +8,7 @@
 (defvar cmd_hibernate "systemctl hibernate")
 
 (defvar cmd_launcher "pkill rofi || rofi -show drun &")
+(defvar cmd_weather "xdg-open https://openweathermap.com")
 
 (defvar cmd_player_next     "playerctl next")
 (defvar cmd_player_toggle   "playerctl play-pause")
@@ -26,7 +27,7 @@
 
 ;; LISTENERS
 (deflisten audio      :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen audio -bd")
-(deflisten weather    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen weather --location Doha")
+(deflisten weather    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen weather --location Doha,Qatar")
 (deflisten player     :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen player")
 (deflisten network    :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen network -t wifi ethernet")
 (deflisten workspaces :initial "null" "python3 -u ~/.dotfiles/scripts/listeners.py --listen workspaces")
@@ -39,6 +40,11 @@
 (defpoll day_percent :interval "10m" :initial "0" "date +\"print((int('%H') + int('%M')/60) / 24 * 100)\" | python3")
 
 ;; SIGNAL LISTENERS
+(defvar s_schedule_fetch 'null')
+(defvar s_schedule_add 'null')
+(defvar s_schedule_remove 'null')
+(deflisten schedule :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen schedule")
+
 (defvar s_bluetooth_scan false)
 (deflisten bluetooth :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen bluetooth")
 

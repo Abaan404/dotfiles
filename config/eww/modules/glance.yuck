@@ -14,6 +14,10 @@
 
 (defvar r_glance_weather_footer false)
 
+(defvar r_glance_time_controls false)
+(defvar r_glance_time_calendar true)
+(defvar r_glance_time_schedule false)
+
 (defvar cmd_glance_closeall "eww update r_glance_wifi=false r_glance_bluetooth=false r_glance_time=false s_wifi_scan=false s_bluetooth_scan=false")
 
 (defwidget w_glance[] (box :class "w_glance"
@@ -34,7 +38,7 @@
 (defwidget w_glance_weather[] (eventbox :class "weather"
     :onhover "eww update r_glance_weather_footer=true"
     :onhoverlost "eww update r_glance_weather_footer=false"
-    :onclick "xdg-open https://openweathermap.com"
+    :onclick cmd_weather
 (box :space-evenly false :orientation "vertical"
     (box :valign "start" :halign "center" :spacing 10 :space-evenly false :halign "start"
         (box :class "image"
@@ -94,25 +98,58 @@
                 (label :class "ssid" :text {device.name} :wrap true))))))
 ))
 
-(defwidget w_page_time[] (box :class "time" :orientation "vertical" :space-evenly false
-(label :halign "center" :text "${time?.hour} : ${time?.minute} : ${time?.second}")
-(calendar)
+(defwidget w_page_time[] (eventbox
+    :onhover "eww update r_glance_time_controls=true"
+    :onhoverlost "eww update r_glance_time_controls=false"
+(box :class "time" :orientation "vertical" :space-evenly false
+    (box :space-evenly false
+        (revealer
+            :reveal r_glance_time_controls
+            :transition "slideright"
+            (box :class "controls" :spacing 10 :space-evenly false
+                (button :onclick "eww update r_glance_time_calendar=true && eww update r_glance_time_schedule=false && eww update s_schedule_fetch=false" " ")
+                (button :onclick "eww update r_glance_time_schedule=true && eww update r_glance_time_calendar=false && eww update s_schedule_fetch=${time?.lweek}" " ")))
+        (label :class "clock" :hexpand true :halign "center" :text "${time?.hour} : ${time?.minute} : ${time?.second}"))
+    (box :class "page" :space-evenly false
+        (revealer
+            :reveal r_glance_time_calendar
+            :transition "slideright"
+            (calendar))
+        (revealer
+            :hexpand true
+            :reveal r_glance_time_schedule
+            :transition "slideleft"
+            (w_page_time_schedule)))
+)))
+
+(defwidget w_page_time_schedule[] (box :class "schedule" :orientation "vertical" :hexpand true :spacing 10 :space-evenly false
+(box :class "header" :space-evenly false
+    (label :class "event-incoming" :halign "start" :hexpand true :limit-width 25 :wrap true :text "Next Up: ${schedule?.[0]?.event ?: "Nothing"}")
+    (button :class "event-add" :halign "end" :onclick "eww update s_schedule_add=true" "+"))
+(box :class "seperator")
+(scroll :vscroll true :vexpand true
+    (box :orientation "vertical" :spacing 10 :space-evenly false :vexpand true
+    (for event in {schedule ?: []}
+        (box :class "entry" :orientation "vertical" :space-evenly false :halign "start"
+            (label :class "event-name" :halign "start" :limit-width 20 :text {event.event})
+            (box :class "footer" :spacing 10 :space-evenly false
+                (label :class "event-time" :halign "start" :text {event.time})
+                (button :class "event-remove" :onclick "eww update s_schedule_remove='{\"time\":\"${event.time}\",\"day\":\"${time.lweek}\"}'" :halign "end" " "))))))
 ))
 
-(defwidget w_glance_controls[]
-(box :class "controls" :orientation "vertical" :spacing 20
-    (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_wifi=true && eww update s_wifi_scan=true"
-        :onmiddleclick "wifi toggle"
-        (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
-    (eventbox
-        :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
-        (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))
-    (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_bluetooth=true && eww update s_bluetooth_scan=true"
-        :onmiddleclick "bluetooth toggle"
-        (circular-progress :thickness 7 :class "bluetooth" :value {network?.bluetooth != "null" ? 100 : 0} (label :text " " :style "padding-left: 30px")))
-    (eventbox
-        :onclick "${cmd_glance_closeall} && eww update r_glance_time=true"
-        (circular-progress :thickness 7 :class "brightness" :value day_percent (label :text " " :style "padding-left: 27px")))
+(defwidget w_glance_controls[] (box :class "controls" :orientation "vertical" :spacing 20
+(eventbox
+    :onclick "${cmd_glance_closeall} && eww update r_glance_wifi=true && eww update s_wifi_scan=true"
+    :onmiddleclick "wifi toggle"
+    (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
+(eventbox
+    :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
+    (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))
+(eventbox
+    :onclick "${cmd_glance_closeall} && eww update r_glance_bluetooth=true && eww update s_bluetooth_scan=true"
+    :onmiddleclick "bluetooth toggle"
+    (circular-progress :thickness 7 :class "bluetooth" :value {network?.bluetooth != "null" ? 100 : 0} (label :text " " :style "padding-left: 30px")))
+(eventbox
+    :onclick "${cmd_glance_closeall} && eww update r_glance_time=true"
+    (circular-progress :thickness 7 :class "brightness" :value day_percent (label :text " " :style "padding-left: 27px")))
 ))

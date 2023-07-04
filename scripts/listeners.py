@@ -60,10 +60,11 @@ class BaseListener:
         ...
 
 class SignalListener(BaseListener):
-    def __init__(self, interval: int) -> None:
+    def __init__(self, interval: int = 1) -> None:
         self.interval = interval
         self.registered = []
 
+    # TODO maybe make this run on a seperate thread?
     @staticmethod
     def on_enable(var: str):
         def decorator(func):
@@ -93,7 +94,7 @@ class SignalListener(BaseListener):
             time.sleep(self.interval)
 
     def read(self) -> dict | list:
-        print("Invalid Operation", file=sys.stderr)
+        print(f"Invalid Operation, --listen must be provided for '{args.command}'", file=sys.stderr)
         return {}
 
 # caches at each interval, hence making it different from defpoll, useful for web requests
@@ -185,9 +186,84 @@ class Weather(CachedIntervalListener):
             "visibility": data["visibility"]
         }
 
+class Schedule(SignalListener):
+    def __init__(self) -> None:
+        super().__init__(interval=1)
+        self.registered.extend([
+            self.fetch,
+            self.add_event,
+            self.remove_event
+        ])
+        self.path = Path("~/.dotfiles/data/schedule.json").expanduser()
+        if not self.path.parent.exists() or not self.path.exists():
+            self.path.parent.mkdir(exist_ok=True)
+            with open(self.path, "w") as f:
+                json.dump(self.template(), f, indent=2)
+
+        with open(self.path, "r") as f:
+            self._schedule = json.load(f)
+
+    def write(self):
+        with open(self.path, "w") as f:
+            json.dump(self._schedule, f, indent=2)
+
+    def template(self) -> dict:
+        return {
+            "sunday": {},
+            "monday": {},
+            "tuesday": {},
+            "wednesday": {},
+            "thursday": {},
+            "friday": {},
+            "saturday": {},
+        }
+
+    @SignalListener.on_enable("s_schedule_fetch")
+    def fetch(self, week):
+        buff = []
+        for time, event in self._schedule[week.lower()].items():
+            buff.append({
+                "time": time,
+                "event": event
+            })
+
+        self.dispatch(sorted(buff, key=lambda x: x["time"])) # yeah i know idc
+
+    @SignalListener.on_signal("s_schedule_add")
+    def add_event(self, _):
+        data = read_shell(["zenity", "--forms",
+                   "--add-entry=Event Title",
+                   "--add-entry=Event Time",
+                   "--add-list=Select Day", "--list-values=sunday|monday|tuesday|wednesday|thursday|friday|saturday"], ignore_error=True).split("|")
+
+        if len(data) != 3:
+            return
+        title, time, day = data
+
+        if not title:
+            read_shell(["notify-send", "No title specified"])
+            return
+
+        if not re.match("^(2[0-3]|(1|0)[0-9]):([0-5][0-9])$", time):
+            read_shell(["notify-send", "Invalid time"])
+            return
+
+        if not day:
+            read_shell(["notify-send", "No day specified"])
+            return
+
+        self._schedule[day][time] = title
+        self.write()
+
+    @SignalListener.on_signal("s_schedule_remove")
+    def remove_event(self, data):
+        data = json.loads(data)
+        del self._schedule[data["day"].lower()][data["time"]]
+        self.write()
+
 class Wifi(SignalListener):
     def __init__(self) -> None:
-        super().__init__(interval=5)
+        super().__init__()
         self.registered.extend([
             self.connect,
             self.scan
@@ -196,7 +272,7 @@ class Wifi(SignalListener):
     @SignalListener.on_signal("s_wifi_connect")
     def connect(self, ssid) -> None:
         # TODO handle remembering wifi and open connections
-        password = read_shell(["kdialog", "--password", ssid, "2>/dev/null"], ignore_error=True)
+        password = read_shell(["zenity", "--entry", "--hide-text", f"--text=Connecting to {ssid}"], ignore_error=True)
         if read_shell(["nmcli", "device", "wifi", "connect", ssid, "password", password], ignore_error=True):
             read_shell(["notify-send", f"Successfully connected to network {ssid}"])
         else:
@@ -215,7 +291,7 @@ class Wifi(SignalListener):
 
 class Bluetooth(SignalListener):
     def __init__(self) -> None:
-        super().__init__(interval=5)
+        super().__init__()
         self.socket = bluez.BluetoothSocket()
         self.registered.extend([
             self.scan
@@ -444,6 +520,7 @@ if __name__ == "__main__":
     weather = subparser.add_parser("weather")
     weather.add_argument("-l", "--location", help="The location to fetch data for", required=True)
 
+    schedule = subparser.add_parser("schedule")
     workspaces = subparser.add_parser("workspaces")
     power = subparser.add_parser("power")
     bluetooth = subparser.add_parser("bluetooth")
@@ -459,6 +536,8 @@ if __name__ == "__main__":
             Player().execute()
         case "network":
             Network().execute()
+        case "schedule":
+            Schedule().execute()
         case "workspaces":
             Workspaces().execute()
         case "power":
