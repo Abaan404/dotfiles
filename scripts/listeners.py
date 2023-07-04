@@ -433,6 +433,9 @@ class Player(BaseListener):
         if not url:
             return
 
+        if url.startswith("file://"):
+            return url
+
         with requests.get(url) as r:
             if r.status_code != 200:
                 print("Could not find playerart", file=sys.stderr)
@@ -456,7 +459,7 @@ class Player(BaseListener):
 
 class Audio(BaseListener):
     def __init__(self) -> None:
-        super().__init__(["pactl", "subscribe"], ".+(sink|source)")
+        super().__init__(["pactl", "subscribe"], ".+(sink|source|server)")
 
     def read(self) -> dict | list:
         buff = {}
@@ -478,10 +481,12 @@ class Audio(BaseListener):
 
     def default(self, data: list, output: str) -> list:
         default_device = read_shell(["pactl", f"get-default-{output}"])
-        for device in data:
+        for i, device in enumerate(data):
             if device.get("name") == default_device:
-                return [device]
-        return []
+                data.insert(0, data.pop(i))
+                break
+
+        return data
 
     def brief(self, data: list) -> list:
         buff = []

@@ -90,9 +90,10 @@
 
 (defwidget w_bar_media[] (w_bar_widget
     :class "media ${audio != "null" ? audio.sink[0].bus : "disconnected"} ${audio == "null" || audio.sink[0].mute ? "muted" : "unmuted"}"
+    :onleftclick "eww open --toggle media"
     :spacing 10 :space-evenly false
     (eventbox
-        :onclick cmd_sink_mute
+        :onmiddleclick cmd_sink_mute
         :onscroll "[ {} == 'up' ] && (${cmd_sink_volume_increase}) || (${cmd_sink_volume_decrease})"
         (box :class "sink" :space-evenly false
             (label :text "${audio == "null" || audio.sink[0].mute || audio.sink[0].volume == 0 ? " " :
@@ -101,7 +102,7 @@
                     ""}"}"}")
             (label :text "${audio?.sink?.[0]?.volume}%" :visible "${audio == "null" || !(audio?.sink[0].mute)}" :style "padding-left: 10px")))
     (eventbox
-        :onclick cmd_source_mute
+        :onmiddleclick cmd_source_mute
         :onscroll "[ {} == 'up' ] && (${cmd_source_volume_increase}) || (${cmd_source_volume_decrease})"
         (box :class "source" :space-evenly false
             (label :text "${audio == "null" || audio.source[0].mute || audio.source[0].volume == 0 ? " " : ""}")

@@ -1,0 +1,56 @@
+(defwindow media
+    :monitor 0
+    :stacking "fg"
+    :exclusive true
+    :namespace "eww_exclusive"
+
+    :geometry (geometry :anchor "top right"
+        :width "25%")
+(w_media))
+
+(defvar r_media_list_sink false)
+(defvar r_media_list_source false)
+
+(defwidget w_media[] (box :class "w_media"
+(box :class "layout-box" :orientation "vertical" :spacing 20 :space-evenly false
+    (box :class "sink" :orientation "vertical" :space-evenly false
+        (box :spacing 10 :space-evenly false
+            (label :class "default name" :halign "start" :hexpand true :limit-width 35
+                :text "${audio?.sink?.[0]?.port == "Headphones" ? " " : " "} ${audio?.sink?.[0]?.alias}")
+            (button :class "mute" :onclick cmd_sink_mute "${audio?.sink?.[0]?.mute ? "󰖁 " : "󰕾 "}")
+            (button :class "list" :onclick {"eww update r_media_list_sink=$(echo 'print(not ${r_media_list_sink})' | lua)"} " "))
+        (revealer
+            :reveal r_media_list_sink
+            :transition "slidedown"
+            :style "padding-top: 10px"
+            (box :orientation "vertical" :spacing 10 :space-evenly false
+                (for device in {jq(audio?.sink ?: [], ".[1:]") ?: []}
+                    (button :class "name" 
+                        :onclick "pactl set-default-sink ${device.name}"
+                        (label :halign "start" :hexpand true :limit-width 40
+                            :text "${device.port == "Headphones" ? " " : " "} ${device.alias}")))))
+        (scale
+            :value {audio?.sink?.[0]?.volume ?: 100}
+            :max 101 ;; floating point precision pog
+            :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"))
+    
+    (box :class "source" :orientation "vertical" :space-evenly false
+        (box :spacing 10 :space-evenly false
+            (label :class "default name" :halign "start" :hexpand true :limit-width 35 :text "  ${audio?.source?.[0]?.alias}")
+            (button :class "mute" :onclick cmd_source_mute "${audio?.source?.[0]?.mute || audio?.source?.[0]?.volume == 0 ? " " : " "}")
+            (button :class "list" :onclick {"eww update r_media_list_source=$(echo 'print(not ${r_media_list_source})' | lua)"} " "))
+        (revealer
+            :reveal r_media_list_source
+            :transition "slidedown"
+            :style "padding-top: 10px"
+            (box :orientation "vertical" :spacing 10 :space-evenly false
+                (for device in {jq(audio?.source ?: [], ".[1:]") ?: []}
+                    (button :class "name" 
+                        :onclick "pactl set-default-source ${device.name}"
+                        (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}")))))
+        (scale
+            :value {audio?.source?.[0]?.volume ?: 100}
+            :max 101 ;; floating point precision pog
+            :onchange "pactl set-source-volume @DEFAULT_SOURCE@ {}%"))
+)))
+
