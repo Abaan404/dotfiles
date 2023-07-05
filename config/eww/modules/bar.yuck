@@ -15,7 +15,7 @@
         (w_bar_launcher)
         (w_bar_workspaces :active {workspaces?.active ?: []} :current {workspaces?.current})
         (w_bar_sysinfo)
-        ;; (tray) ;; waiting on https://github.com/elkowar/eww/pull/743
+        (w_bar_tray)
         )
     (box :class "middle" :halign "center" :spacing "10" :space-evenly false
         (w_bar_player)
@@ -28,6 +28,7 @@
 ))
 
 ;; REVEAL BOOLEAN
+(defvar r_bar_systray false)
 (defvar r_bar_battery false)
 (defvar r_bar_launcher false)
 (defvar r_bar_exit false)
@@ -67,14 +68,17 @@
 
 
 (defwidget w_bar_sysinfo[] (w_bar_widget :class "sysinfo" :spacing 12 :space-evenly false
+    :onleftclick "eww update r_bar_systray=$(echo 'print(not ${r_bar_systray})' | lua)"
     (label :text " ${round((EWW_RAM.used_mem) / (1024 * 1024 * 1024), 1)}G")
     (label :text " ${round(EWW_CPU.avg, 1)}%")
 ))
 
-;; (defwidget tray[] (eventbox :class "tray"
-;; (box
-;;     )
-;; ))
+(defwidget w_bar_tray[] (revealer 
+    :reveal r_bar_systray
+    :transition "slideleft"
+    (w_bar_widget :class "tray" :spacing 20 :space-evenly false
+        (systray :icon-size 18 :pack-direction "right"))
+))
 
 (defwidget w_bar_player[] (w_bar_widget :class "player" :spacing 20 :space-evenly false
     :visible {player != "null" && player.alive != []}

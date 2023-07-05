@@ -39,6 +39,33 @@
         }
     }
 
+    .tray {
+        .widget {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        menu {
+            background-color: colors.$primary;
+            padding: 10px;
+            border-radius: 10px;
+
+            menuitem {
+                @include animations.fade("&:hover", colors.$primary, colors.$accent);
+                border-radius: 10px;
+                label {
+                    padding: 2px 8px;
+                }
+            }
+        }
+
+        menubar {
+            menuitem {
+                padding: 4px;
+            }
+        }
+    }
+
     // media
     .bluetooth {
         background-color: colors.$bluetooth;
