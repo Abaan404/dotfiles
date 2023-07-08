@@ -20,6 +20,7 @@ function get_profile {
 }
 
 # maybe theres a better systemd way to do this
+get_profile
 acpi_listen | while read -r line; do
     # if Fn + Q is pressed
     if [[ $line == "D320289E-8FEA- 000000e7 00000000" ]]; then

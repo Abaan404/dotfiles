@@ -2,7 +2,7 @@
 Description=Get the current power profile for Lenovo Ideapad 3 Laptops
 
 [Service]
-Restart=on-failure
+Restart=always
 RestartSec=5s
 ExecStart=/usr/bin/lenovo-profile
 
