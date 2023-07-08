@@ -12,7 +12,7 @@
     show_age_threshold = 60
     stack_duplicates = true
     hide_duplicate_count = false
-    show_indicators = yes
+    show_indicators = no
     indicate_hidden = yes
 
     frame_width = 2
@@ -26,6 +26,10 @@
 
     dmenu = /usr/bin/rofi -p dunst:
     browser = /usr/bin/firefox --new-tab
+
+    mouse_left_click = do_action
+    mouse_middle_click = close_all
+    mouse_right_click = close_current
 
 [urgency_low]
     background = "#!!{primary}88"
