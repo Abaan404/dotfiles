@@ -141,7 +141,7 @@
 (eventbox
     :onclick "${cmd_glance_closeall} && eww update r_glance_wifi=true && eww update s_wifi_scan=true"
     :onmiddleclick "wifi toggle"
-    (circular-progress :thickness 7 :class "internet" :value {network?.strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
+    (circular-progress :thickness 7 :class "internet" :value {network_strength ?: 0} (label :class "test" :text "󰤥 " :style "padding-left: 27px")))
 (eventbox
     :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
     (circular-progress :thickness 7 :class "battery" :value {EWW_BATTERY.BAT0.capacity} (label :text " " :style "padding-left: 23px")))

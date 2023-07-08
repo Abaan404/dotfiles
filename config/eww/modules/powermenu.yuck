@@ -3,10 +3,8 @@
     :stacking "fg"
     :namespace "eww_overlay"
 
-    :geometry (geometry
-        :anchor "right center"
-        :width "15%"
-    )
+    :geometry (geometry :anchor "right center"
+        :width "15%")
 (w_powermenu))
 
 (defwidget w_powermenu []

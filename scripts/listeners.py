@@ -376,12 +376,8 @@ class Network(BaseListener):
         buff["bluetooth"] = read_shell("bluetoothctl info | grep 'Name' | sed 's/\\sName:\\s//g'", shell=True) or None
         buff["ssid"] = None
         buff["type"] = None
-        buff["strength"] = None
         buff["device"] = None
         buff["connectivity"] = read_shell(["nmcli", "-t", "-f", "CONNECTIVITY", "general", "status"])
-
-        if strength := read_shell("nmcli -t -f IN-USE,SIGNAL dev wifi list | grep -E '\\*.+' | cut -c 3-", shell=True, ignore_error=True):
-            buff["strength"] = strength
 
         status = read_shell(["nmcli", "device", "status"])
         for data in status.split("\n")[1:]: # ignore header

@@ -1,8 +1,7 @@
 (defwindow media
     :monitor 0
     :stacking "fg"
-    :exclusive true
-    :namespace "eww_exclusive"
+    :namespace "eww_overlay"
 
     :geometry (geometry :anchor "top right"
         :width "25%")
@@ -25,7 +24,7 @@
             :style "padding-top: 10px"
             (box :orientation "vertical" :spacing 10 :space-evenly false
                 (for device in {jq(audio?.sink ?: [], ".[1:]") ?: []}
-                    (button :class "name" 
+                    (button :class "name"
                         :onclick "pactl set-default-sink ${device.name}"
                         (label :halign "start" :hexpand true :limit-width 40
                             :text "${device.port == "Headphones" ? " " : " "} ${device.alias}")))))
@@ -33,7 +32,7 @@
             :value {audio?.sink?.[0]?.volume ?: 100}
             :max 101 ;; floating point precision pog
             :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"))
-    
+
     (box :class "source" :orientation "vertical" :space-evenly false
         (box :spacing 10 :space-evenly false
             (label :class "default name" :halign "start" :hexpand true :limit-width 35 :text "  ${audio?.source?.[0]?.alias}")
@@ -45,7 +44,7 @@
             :style "padding-top: 10px"
             (box :orientation "vertical" :spacing 10 :space-evenly false
                 (for device in {jq(audio?.source ?: [], ".[1:]") ?: []}
-                    (button :class "name" 
+                    (button :class "name"
                         :onclick "pactl set-default-source ${device.name}"
                         (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}")))))
         (scale

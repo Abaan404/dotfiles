@@ -4,21 +4,23 @@
 
 import subprocess, sys
 import random
-import pywal, wpgtk
+import pywal
 
 from PIL import Image
 from string import Template
 from pathlib import Path
 
-CONFIG_TEMPLATE_PATH = Path("~/.dotfiles/config").expanduser()
-CONFIG_PATH = Path("~/.config").expanduser()
-WALLPAPER_FOLDER = Path("~/Pictures/wallpapers/").expanduser()
-PYWAL_BACKEND = "colorthief"
+CONFIG = {
+    "config_template_path": Path("~/.dotfiles/config").expanduser(),
+    "config_path": Path("~/.config").expanduser(),
+    "wallpaper_folder": Path("~/Pictures/wallpapers").expanduser(),
+    "backend": "colorthief" # ensure the package for the backend is installed
+}
 
 class CustomTemplate(Template):
 	delimiter = '!!'
 
-class Configs:
+class TemplateWriter:
     def __init__(self, mappings: dict) -> None:
         self.mappings = mappings
 
@@ -43,15 +45,15 @@ class Configs:
 
 
     def reload(self):
-        self.write(CONFIG_TEMPLATE_PATH, CONFIG_PATH)
+        self.write(CONFIG["config_template_path"], CONFIG["config_path"])
 
         # run post-reload scripts
-        for template in CONFIG_TEMPLATE_PATH.iterdir():
+        for template in CONFIG["config_template_path"].iterdir():
             getattr(self, template.name.lower(), lambda: None)()
 
     def eww(self):
         color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
-        path = CONFIG_PATH.joinpath("eww/images/")
+        path = CONFIG["config_path"].joinpath("eww/images/")
         path.mkdir(exist_ok=True)
 
         # change all non-transparent colors in the image to "color"
@@ -64,18 +66,37 @@ class Configs:
             img.save(path.joinpath(file.name))
 
     def swaylock(self):
-        subprocess.Popen("echo $(killall swayidle) && swayidle", shell=True)
+        subprocess.Popen(["killall", "swayidle"])
+        subprocess.Popen(["swayidle"])
 
     def hypr(self):
-        if subprocess.check_output("echo $(pidof obs)", shell=True).strip(): # hyprland crashes if configs get updated while obs is running
+        if subprocess.run(["pidof", "obs"], check=False).stdout: # hyprland crashes if configs get updated while obs is running
             return
-        subprocess.Popen("hyprctl reload", shell=True)
+        subprocess.Popen(["hyprctl", "reload"])
 
     def dunst(self):
-        subprocess.Popen("echo $(killall dunst) && dunst", shell=True)
+        subprocess.Popen(["killall", "dunst"])
+        subprocess.Popen(["dunst"])
 
     def kvantum(self):
-        subprocess.Popen("kvantummanager --set Layan-pywal", shell=True)
+        # qt
+        subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"])
+
+        # gtk
+        oomox = Path("~/.cache/wal/colors-oomox").expanduser()
+        configs = "\n".join([
+            f"FG={self.mappings['text']}",
+            f"SEL_FG={self.mappings['text']}",
+            "SPACING=2",
+            "ROUNDNESS=5",
+            "BTN_OUTLINE_WIDTH=1",
+            "BTN_OUTLINE_OFFSET=-3"
+        ])
+
+        with open(oomox, "a") as f:
+            f.write(configs)
+
+        subprocess.Popen(["/opt/oomox/plugins/theme_oomox/change_color.sh", oomox])
 
     def rofi(self):
         # a 512x512 image centered on the wallpaper
@@ -83,20 +104,20 @@ class Configs:
         box = (
             *((ax - 512) // 2 for ax in img.size),
             *((ax + 512) // 2 for ax in img.size))
-        img.crop(box).save(CONFIG_PATH.joinpath("rofi/image.png"))
+        img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png"))
 
 
 class Wallpaper:
-    def __init__(self, wallpaper_folder: Path) -> None:
+    def __init__(self) -> None:
         file_types = (".gif", ".jpeg", ".png", ".tga", ".tiff", ".webp", ".bmp", ".jpg")
         try:
             current_wallpaper = str(subprocess.check_output(["swww", "query"])).split('"')[-2]
-        except IndexError:
+        except (IndexError, subprocess.CalledProcessError):
             current_wallpaper = None  # if no wallpaper is set
 
         self.wallpapers = filter(
             lambda wallpaper: wallpaper.name.endswith(file_types) and wallpaper.name != current_wallpaper,
-            wallpaper_folder.iterdir()
+            CONFIG["wallpaper_folder"].iterdir()
         )
 
     def __set(self, wallpaper: Path):
@@ -104,11 +125,14 @@ class Wallpaper:
                 "--transition-type=grow",
                 "--transition-fps=120",
                 "--transition-pos=top-right"])
+        return str(wallpaper)
 
-    def get_random(self):
+    def set_random(self):
         wallpaper = random.choice(list(self.wallpapers))
-        self.__set(wallpaper)
-        return wallpaper
+        return self.__set(wallpaper)
+
+    def set_image(self, wallpaper):
+        return self.__set(wallpaper)
 
 
 # https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
@@ -124,24 +148,19 @@ def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        wallpaper = Path(sys.argv[1]).absolute().expanduser()
+        wallpaper = Wallpaper().set_image(Path(sys.argv[1]).absolute().expanduser())
     else:
-        wallpaper = Wallpaper(WALLPAPER_FOLDER).get_random()
+        wallpaper = Wallpaper().set_random()
 
     image = pywal.image.get(str(wallpaper))
-    colors = pywal.colors.get(image, backend=PYWAL_BACKEND)
+    colors = pywal.colors.get(image, backend=CONFIG["backend"])
     pywal.export.every(colors)
 
     # load all colors from pywal (and remove the # symbol before each color)
     colors = flatten_dict(colors)
     colors.update({k: v[1:] for k, v in colors.items() if v.startswith("#")})
 
-    # weird hack to theme gtk and also to ignore it theming terminals
-    wpgtk.data.config.settings.setdefault("backend", "colortheif")
-    wpgtk.data.themer.pywal.sequences.send = lambda *args, **kwargs: None
-    wpgtk.data.themer.set_pywal_theme(str(Path("~/.cache/wal/colors").expanduser()), False)
-
-    Configs({
+    TemplateWriter({
         # dirs
         "HOME": str(Path("~").expanduser()),
         "wallpaper": str(wallpaper),

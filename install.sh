@@ -40,13 +40,12 @@ function install_yay {
 }
 
 function bootstrap {
-    chmod +x ~/.dotfiles/scripts/*
-    chmod +x ~/.dotfiles/configs.py
+    chmod a+x ~/.dotfiles/scripts/*
 
     mkdir -p ~/Pictures/wallpapers
     wget https://i.imgur.com/uGRFZEs.jpg -O ~/Pictures/wallpapers/bliss.png
 
-    ~/.dotfiles/configs.py
+    ~/.dotfiles/scripts/reload.py
 }
 
 if __read_yn "THIS SCRIPT CAN POTENTIALLY ERASE EXISTING DATA, THIS IS MEANT TO BE RAN ON A FRESH ARCH LINUX INSTALL!\nIt is also very likey this wont even work, use at your own risk\ncontinue? [y/N] " -1; then
@@ -75,7 +74,7 @@ install_yay
 yay -S --needed --noconfirm \
     swaylock-effects swww auto-cpufreq \
     hyprpicker-git pyprland sway-audio-idle-inhibit-git \
-    wpgtk python-colorthief \
+    themix-theme-oomox-git python-colorthief \
     tela-icon-theme bibata-cursor-theme-bin ttf-jetbrains-mono-nerd otf-font-awesome nwg-look \
     oh-my-zsh-git zsh-autosuggestions
 
