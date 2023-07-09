@@ -49,7 +49,7 @@ function bootstrap {
 }
 
 if __read_yn "THIS SCRIPT CAN POTENTIALLY ERASE EXISTING DATA, THIS IS MEANT TO BE RAN ON A FRESH ARCH LINUX INSTALL!\nIt is also very likey this wont even work, use at your own risk\ncontinue? [y/N] " -1; then
-    git clone "https://github.com/abaan404/dotfiles" ~/.dotfiles2
+    git clone "https://github.com/abaan404/dotfiles" ~/.dotfiles
 else
     exit
 fi

@@ -2,18 +2,25 @@
 
 # i tried ok
 
-import subprocess, sys
-import random
+import subprocess, sys, os
+import dotenv
+import requests
 import pywal
 
 from PIL import Image
 from string import Template
 from pathlib import Path
 
+dotenv.load_dotenv()
+
 CONFIG = {
     "config_template_path": Path("~/.dotfiles/config").expanduser(),
     "config_path": Path("~/.config").expanduser(),
+
     "wallpaper_folder": Path("~/Pictures/wallpapers").expanduser(),
+    "wallpaper_type": "iterative", # unsplash, random, or iterative (Unsplash can be really slow)
+    "unsplash_query": "mountain",
+
     "backend": "colorthief" # ensure the package for the backend is installed
 }
 
@@ -43,7 +50,6 @@ class TemplateWriter:
                 print(f"Writing to path {config_path.joinpath(conf.name)}")
                 f.write(stream)
 
-
     def reload(self):
         self.write(CONFIG["config_template_path"], CONFIG["config_path"])
 
@@ -59,7 +65,7 @@ class TemplateWriter:
         # change all non-transparent colors in the image to "color"
         for file in [
             Path("~/.dotfiles/images/launcher.png"),
-            Path("~/.dotfiles/images/playerart.png")
+            Path("~/.dotfiles/images/playerart-default.png")
         ]:
             img = Image.open(file.expanduser()).convert("RGBA")
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
@@ -107,33 +113,31 @@ class TemplateWriter:
         img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png"))
 
 
-class Wallpaper:
-    def __init__(self) -> None:
-        file_types = (".gif", ".jpeg", ".png", ".tga", ".tiff", ".webp", ".bmp", ".jpg")
-        try:
-            current_wallpaper = str(subprocess.check_output(["swww", "query"])).split('"')[-2]
-        except (IndexError, subprocess.CalledProcessError):
-            current_wallpaper = None  # if no wallpaper is set
+def unsplash(query):
+    headers={ "Authorization": f"Client-ID {os.getenv('UNSPLASH_ACCESS_KEY')}" }
+    with requests.get(f"https://api.unsplash.com/photos/random?orientation=landscape&query={query}", headers=headers) as r:
+        match r.status_code:
+            case 200:
+                data = r.json()
+            case 429:
+                print(f"Rate Limit Exceeded, reverting to random image from {CONFIG['wallpaper_folder']}")
+                return pywal.image.get(CONFIG["wallpaper_folder"], iterative=False)
+            case _:
+                print(f"Unknown Error: {r.content}", file=sys.stderr)
+                return
 
-        self.wallpapers = filter(
-            lambda wallpaper: wallpaper.name.endswith(file_types) and wallpaper.name != current_wallpaper,
-            CONFIG["wallpaper_folder"].iterdir()
-        )
+        if int(r.headers["X-Ratelimit-Remaining"]) / int(r.headers["X-Ratelimit-Limit"]) < 0.10:
+            subprocess.Popen(["notify-send", f"{r.headers['X-Ratelimit-Remaining']} request(s) remaining"])
 
-    def __set(self, wallpaper: Path):
-        subprocess.Popen(["swww", "img", wallpaper,
-                "--transition-type=grow",
-                "--transition-fps=120",
-                "--transition-pos=top-right"])
-        return str(wallpaper)
+    subprocess.Popen(["notify-send", f'{data["description"] or "No Description"}', f'By {data["user"]["name"]}'])
+    with requests.get(data["urls"]["raw"]) as r:
+        img = r.content
 
-    def set_random(self):
-        wallpaper = random.choice(list(self.wallpapers))
-        return self.__set(wallpaper)
+    unsplash_path = CONFIG["wallpaper_folder"].joinpath("unsplash.png")
+    with open(unsplash_path, "wb") as f:
+        f.write(img)
 
-    def set_image(self, wallpaper):
-        return self.__set(wallpaper)
-
+    return str(unsplash_path)
 
 # https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
 def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
@@ -148,12 +152,27 @@ def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        wallpaper = Wallpaper().set_image(Path(sys.argv[1]).absolute().expanduser())
-    else:
-        wallpaper = Wallpaper().set_random()
+        wallpaper = pywal.image.get(str(Path(sys.argv[1]).absolute()))
 
-    image = pywal.image.get(str(wallpaper))
-    colors = pywal.colors.get(image, backend=CONFIG["backend"])
+    elif CONFIG["wallpaper_type"] == "random":
+        wallpaper = pywal.image.get(CONFIG["wallpaper_folder"])
+
+    elif CONFIG["wallpaper_type"] == "iterative":
+        wallpaper = pywal.image.get(CONFIG["wallpaper_folder"], iterative=True)
+
+    elif CONFIG["wallpaper_type"] == "unsplash":
+        # dont cache color scheme
+        pywal.colors.cache_fname = lambda *_: ["/dev", "null"]
+        wallpaper = pywal.image.get(unsplash(CONFIG["unsplash_query"]))
+
+    else:
+        print("Invalid wallpaper type", file=sys.stderr)
+        exit(1)
+
+    subprocess.Popen(["swww", "img", wallpaper, "--transition-type=grow", "--transition-fps=120", "--transition-pos=top-right"])
+
+    # use pywal to get colors
+    colors = pywal.colors.get(wallpaper, backend=CONFIG["backend"])
     pywal.export.every(colors)
 
     # load all colors from pywal (and remove the # symbol before each color)
@@ -163,7 +182,7 @@ if __name__ == "__main__":
     TemplateWriter({
         # dirs
         "HOME": str(Path("~").expanduser()),
-        "wallpaper": str(wallpaper),
+        "wallpaper": wallpaper,
 
         # colors
         **colors,
