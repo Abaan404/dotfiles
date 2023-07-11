@@ -258,7 +258,11 @@ class Schedule(SignalListener):
     @SignalListener.on_signal("s_schedule_remove")
     def remove_event(self, data):
         data = json.loads(data)
-        del self._schedule[data["day"].lower()][data["time"]]
+        try:
+            del self._schedule[data["day"].lower()][data["time"]]
+        except KeyError:
+            print(f"Could not delete schedule with the following data: {data}", file=sys.stderr)
+
         self.write()
 
 class Wifi(SignalListener):
@@ -406,12 +410,16 @@ class Player(BaseListener):
             return buff
 
         for player in players:
-            title, artist, album, url, art_url, length = read_shell(
+            data = read_shell(
                 ["playerctl", f"--player={player}", "metadata", "--format",
                  "{{xesam:title}}:!:{{xesam:artist}}:!:{{xesam:album}}:!:{{xesam:url}}:!:{{mpris:artUrl}}:!:{{duration(mpris:length)}}"],
-                retry=True # idk why but it fails randomly woo
-            ).split(":!:")
+                retry=True, ignore_error=True # idk why but it fails randomly woo
+            )
 
+            if not data:
+                return buff
+
+            title, artist, album, url, art_url, length = data.split(":!:")
             buff["alive"].append({
                 "name": player,
                 "glyph": self.glyph(player),

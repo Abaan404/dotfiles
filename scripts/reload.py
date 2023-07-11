@@ -76,7 +76,7 @@ class TemplateWriter:
         subprocess.Popen(["swayidle"])
 
     def hypr(self):
-        if subprocess.run(["pidof", "obs"], check=False).stdout: # hyprland crashes if configs get updated while obs is running
+        if subprocess.run(["pidof", "obs"], check=False, stdout=subprocess.PIPE).stdout: # hyprland crashes if configs get updated while obs is running
             return
         subprocess.Popen(["hyprctl", "reload"])
 
