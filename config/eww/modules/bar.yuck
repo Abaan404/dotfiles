@@ -120,6 +120,7 @@
         :onhover "eww update r_bar_battery=true"
         :onhoverlost "eww update r_bar_battery=false"
         :onscroll "[ {} == 'up' ] && (${cmd_brightness_increase}) || (${cmd_brightness_decrease})"
+        :tooltip battery_time
         (box :space-evenly false :spacing 2
             (label :text
                 "${EWW_BATTERY.BAT0.capacity >= 80 ? " " :

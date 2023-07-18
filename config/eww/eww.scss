@@ -19,3 +19,9 @@
         color: colors.$text;
     }
 }
+
+tooltip label {
+    background-color: colors.$primary;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
