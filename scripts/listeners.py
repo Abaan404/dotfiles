@@ -406,7 +406,9 @@ class Player(BaseListener):
             "status": read_shell(["playerctl", "status"], ignore_error=True),
             "alive": []
         }
-        if not (players := [args.player] if args.player else read_shell(["playerctl", "--list-all"], ignore_error=True).split()):
+
+        players = [args.player] if args.player else read_shell(["playerctl", "--list-all"], ignore_error=True).split()
+        if not players:
             return buff
 
         for player in players:
@@ -463,12 +465,15 @@ class Player(BaseListener):
 
 class Audio(BaseListener):
     def __init__(self) -> None:
-        super().__init__(["pactl", "subscribe"], ".+(sink|source|server)")
+        super().__init__(["pactl", "subscribe"], ".+(sink|source|server|sink-inputs)")
 
     def read(self) -> dict | list:
         buff = {}
-        for output in ["source", "sink"]:
+        for output in ["source", "sink", "sink-input", "source-output"]:
             data = json.loads(read_shell(["pactl", "-f", "json", "list", f"{output}s"]))
+
+            if not data:
+                return buff
 
             if isinstance(data, dict):
                 data = [data]
@@ -477,13 +482,16 @@ class Audio(BaseListener):
                 data = self.default(data, output)
 
             if args.brief:
-                data = self.brief(data)
+                data = self.brief(data, output)
 
             buff[output] = data
 
         return buff
 
     def default(self, data: list, output: str) -> list:
+        if output not in ["source", "sink"]:
+            return data
+
         default_device = read_shell(["pactl", f"get-default-{output}"])
         for i, device in enumerate(data):
             if device.get("name") == default_device:
@@ -492,18 +500,38 @@ class Audio(BaseListener):
 
         return data
 
-    def brief(self, data: list) -> list:
+    def brief(self, data: list, output) -> list:
         buff = []
+
         for device in data:
-            port = device.get("ports")
-            buff.append({
-                "name": device.get("name"),
-                "alias": device.get("description"),
-                "bus": device.get("properties").get("device.bus"),
-                "mute": device.get("mute"),
-                "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
-                "port": port[0].get("type") if port else "Invalid"
-            })
+            if output == "sink-input":
+                buff.append({
+                    "index": device.get("index"),
+                    "name": device.get("properties").get("application.name"),
+                    "mute": device.get("mute"),
+                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                })
+
+            elif output == "source-output":
+                buff.append({
+                    "index": device.get("index"),
+                    "name": device.get("properties").get("application.name"),
+                    "mute": device.get("mute"),
+                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                })
+
+            elif output in ["source", "sink"]:
+                port = device.get("ports")
+                buff.append({
+                    "index": device.get("index"),
+                    "name": device.get("name"),
+                    "alias": device.get("description"),
+                    "bus": device.get("properties").get("device.bus"),
+                    "mute": device.get("mute"),
+                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                    "port": port[0].get("type") if port else None
+                })
+
         return buff
 
 if __name__ == "__main__":

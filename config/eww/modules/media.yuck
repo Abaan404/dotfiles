@@ -9,47 +9,92 @@
 
 (defvar r_media_list_sink false)
 (defvar r_media_list_source false)
+(defvar r_media_list_mixer_source false)
+(defvar r_media_list_mixer_sink false)
+
+(defvar r_media_mixer false)
 
 (defwidget w_media[] (box :class "w_media"
-(box :class "layout-box" :orientation "vertical" :spacing 20 :space-evenly false
-    (box :class "sink" :orientation "vertical" :space-evenly false
+(box :class "layout-box" :orientation "vertical" :spacing 10 :space-evenly false
+    (w_media_slider :class "sink" :alias {audio?.sink?.[0]?.alias}
+        :glyph_device {audio?.sink?.[0]?.port == "Headphones" ? " " : " "}
+        :glyph_mute {audio?.sink?.[0]?.mute == "true" ? "󰖁 " : "󰕾 "}
+        :cmd_volume_get {audio?.sink?.[0]?.volume ?: 100}
+        :cmd_volume_set "pactl set-sink-volume @DEFAULT_SINK@ {}%"
+        :cmd_mute cmd_sink_mute
+        :cmd_reveal_toggle "eww update r_media_list_sink=$(echo 'print(not ${r_media_list_sink})' | lua)"
+        :var_reveal r_media_list_sink
+        (box :orientation "vertical" :spacing 10 :space-evenly false
+            (for device in {jq(audio?.sink ?: [], ".[1:]") ?: []}
+                (button :class "name" :onclick "pactl set-default-sink ${device.name}"
+                    (label :halign "start" :hexpand true :limit-width 40 :text "${device.port == "Headphones" ? " " : " "} ${device.alias}")))))
+
+    (w_media_slider :class "source" :alias {audio?.source?.[0]?.alias}
+        :glyph_device " "
+        :glyph_mute {audio?.source?.[0]?.mute == "true" || audio?.source?.[0]?.volume == 0 ? " " : " "}
+        :cmd_volume_get {audio?.source?.[0]?.volume ?: 100}
+        :cmd_volume_set "pactl set-source-volume @DEFAULT_SOURCE@ {}%"
+        :cmd_mute cmd_source_mute
+        :cmd_reveal_toggle "eww update r_media_list_source=$(echo 'print(not ${r_media_list_source})' | lua)"
+        :var_reveal r_media_list_source
+        (box :orientation "vertical" :spacing 10 :space-evenly false
+            (for device in {jq(audio?.source ?: [], ".[1:]") ?: []}
+                (button :class "name" :onclick "pactl set-default-source ${device.name}"
+                    (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}")))))
+
+    (box :class "mixer" :orientation "vertical" :space-evenly false
+        (box :class "buttons"
+            (button :onclick "eww update r_media_mixer=$(echo 'print(not ${r_media_mixer})' | lua)" "Applications"))
+        (revealer
+            :reveal r_media_mixer
+            :transition "slidedown"
+            :style "padding-top: 10px"
+            (box :orientation "vertical" :spacing 10 :space-evenly false
+                (for client in {audio?.sink-input ?: []}
+                    (w_media_slider :class "source" :alias {client.name} :max 100
+                        :glyph_device " "
+                        :glyph_mute {client.mute == "true" || client.volume == 0 ? "󰖁 " : "󰕾 "}
+                        :cmd_volume_get {client.volume ?: 100}
+                        :cmd_volume_set "pactl set-sink-input-volume ${client.index} {}%"
+                        :cmd_mute "pactl set-sink-input-mute ${client.index} toggle"
+                        :cmd_reveal_toggle "eww update r_media_list_mixer_sink=$(echo 'print(not ${r_media_list_mixer_sink})' | lua)"
+                        :var_reveal r_media_list_mixer_sink
+                        (box :orientation "vertical" :spacing 10 :space-evenly false
+                            (for device in {audio?.sink ?: []}
+                                (button :class "name" :onclick "pactl move-sink-input ${client.index} ${device.index}"
+                                    (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}"))))))
+
+                (for client in {audio?.source-output ?: []}
+                    (w_media_slider :class "source" :alias {client.name} :max 100
+                        :glyph_device " "
+                        :glyph_mute {client.mute == "true" || client.volume == 0 ? "󰖁 " : "󰕾 "}
+                        :cmd_volume_get {client.volume ?: 100}
+                        :cmd_volume_set "pactl set-source-output-volume ${client.index} {}%"
+                        :cmd_mute "pactl set-source-output-mute ${client.index} toggle"
+                        :cmd_reveal_toggle "eww update r_media_list_mixer_source=$(echo 'print(not ${r_media_list_mixer_source})' | lua)"
+                        :var_reveal r_media_list_mixer_source
+                        (box :orientation "vertical" :spacing 10 :space-evenly false
+                            (for device in {audio?.source ?: []}
+                                (button :class "name" :onclick "pactl move-source-output ${client.index} ${device.index}"
+                                    (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}")))))))))
+)))
+
+(defwidget w_media_slider[class alias glyph_device glyph_mute cmd_volume_get cmd_volume_set cmd_mute cmd_reveal_toggle var_reveal ?max]
+    (box :class "${class} volume-box" :orientation "vertical" :space-evenly false
         (box :spacing 10 :space-evenly false
             (label :class "default name" :halign "start" :hexpand true :limit-width 35
-                :text "${audio?.sink?.[0]?.port == "Headphones" ? " " : " "} ${audio?.sink?.[0]?.alias}")
-            (button :class "mute" :onclick cmd_sink_mute "${audio?.sink?.[0]?.mute ? "󰖁 " : "󰕾 "}")
-            (button :class "list" :onclick {"eww update r_media_list_sink=$(echo 'print(not ${r_media_list_sink})' | lua)"} " "))
+                :text "${glyph_device} ${alias}")
+            (button :class "mute" :onclick cmd_mute "${glyph_mute}")
+            (button :class "list" :onclick cmd_reveal_toggle " "))
         (revealer
-            :reveal r_media_list_sink
+            :reveal var_reveal
             :transition "slidedown"
             :style "padding-top: 10px"
-            (box :orientation "vertical" :spacing 10 :space-evenly false
-                (for device in {jq(audio?.sink ?: [], ".[1:]") ?: []}
-                    (button :class "name"
-                        :onclick "pactl set-default-sink ${device.name}"
-                        (label :halign "start" :hexpand true :limit-width 40
-                            :text "${device.port == "Headphones" ? " " : " "} ${device.alias}")))))
-        (scale
-            :value {audio?.sink?.[0]?.volume ?: 100}
-            :max 101 ;; floating point precision pog
-            :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"))
+            (children))
 
-    (box :class "source" :orientation "vertical" :space-evenly false
-        (box :spacing 10 :space-evenly false
-            (label :class "default name" :halign "start" :hexpand true :limit-width 35 :text "  ${audio?.source?.[0]?.alias}")
-            (button :class "mute" :onclick cmd_source_mute "${audio?.source?.[0]?.mute || audio?.source?.[0]?.volume == 0 ? " " : " "}")
-            (button :class "list" :onclick {"eww update r_media_list_source=$(echo 'print(not ${r_media_list_source})' | lua)"} " "))
-        (revealer
-            :reveal r_media_list_source
-            :transition "slidedown"
-            :style "padding-top: 10px"
-            (box :orientation "vertical" :spacing 10 :space-evenly false
-                (for device in {jq(audio?.source ?: [], ".[1:]") ?: []}
-                    (button :class "name"
-                        :onclick "pactl set-default-source ${device.name}"
-                        (label :halign "start" :hexpand true :limit-width 40 :text "  ${device.alias}")))))
         (scale
-            :value {audio?.source?.[0]?.volume ?: 100}
-            :max 101 ;; floating point precision pog
-            :onchange "pactl set-source-volume @DEFAULT_SOURCE@ {}%"))
-)))
+            :value cmd_volume_get
+            :max {max ?: 101} ;; floating point precision pog
+            :onchange cmd_volume_set)
+))
 

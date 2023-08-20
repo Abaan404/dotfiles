@@ -8,49 +8,64 @@
         margin: 20px;
         background-color: colors.$color1;
         border-radius: 10px;
-        padding: 20px {
-            top: 10px;
-        }
+        padding: 15px;
 
-        .mute, .list {
-            @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
-            @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
-        }
+        .volume-box {
+            margin: 5px 0px;
 
-        .name {
-            @include animations.fade("&:hover", colors.$primary, colors.$accent);
-            @include animations.fade("&:active", colors.$accent, colors.$primary);
+            .mute, .list {
+                @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
+                @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
+            }
+
+            .mute label {
+                font: {
+                    size: 1.25em;
+                    weight: bolder;
+                }
+            }
+
+            contents {
+                background-color: colors.$color2;
+                border-radius: 10px;
+                margin-top: 10px;
+
+                slider {
+                    background-color: colors.$accent;
+                    border-radius: 10px;
+                    min-height: 10px;
+                }
+
+                highlight {
+                    background-color: colors.$accent;
+                    border-radius: 10px;
+                }
+            }
+
+            .name {
+                @include animations.fade("&:hover", colors.$primary, colors.$accent);
+                @include animations.fade("&:active", colors.$accent, colors.$primary);
+
+                background-color: colors.$primary;
+                padding: 0px 10px;
+                border-radius: 10px;
+            }
+
+            .default {
+                background-color: colors.$secondary;
+            }
+        }
+    }
+
+    .mixer {
+        .buttons button {
+            @include animations.fade("&:hover", colors.$primary, colors.$accent, $property: "background-color");
+            @include animations.fade("&:active", colors.$accent, colors.$primary, $property: "background-color");
 
             background-color: colors.$primary;
-            padding: 0px 10px;
-            border-radius: 10px;
-        }
-
-        .default {
-            background-color: colors.$secondary;
-        }
-
-        .mute label {
-            font: {
-                size: 1.25em;
-                weight: bolder;
-            }
-        }
-
-        contents {
-            background-color: colors.$color2;
-            border-radius: 10px;
-            margin-top: 10px;
-
-            slider {
-                background-color: colors.$accent;
-                border-radius: 10px;
-                min-height: 10px;
-            }
-
-            highlight {
-                background-color: colors.$accent;
-                border-radius: 10px;
+            border-radius: 20px;
+            label {
+                padding: 10px;
             }
         }
     }
