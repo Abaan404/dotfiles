@@ -1,9 +1,10 @@
 @use "sass:list";
-@use 'css/animations';
-@use 'css/colors';
+@use 'animations';
+@use 'colors';
 
-.w_bar {
+.bar {
     margin: 10px { bottom: 0px }
+    min-height: 30px;
 
     $all-modules: "launcher", "workspaces", "sysinfo", "tray", "player", "info", "media", "power";
     @each $modules in $all-modules {
@@ -17,8 +18,7 @@
             background-color: colors.$primary;
 
             .widget {
-                padding-left: 14px;
-                padding-right: 14px;
+                padding: 0px 14px;
             }
         }
     }
@@ -34,6 +34,11 @@
 
     .workspaces {
         @include animations.fade(".inactive:hover label", colors.$text, white, $property: "color");
+
+        & > box > button > label {
+            min-width: 24px;
+        }
+
         .active label {
             color: white;
         }
@@ -74,11 +79,16 @@
         background-color: colors.$bad;
     }
 
-    // network
-    .limited label {
-        color: colors.$warning;
-    }
-    .none label {
-        color: colors.$bad;
+    .info {
+        .battery .glyph {
+            min-width: 1.3em;
+        }
+
+        .connecting {
+            color: colors.$warning;
+        }
+        .unknown {
+            color: colors.$bad;
+        }
     }
 }

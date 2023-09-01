@@ -62,6 +62,3 @@
 
 ;; DEBUG
 (include "./modules/debug.yuck")
-
-;; BAR
-(include "./modules/bar.yuck")

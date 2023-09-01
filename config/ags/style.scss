@@ -1,0 +1,27 @@
+@use 'css/colors';
+
+// window stuff
+@use 'css/bar';
+@use 'css/player';
+@use 'css/glance';
+@use 'css/powermenu';
+@use 'css/media';
+
+* {
+    all: initial;
+    font: {
+        family: JetBrainsMono Nerd Font;
+        size: 14px;
+        weight: bold;
+    }
+
+    label {
+        color: colors.$text;
+    }
+}
+
+tooltip label {
+    background-color: colors.$primary;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
