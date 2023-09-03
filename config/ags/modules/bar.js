@@ -23,7 +23,6 @@ const Launcher = BarWidget({
             execAsync(["pkill", "rofi"])
                 .catch(() => execAsync(["rofi", "-show", "drun"]).catch(() => null))
         },
-        // todo this sucks
         onHover: widget => widget.child.children[1].reveal_child = true,
         onHoverLost: widget => widget.child.children[1].reveal_child = false
     },
@@ -107,11 +106,10 @@ const Player = BarWidget({
 
             // display string
             let player_string;
-            if (artists[0].trim() === "") {
+            if (artists[0].trim() === "")
                 player_string = `${title}`
-            } else {
+            else
                 player_string = `${artists[0]} - ${title}`
-            }
 
             // truncate string if too long
             if (player_string.length >= 35)
@@ -178,22 +176,19 @@ const Media = BarWidget({
                     Label({
                         connections: [
                             [Audio, widget => {
-                                if (!Audio.speaker) {
+                                if (!Audio.speaker)
                                     widget.label = "󰖁 ";
-
-                                } else if (Audio.speaker.isMuted) {
+                                else if (Audio.speaker.isMuted)
                                     widget.label = "󰝟 ";
-
-                                } else if (Audio.speaker._stream.port === "headphone-output") {
+                                else if (Audio.speaker._stream.port === "headphone-output")
                                     widget.label = " ";
-
-                                } else {
+                                else
                                     widget.label = symbolic_strength({
                                         value: Audio.speaker.volume,
                                         max: 1,
                                         array: ["󰖀 ", "󰕾 "]
                                     });
-                                }
+
                             }, "speaker-changed"],
                         ]
                     }),
@@ -222,12 +217,11 @@ const Media = BarWidget({
                     Label({
                         connections: [
                             [Audio, widget => {
-                                if (!Audio.microphone || Audio.microphone.isMuted || Audio.microphone.volume === 0) {
+                                if (!Audio.microphone || Audio.microphone.isMuted || Audio.microphone.volume === 0)
                                     widget.label = " ";
-
-                                } else {
+                                else
                                     widget.label = " ";
-                                }
+
                             }, "microphone-changed"],
                         ]
                     }),
@@ -332,19 +326,18 @@ const NetworkInfo = EventBox({
 
                     } else {
                         widget.className = Network.wifi.internet;
-                        if (Network.wifi.internet === "connected") {
+                        if (Network.wifi.internet === "connected")
                             widget.label = symbolic_strength({
                                 value: Network.wifi.strength,
                                 array: ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 "]
                             });
-                        } else if (Network.wifi.internet === "connecting") {
+                        else if (Network.wifi.internet === "connecting")
                             widget.label = symbolic_strength({
                                 value: Network.wifi.strength,
                                 array: ["󰤫 ", "󰤠 ", "󰤣 ", "󰤦 "]
                             });
-                        } else {
+                        else
                             widget.label = "󰤭 ";
-                        }
                     }
                 }]]
             }),
@@ -377,8 +370,7 @@ const Info = BarWidget({
 const Power = BarWidget({
     className: "power",
     eventbox: {
-        onPrimaryClick: "eww open --toggle powermenu",
-        // todo this sucks
+        onPrimaryClick: () => toggle_powermenu(),
         onHover: widget => widget.child.children[1].reveal_child = true,
         onHoverLost: widget => widget.child.children[1].reveal_child = false
     },

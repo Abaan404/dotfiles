@@ -57,7 +57,6 @@
 ;; WINDOWS
 (include "./modules/glance.yuck")
 (include "./modules/player.yuck")
-(include "./modules/powermenu.yuck")
 (include "./modules/media.yuck")
 
 ;; DEBUG

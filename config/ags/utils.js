@@ -40,3 +40,31 @@ export function symbolic_strength({ value, array, max = 100 }) {
     return array[Math.min(interp, array.length - 1)];
 }
 
+export function toggle_window(name, window) {
+    if (ags.App.windows.has(name)) {
+        ags.App.closeWindow(name);
+        ags.App.removeWindow(name);
+    }
+    else {
+        ags.App.addWindow(window);
+        ags.App.openWindow(name);
+    }
+}
+
+export function create_window({className, children, box, ...other}) {
+    return ags.Widget.Window({
+        name: className,
+        popup: true,
+        ...other,
+        child: ags.Widget.Box({
+            className: className,
+            children: [
+                ags.Widget.Box({
+                    className: "layout-box",
+                    children: children,
+                    ...box,
+                })
+            ]
+        }),
+    });
+}
