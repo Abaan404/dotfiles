@@ -2,7 +2,7 @@ font=JetBrainsMono Nerd Font
 
 clock
 timestr=%R
-datestr=%a, %e of %B
+datestr=%a, %d of %b
 
 screenshots
 fade-in=0.2
