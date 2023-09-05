@@ -35,4 +35,10 @@ opt.swapfile = false
 opt.updatetime = 250
 opt.timeoutlen = 2000
 
+opt.foldmethod = "expr"
+opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+-- open all folds before opening
+vim.api.nvim_create_autocmd({ "BufReadPost", "FileReadPost" }, { command = "normal zR" })
+
 vim.api.nvim_create_user_command("TrimWhitespace", "%s/\\s\\+$//e", {})
