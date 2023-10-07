@@ -58,7 +58,6 @@ class TemplateWriter:
             getattr(self, template.name.lower(), lambda: None)()
 
     def ags(self):
-        subprocess.Popen(["killall", "ags"])
         color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
         path = CONFIG["config_path"].joinpath("ags/images/")
         path.mkdir(exist_ok=True)
@@ -72,7 +71,7 @@ class TemplateWriter:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
-        subprocess.Popen(["ags"])
+        subprocess.Popen("killall ags; ags", shell=True)
 
     def eww(self):
         color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
@@ -89,8 +88,7 @@ class TemplateWriter:
             img.save(path.joinpath(file.name))
 
     def swaylock(self):
-        subprocess.Popen(["killall", "swayidle"])
-        subprocess.Popen(["swayidle"])
+        subprocess.Popen("killall swayidle; swayidle", shell=True)
 
     def hypr(self):
         if subprocess.run(["pidof", "obs"], check=False, stdout=subprocess.PIPE).stdout: # hyprland crashes if configs get updated while obs is running
@@ -98,8 +96,7 @@ class TemplateWriter:
         subprocess.Popen(["hyprctl", "reload"])
 
     def dunst(self):
-        subprocess.Popen(["killall", "dunst"])
-        subprocess.Popen(["dunst"])
+        subprocess.Popen("killall dunst; dusnt", shell=True)
 
     def kvantum(self):
         # qt
