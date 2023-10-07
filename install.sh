@@ -77,7 +77,8 @@ yay -S --needed --noconfirm \
     themix-theme-oomox-git python-colorthief \
     tela-icon-theme bibata-cursor-theme-bin ttf-jetbrains-mono-nerd otf-font-awesome nwg-look \
     oh-my-zsh-git zsh-autosuggestions \
-    aylurs-gtk-shell
+    aylurs-gtk-shell \
+    codelldb
 
 if __read_yn "Install nvidia drivers? [y/N] " -1; then
     sudo pacman -S --needed --noconfirm \

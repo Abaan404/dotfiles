@@ -84,6 +84,22 @@ set("n", "<leader>li", vim.lsp.buf.implementation)
 set("n", "<leader>lk", vim.lsp.buf.hover)
 set("n", "<leader>lD", vim.lsp.buf.declaration)
 
+-- nvim-dap
+local dap = require("dap")
+local telescope = require("telescope")
+
+set("n", "<leader>dB", telescope.extensions.dap.list_breakpoints)
+set("n", "<leader>dv", telescope.extensions.dap.variables)
+set("n", "<leader>df", telescope.extensions.dap.frames)
+set("n", "<leader>dc", telescope.extensions.dap.commands)
+
+set("n", "<leader>db", dap.toggle_breakpoint)
+set("n", "<leader>dr", dap.continue)
+set("n", "<leader>ds", dap.terminate)
+set("n", "m", dap.step_over)
+set("n", "<leader>di", dap.step_into)
+set("n", "<leader>dt", dap.repl.open)
+
 -- GitSigns
 local gitsigns = require("gitsigns")
 
