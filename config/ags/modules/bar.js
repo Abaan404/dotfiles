@@ -145,7 +145,7 @@ const Media = BarWidget({
     spacing: 10,
     eventbox: {
         setup: widget => widget.set_above_child(false),
-        onPrimaryClick: "eww open --toggle media",
+        onPrimaryClick: () => toggle_audio(),
         connections: [
             [Bluetooth, widget => {
                 let connected = false;

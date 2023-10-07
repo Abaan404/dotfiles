@@ -1,8 +1,10 @@
-@use 'css/animations';
-@use 'css/colors';
+@use 'animations';
+@use 'colors';
 
-.w_media {
+.audio {
     @include animations.flyin("&", "top");
+
+    min-width: 480px;
 
     .layout-box {
         margin: 20px;

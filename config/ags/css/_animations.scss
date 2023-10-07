@@ -32,7 +32,7 @@
     }
 }
 
-@mixin flyin ($selector, $direction, $offset: 100px, $push: 0.1, $duration: 500ms) {
+@mixin flyin ($selector, $direction, $offset: 80px, $push: 0.1, $duration: 500ms) {
     $unique: unique-id();
     @include kf-flyin($direction, $offset, $push, $id: $unique);
     animation: $duration flyin-#{$unique}; // bezier is kinda buggy?
