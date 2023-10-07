@@ -167,14 +167,18 @@ return {
                     texlab = {
                         build = {
                             executable = "tectonic",
-                            args = { "-X", "compile", "%f" },
+                            args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
                             onSave = true,
                             forwardSearchAfter = true
                         },
                         forwardSearch = {
-                            executable = "okular",
-                            args = { "--unique", "file:%p#src:%l%f" }
-                        },
+                            executable = "zathura",
+                            args = {
+                                '--synctex-forward',
+                                '%l:1:%f',
+                                '%p',
+                            }
+                        }
                     }
                 }
             })
