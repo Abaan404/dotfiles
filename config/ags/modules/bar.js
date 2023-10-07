@@ -290,7 +290,7 @@ const BatteryInfo = EventBox({
 
                         widget.label = symbolic_strength({
                             value: Battery.percent,
-                            array: [" ", " ", " ", " ", " "]
+                            array: [ " ", " ", " ", " ", " " ]
                         })
                     }]
                 ]
