@@ -42,11 +42,15 @@ return {
                     -- bash stuff
                     "bashls",
 
-                    -- LaTeX stuff
+                    -- typesetting stuff
                     "texlab",
+                    "typst_lsp",
 
                     -- Java
-                    "jdtls"
+                    "jdtls",
+
+                    -- matlab
+                    "matlab_ls"
                 },
                 automatic_installation = true,
             })
@@ -127,16 +131,10 @@ return {
 
             -- setup lsp for all other server installed by mason
             for _, server in pairs(require("mason-lspconfig").get_installed_servers()) do
-                for _, excludes in ipairs({ "lua_ls", "pyright", "texlab" }) do
-                    if server == excludes then
-                        goto continue
-                    end
-                end
                 require("lspconfig")[server].setup({
                     on_attach = on_attach,
                     capabilities = capabilities,
                 })
-                ::continue::
             end
 
             -- Lua
@@ -179,6 +177,19 @@ return {
                         },
                     }
                 }
+            })
+
+            require("lspconfig")["matlab_ls"].setup({
+                on_attach = on_attach,
+                capabilities = capabilities,
+                settings = {
+                    matlab = {
+                        indexWorkspace = true,
+                        installPath = "/usr/local/MATLAB/R2023b",
+                        matlabConnectionTiming = "onStart",
+                        telemetry = true,
+                    },
+                },
             })
 
             -- Python
