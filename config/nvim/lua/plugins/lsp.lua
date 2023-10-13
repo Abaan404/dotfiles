@@ -262,5 +262,21 @@ return {
             dap.configurations.c = dap.configurations.cpp
             dap.configurations.rust = dap.configurations.cpp
         end
+    },
+    {
+        "danymat/neogen",
+        dependencies = "nvim-treesitter/nvim-treesitter",
+        config = function()
+            require("neogen").setup({
+                languages = {
+                    ["c.doxygen"] = require("neogen.configurations.c"),
+                    ["cpp.doxygen"] = require("neogen.configurations.cpp"),
+                    ["python.google_docstrings"] = require("neogen.configurations.python"),
+                    ["javascript.jsdoc"] = require("neogen.configurations.javascript"),
+                    ["javascriptreact.jsdoc"] = require("neogen.configurations.javascriptreact"),
+                },
+                snippet_engine = "luasnip",
+            })
+        end
     }
 }
