@@ -1,16 +1,16 @@
 import { commands, symbolic_strength } from "../utils.js";
 
-const { Hyprland, Mpris, Network, Battery, Audio, Bluetooth } = ags.Service;
-const { execAsync } = ags.Utils;
-const { Box, EventBox, CenterBox, Button, Label, Icon, Window, Revealer } = ags.Widget;
+import { Hyprland, Mpris, Network, Battery, Audio, Bluetooth, SystemTray } from "../imports.js";
+
+import { Utils, Widget } from "../imports.js";
 
 // TODO figure out how to have multiple event box do hover properly
 
-const BarWidget = ({ className, eventbox, ...box }) => EventBox({
+const BarWidget = ({ className, eventbox, ...box }) => Widget.EventBox({
     className: className,
     setup: widget => widget.set_above_child(true),
     ...eventbox,
-    child: Box({
+    child: Widget.Box({
         className: "widget",
         ...box,
     }),
@@ -20,21 +20,21 @@ const Launcher = BarWidget({
     className: "launcher",
     eventbox: {
         onPrimaryClick: () => {
-            execAsync(["pkill", "rofi"])
-                .catch(() => execAsync(["rofi", "-show", "drun"]).catch(() => null))
+            Utils.execAsync(["pkill", "rofi"])
+                .catch(() => Utils.execAsync(["rofi", "-show", "drun"]).catch(() => null))
         },
         onHover: widget => widget.child.children[1].reveal_child = true,
         onHoverLost: widget => widget.child.children[1].reveal_child = false
     },
     children: [
-        Icon({
+        Widget.Icon({
             icon: "!!HOME/.config/eww/images/launcher.png",
             size: 16,
         }),
-        Revealer({
+        Widget.Revealer({
             transition: "slide_left",
             transitionDuration: 500,
-            child: Label("Launcher"),
+            child: Widget.Label("Launcher"),
             style: "padding-left: 10px;", // add padding when shown
         })
     ]
@@ -43,49 +43,62 @@ const Launcher = BarWidget({
 const Workspaces = BarWidget({
     className: "workspaces",
     spacing: 20,
-    connections: [
-        [Hyprland, widget => {
-            const workspaces = [
-                {"id": 1, "glyph": ""},
-                {"id": 2, "glyph": ""},
-                {"id": 3, "glyph": ""},
-                {"id": 4, "glyph": ""}
-            ];
+    connections: [[Hyprland, widget => {
+        const workspaces = [
+            {"id": 1, "glyph": ""},
+            {"id": 2, "glyph": ""},
+            {"id": 3, "glyph": ""},
+            {"id": 4, "glyph": ""}
+        ];
 
-            const persistent_id = workspaces.map(ws => ws.id)
-            Array(...Hyprland.workspaces.keys())
-                .sort()
-                .map(ws => {
-                    if (!persistent_id.includes(ws) && ws > 0)
-                        workspaces.push({"id": ws, "glyph": ""});
-                })
+        const persistent_id = workspaces.map(ws => ws.id)
+        Array(...Hyprland.workspaces.keys())
+            .sort()
+            .map(ws => {
+                if (!persistent_id.includes(ws) && ws > 0)
+                    workspaces.push({"id": ws, "glyph": ""});
+            })
 
-            widget.children = workspaces.map(ws => Button({
-                className: Hyprland.active.workspace.id == ws.id ? 'active' : 'inactive',
-                child: Label({ label: `${ws.glyph}` }),
-                onPrimaryClick: `hyprctl dispatch workspace ${ws}`,
-            }));
-        }]
-    ]
+        widget.children = workspaces.map(ws => Widget.Button({
+            className: Hyprland.active.workspace.id == ws.id ? 'active' : 'inactive',
+            child: Widget.Label({ label: `${ws.glyph}` }),
+            onPrimaryClick: `hyprctl dispatch workspace ${ws}`,
+        }));
+    }]]
 })
 
 const SysInfo = BarWidget({
     className: "sysinfo",
     spacing: 12,
     children: [
-        Label({
+        Widget.Label({
             label: " 0.0G",
-            connections: [[2000, widget => execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"])
+            connections: [[2000, widget => Utils.execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"])
                 .then(out => widget.label = ` ${out}`)]
             ]
         }),
-        Label({
+        Widget.Label({
             label: " 0.0%",
-            connections: [[2000, widget => execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"])
+            connections: [[2000, widget => Utils.execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"])
                 .then(out => widget.label = ` ${out}%`)]
             ]
         })
     ]
+})
+
+// todo impl this
+const SysTray = BarWidget({
+    className: "systray",
+    connections: [[SystemTray, widget => {
+        SystemTray.items.forEach(item => {
+            widget.children.push(
+                Widget.Button({
+                    label: item.title,
+                    onPrimaryClick: btn => item.openMenu(null),
+                })
+            )
+        })
+    }]]
 })
 
 const Player = BarWidget({
@@ -96,48 +109,46 @@ const Player = BarWidget({
         onMiddleClick: commands.player.toggle
     },
     spacing: 20,
-    connections: [
-        [Mpris, widget => {
-            if (!Mpris.getPlayer())
-                return
+    connections: [[Mpris, widget => {
+        if (!Mpris.getPlayer())
+            return
 
-            const title = Mpris.getPlayer().trackTitle;
-            const artists = Mpris.getPlayer().trackArtists;
+        const title = Mpris.getPlayer().trackTitle;
+        const artists = Mpris.getPlayer().trackArtists;
 
-            // display string
-            let player_string;
-            if (artists[0].trim() === "")
-                player_string = `${title}`
-            else
-                player_string = `${artists[0]} - ${title}`
+        // display string
+        let player_string;
+        if (artists[0].trim() === "")
+            player_string = `${title}`
+        else
+            player_string = `${artists[0]} - ${title}`
 
-            // truncate string if too long
-            if (player_string.length >= 35)
-                player_string = player_string.slice(0, 35) + "..."
+        // truncate string if too long
+        if (player_string.length >= 35)
+            player_string = player_string.slice(0, 35) + "..."
 
-            // display glyph
-            let player_glyph;
-            switch (Mpris.getPlayer().name) {
-                case "firefox":
-                    player_glyph = "";
-                    break;
-                case "spotify":
-                    player_glyph = "";
-                    break
-                case "discord":
-                    player_glyph = "";
-                    break
-                default:
-                    player_glyph = "";
-                    break;
-            }
+        // display glyph
+        let player_glyph;
+        switch (Mpris.getPlayer().name) {
+            case "firefox":
+                player_glyph = "";
+                break;
+            case "spotify":
+                player_glyph = "";
+                break
+            case "discord":
+                player_glyph = "";
+                break
+            default:
+                player_glyph = "";
+                break;
+        }
 
-            widget.children = [
-                Label(`${player_glyph}`),
-                Label(`${player_string}`)
-            ]
-        }]
-    ]
+        widget.children = [
+            Widget.Label(`${player_glyph}`),
+            Widget.Label(`${player_string}`)
+        ]
+    }]]
 })
 
 const Media = BarWidget({
@@ -157,81 +168,77 @@ const Media = BarWidget({
                     : widget.get_style_context().remove_class("bluetooth");
             }],
             [Audio, widget => {
-                Audio.speaker?.isMuted
+                Audio.speaker?.stream.isMuted
                     ? widget.get_style_context().add_class("muted")
                     : widget.get_style_context().remove_class("muted");
             }, "speaker-changed"]
         ]
     },
     children: [
-        EventBox({
+        Widget.EventBox({
             setup: widget => widget.set_above_child(true),
             onScrollUp: commands.sink.increase,
             onScrollDown: commands.sink.decrease,
             onMiddleClick: commands.sink.mute,
-            child: Box({
+            child: Widget.Box({
                 className: "sink",
                 spacing: 6,
                 children: [
-                    Label({
-                        connections: [
-                            [Audio, widget => {
-                                if (!Audio.speaker)
-                                    widget.label = "󰖁 ";
-                                else if (Audio.speaker.isMuted)
-                                    widget.label = "󰝟 ";
-                                else if (Audio.speaker._stream.port === "headphone-output")
-                                    widget.label = " ";
-                                else
-                                    widget.label = symbolic_strength({
-                                        value: Audio.speaker.volume,
-                                        max: 1,
-                                        array: ["󰖀 ", "󰕾 "]
-                                    });
+                    Widget.Label({
+                        connections: [[Audio, widget => {
+                            if (!Audio.speaker)
+                                widget.label = "󰖁 ";
+                            else if (Audio.speaker.stream.isMuted)
+                                widget.label = "󰝟 ";
+                            else if (Audio.speaker._stream.port === "headphone-output")
+                                widget.label = " ";
+                            else
+                                widget.label = symbolic_strength({
+                                    value: Audio.speaker.volume,
+                                    max: 1,
+                                    array: ["󰖀 ", "󰕾 "]
+                                });
 
-                            }, "speaker-changed"],
-                        ]
+                        }, "speaker-changed"]]
                     }),
-                    Label({
+                    Widget.Label({
                         connections: [[Audio, widget => {
                             if (!Audio.speaker)
                                 return
 
                             widget.label = String(Math.floor(Audio.speaker.volume * 100)) + "%";
-                            widget.visible = !(Audio.speaker.isMuted);
+                            widget.visible = !(Audio.speaker.stream.isMuted);
 
                         }, "speaker-changed"]]
                     })
                 ]
             })
         }),
-        EventBox({
+        Widget.EventBox({
             setup: widget => widget.set_above_child(true),
             onScrollUp: commands.source.increase,
             onScrollDown: commands.source.decrease,
             onMiddleClick: commands.source.mute,
-            child: Box({
+            child: Widget.Box({
                 className: "source",
                 spacing: 1,
                 children: [
-                    Label({
-                        connections: [
-                            [Audio, widget => {
-                                if (!Audio.microphone || Audio.microphone.isMuted || Audio.microphone.volume === 0)
-                                    widget.label = " ";
-                                else
-                                    widget.label = " ";
+                    Widget.Label({
+                        connections: [[Audio, widget => {
+                            if (!Audio.microphone || Audio.microphone.stream.isMuted || Audio.microphone.volume === 0)
+                                widget.label = " ";
+                            else
+                                widget.label = " ";
 
-                            }, "microphone-changed"],
-                        ]
+                        }, "microphone-changed"]]
                     }),
-                    Label({
+                    Widget.Label({
                         connections: [[Audio, widget => {
                             if (!Audio.microphone)
                                 return
 
                             widget.label = String(Math.floor(Audio.microphone.volume * 100)) + "%";
-                            widget.visible = !(Audio.microphone.isMuted || Audio.microphone.volume === 0)
+                            widget.visible = !(Audio.microphone.stream.isMuted || Audio.microphone.volume === 0)
 
                         }, "microphone-changed"]]
                     })
@@ -241,22 +248,22 @@ const Media = BarWidget({
     ]
 })
 
-const CockInfo = EventBox({
+const CockInfo = Widget.EventBox({
     className: "clock",
     setup: widget => widget.set_above_child(true),
     onHover: widget => widget.child.children[1].reveal_child = true,
     onHoverLost: widget => widget.child.children[1].reveal_child = false,
-    child: Box({
+    child: Widget.Box({
         children: [
-            Label({
+            Widget.Label({
                 className: "glyph",
                 connections: [[1000, widget => widget.label = new Date().toLocaleTimeString("en-gb", { hour: "2-digit", minute: "2-digit" })]]
             }),
-            Revealer({
+            Widget.Revealer({
                 transition: "slide_left",
                 transitionDuration: 500,
                 style: "padding-left: 10px;", // add padding when shown
-                child: Label({
+                child: Widget.Label({
                     connections: [[1000, widget => {
                         const datetime = new Date();
                         const day = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][datetime.getDay() - 1];
@@ -272,34 +279,32 @@ const CockInfo = EventBox({
     )
 })
 
-const BatteryInfo = EventBox({
+const BatteryInfo = Widget.EventBox({
     className: "battery",
     setup: widget => widget.set_above_child(true),
     onScrollUp: commands.brightness.increase,
     onScrollDown: commands.brightness.decrease,
     onHover: widget => widget.child.children[1].reveal_child = true,
     onHoverLost: widget => widget.child.children[1].reveal_child = false,
-    child: Box({
+    child: Widget.Box({
         children: [
-            Label({
+            Widget.Label({
                 className: "glyph",
-                connections: [
-                    [Battery, widget => {
-                        if (Battery.percent < 0) // -1 is an odd default choice but ok
-                            return
+                connections: [[Battery, widget => {
+                    if (Battery.percent < 0) // -1 is an odd default choice but ok
+                    return
 
-                        widget.label = symbolic_strength({
-                            value: Battery.percent,
-                            array: [ " ", " ", " ", " ", " " ]
-                        })
-                    }]
-                ]
+                    widget.label = symbolic_strength({
+                        value: Battery.percent,
+                        array: [ " ", " ", " ", " ", " " ]
+                    })
+                }]]
             }),
-            Revealer({
+            Widget.Revealer({
                 transition: "slide_left",
                 transitionDuration: 500,
                 style: "padding-left: 5px;", // add padding when shown
-                child: Label({
+                child: Widget.Label({
                     connections: [[Battery, widget => widget.label = Battery.percent.toString() + "%"]]
                 }),
             })
@@ -307,14 +312,14 @@ const BatteryInfo = EventBox({
     )
 })
 
-const NetworkInfo = EventBox({
+const NetworkInfo = Widget.EventBox({
     className: "network",
     setup: widget => widget.set_above_child(true),
     onHover: widget => widget.child.children[1].reveal_child = true,
     onHoverLost: widget => widget.child.children[1].reveal_child = false,
-    child: Box({
+    child: Widget.Box({
         children: [
-            Label({
+            Widget.Label({
                 className: "disconnected",
                 connections: [[Network, widget => {
                     if (!Network.wifi || !Network.wired)
@@ -341,11 +346,11 @@ const NetworkInfo = EventBox({
                     }
                 }]]
             }),
-            Revealer({
+            Widget.Revealer({
                 transition: "slide_left",
                 transitionDuration: 500,
                 style: "padding-left: 5px;", // add padding when shown
-                child: Label({
+                child: Widget.Label({
                     connections: [[Network, widget => widget.label = Network.wifi?.ssid ?? "Offline"]]
                 })
             })
@@ -375,39 +380,40 @@ const Power = BarWidget({
         onHoverLost: widget => widget.child.children[1].reveal_child = false
     },
     children: [
-        Label(""),
-        Revealer({
+        Widget.Label(""),
+        Widget.Revealer({
             transition: "slide_left",
             transitionDuration: 500,
-            child: Label("exit"),
+            child: Widget.Label("exit"),
             style: "padding-left: 10px;", // add padding when shown
         })
     ]
 });
 
-export const Bar = Window({
+export const Bar = Widget.Window({
     name: "bar",
     anchor: ["top", "left", "right"],
     exclusive: true,
-    child: CenterBox({
+    child: Widget.CenterBox({
         className: "bar",
-        startWidget: Box({
+        startWidget: Widget.Box({
             spacing: 10,
             halign: 'start',
             children: [
                 Launcher,
                 Workspaces,
-                SysInfo
+                SysInfo,
+                // SysTray
             ],
         }),
-        centerWidget: Box({
+        centerWidget: Widget.Box({
             spacing: 10,
             halign: 'center',
             children: [
                 Player
             ]
         }),
-        endWidget: Box({
+        endWidget: Widget.Box({
             spacing: 10,
             halign: 'end',
             children: [

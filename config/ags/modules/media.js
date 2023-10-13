@@ -1,39 +1,39 @@
+import Gtk from 'gi://Gtk?version=3.0';
 import { commands, create_window } from "../utils.js";
 
-const { Mpris, Audio } = ags.Service;
-const { Box, Slider, Button, Label, Revealer } = ags.Widget;
+import { Mpris, Audio, Widget } from "../imports.js";
 
-const MediaSlider = ({ label, mute, other_devices, slider }) => Box({
+const MediaSlider = ({ label, mute, other_devices, slider }) => Widget.Box({
     className: "volume-box",
     orientation: Gtk.Orientation.VERTICAL,
     children: [
-        Box({
+        Widget.Box({
             spacing: 10,
             children: [
-                Label({
+                Widget.Label({
                     className: ["default", "name"],
                     hexpand: true,
                     halign: Gtk.Align.START,
                     ...label,
                 }),
-                Button({
+                Widget.Button({
                     className: "mute",
                     ...mute
                 }),
-                Button({
+                Widget.Button({
                     className: "list",
                     onPrimaryClick: widget => widget.parent.parent.children[1].reveal_child = !(widget.parent.parent.children[1].reveal_child),
-                    child: Label(" ")
+                    child: Widget.Label(" ")
                 })
             ]
         }),
-        Revealer({
+        Widget.Revealer({
             transition: "slide_down",
             transitionDuration: 500,
             style: "padding-top: 10px;",
             child: other_devices, 
         }),
-        Slider({
+        Widget.Slider({
             drawValue: false,
             min: 0,
             max: 100,
@@ -63,7 +63,7 @@ export const MediaFactory = () => create_window({
             },
             mute: {
                 onPrimaryClick: commands.sink.mute,
-                child: Label({
+                child: Widget.Label({
                     connections: [[Audio, widget => {
                         Audio.speaker.isMuted
                             ? widget.label = "󰖁 "
@@ -79,7 +79,7 @@ export const MediaFactory = () => create_window({
                     widget.value = Audio.speaker.volume * 100;
                 }]]
             },
-            other_devices: Box({
+            other_devices: Widget.Box({
                 connections: [[Audio, widget =>
                     widget.children = Audio.speakers
                         .slice(1)
@@ -90,10 +90,10 @@ export const MediaFactory = () => create_window({
                             if (label.length >= 40)
                                 label = label.slice(0, 35) + "..."
 
-                            const button = Button({
+                            const button = Widget.Button({
                                 className: "name",
                                 onPrimaryClick: `pactl set-default-source ${speaker.name}`,
-                                child: Label({
+                                child: Widget.Label({
                                     halign: Gtk.Align.START,
                                     hexpand: true,
                                     label: label
@@ -117,7 +117,7 @@ export const MediaFactory = () => create_window({
             },
             mute: {
                 onPrimaryClick: commands.source.mute,
-                child: Label({
+                child: Widget.Label({
                     connections: [[Audio, widget => {
                         log(Audio.microphone.isMuted)
                         Audio.microphone.isMuted
@@ -134,9 +134,9 @@ export const MediaFactory = () => create_window({
                     widget.value = Audio.microphone.volume * 100;
                 }]]
             },
-            other_devices: Box({
+            other_devices: Widget.Box({
                 connections: [[Audio, widget =>
-                    widget.children = Audio.microphone
+                    widget.children = Audio.microphones
                         .slice(1)
                         .map(microphone => {
                             const label = "  " + microphone.description;
@@ -145,10 +145,10 @@ export const MediaFactory = () => create_window({
                             if (label.length >= 40)
                                 label = label.slice(0, 35) + "..."
 
-                            const button = Button({
+                            const button = Widget.Button({
                                 className: "name",
                                 onPrimaryClick: `pactl set-default-source ${microphone.name}`,
-                                child: Label({
+                                child: Widget.Label({
                                     halign: Gtk.Align.START,
                                     hexpand: true,
                                     label: label

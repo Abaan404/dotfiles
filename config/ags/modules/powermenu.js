@@ -1,19 +1,21 @@
+import Gtk from 'gi://Gtk?version=3.0';
 import { commands, create_window } from "../utils.js";
-const { Box, EventBox, Button, Label } = ags.Widget;
 
-const MenuButton = ({label, className, glyph, command}) => EventBox({
+import { Widget } from "../imports.js";
+
+const MenuButton = ({label, className, glyph, command}) => Widget.EventBox({
     className: className,
-    child: Box({
+    child: Widget.Box({
         halign: Gtk.Align.END,
         spacing: 15,
         children: [
-            Label({
+            Widget.Label({
                 className: "transition-text",
                 label: label
             }),
-            Button({
+            Widget.Button({
                 onPrimaryClick: command,
-                child: Label(glyph)
+                child: Widget.Label(glyph)
             })
         ]
     })
