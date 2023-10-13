@@ -73,32 +73,32 @@ set("n", "<leader>M", "<cmd>Mason<cr>")
 
 set("n", "<leader>lc", vim.lsp.buf.rename)
 set("n", "<leader>la", vim.lsp.buf.code_action)
-set("n", "<leader>ld", vim.lsp.buf.type_definition)
+set("n", "<leader>lt", vim.lsp.buf.type_definition)
 set("n", "<leader>ls", telescope_builtin.lsp_document_symbols)
 set("n", "<leader>lf", vim.lsp.buf.format)
 
 set("n", "<leader>ld", vim.lsp.buf.definition)
 set("n", "<leader>lr", telescope_builtin.lsp_references)
-set("n", "<leader>ld", telescope_builtin.diagnostics)
+set("n", "<leader>ll", telescope_builtin.diagnostics)
 set("n", "<leader>li", vim.lsp.buf.implementation)
 set("n", "<leader>lk", vim.lsp.buf.hover)
 set("n", "<leader>lD", vim.lsp.buf.declaration)
 
+-- neogen
+local neogen = require("neogen")
+
+set("n", "<leader>lg", neogen.generate)
+
 -- nvim-dap
 local dap = require("dap")
-local telescope = require("telescope")
+local dapui = require("dapui")
 
-set("n", "<leader>dB", telescope.extensions.dap.list_breakpoints)
-set("n", "<leader>dv", telescope.extensions.dap.variables)
-set("n", "<leader>df", telescope.extensions.dap.frames)
-set("n", "<leader>dc", telescope.extensions.dap.commands)
-
+set("n", "<leader>dd", dapui.toggle)
 set("n", "<leader>db", dap.toggle_breakpoint)
 set("n", "<leader>dr", dap.continue)
-set("n", "<leader>ds", dap.terminate)
+set("n", "<leader>dt", dap.terminate)
 set("n", "m", dap.step_over)
 set("n", "<leader>di", dap.step_into)
-set("n", "<leader>dt", dap.repl.open)
 
 -- GitSigns
 local gitsigns = require("gitsigns")
@@ -107,13 +107,13 @@ set("n", "<leader>ghr", gitsigns.reset_hunk)
 set("n", "<leader>ghR", gitsigns.reset_buffer)
 set("n", "<leader>ghs", gitsigns.stage_hunk)
 set("n", "<leader>ghS", gitsigns.stage_buffer)
-set("n", "<leader>gb", gitsigns.diffthis)
+set("n", "<leader>gb", telescope_builtin.git_branches)
 set("n", "<leader>gB", gitsigns.toggle_current_line_blame)
 set("n", "<leader>ghp", gitsigns.preview_hunk)
 set("n", "<leader>ghu", gitsigns.undo_stage_hunk)
 set("n", "<leader>gt", gitsigns.toggle_deleted)
-
-set({ "o", "x" }, "<leader>ghl", ":<C-U>Gitsigns select_hunk<CR>")
+set("n", "<leader>g]", gitsigns.next_hunk)
+set("n", "<leader>g[", gitsigns.prev_hunk)
 
 -- Peepsight
 local peepsight = require("peepsight")

@@ -10,6 +10,7 @@ return {
             },
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
             "folke/neodev.nvim",
             "RRethy/vim-illuminate",
             "hrsh7th/cmp-nvim-lsp",
@@ -53,6 +54,12 @@ return {
                     "matlab_ls"
                 },
                 automatic_installation = true,
+            })
+
+            require("mason-tool-installer").setup({
+                ensure_installed = {
+                    "codelldb"
+                }
             })
 
             -- Neodev setup before LSP config
@@ -212,16 +219,26 @@ return {
     },
     {
         "mfussenegger/nvim-dap",
+        dependencies = {
+            {
+                "rcarriga/nvim-dap-ui",
+                config = function ()
+                    require("dapui").setup()
+                end
+            }
+        },
         event = "BufReadPre",
         ft = { "c", "cpp" },
         config = function()
-            local dap = require('dap')
+            local dap = require("dap")
+            local mason_registry = require("mason-registry")
 
+            local codelldb = mason_registry.get_package("codelldb")
             dap.adapters.codelldb = {
-                type = 'server',
+                type = "server",
                 port = "${port}",
                 executable = {
-                    command = '/usr/bin/codelldb',
+                    command = codelldb:get_install_path() .. "/codelldb",
                     args = { "--port", "${port}" },
                 }
             }
@@ -233,11 +250,12 @@ return {
                     request = "launch",
                     program = function()
                         ---@diagnostic disable-next-line: redundant-parameter
-                        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
                     end,
-                    cwd = '${workspaceFolder}',
+                    cwd = "${workspaceFolder}",
                     stopOnEntry = false,
-                }, }
+                },
+            }
 
             -- If you want to use this for Rust and C, add something like this:
 
