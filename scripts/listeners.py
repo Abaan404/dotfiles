@@ -500,21 +500,21 @@ class Audio(BaseListener):
 
         return data
 
-    def brief(self, data: list) -> list:
+    def brief(self, data: list, output) -> list:
         buff = []
+        
         for device in data:
-            port = device.get("ports")
-            try:
-                volvar = int(device.get("volume").get("front-left").get("value_percent")[:-1])
-            except AttributeError: volvar = int(device.get("volume").get("mono").get("value_percent")[:-1])
+            
+            try: 
+                volvar = int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+            except AttributeError: 
+                volvar = int(device.get("volume").get("mono").get("value_percent")[:-1]),
             if output == "sink-input":
                 buff.append({
-                    "name": device.get("name"),
-                    "alias": device.get("description"),
-                    "bus": device.get("properties").get("device.bus"),
+                    "index": device.get("index"),
+                    "name": device.get("properties").get("application.name"),
                     "mute": device.get("mute"),
-                    "volume": volvar,
-                    "port": port[0].get("type") if port else "Invalid"
+                    "volume": volvar
                 })
 
             elif output == "source-output":
