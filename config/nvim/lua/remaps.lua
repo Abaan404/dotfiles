@@ -95,8 +95,8 @@ local dapui = require("dapui")
 
 set("n", "<leader>dd", dapui.toggle)
 set("n", "<leader>db", dap.toggle_breakpoint)
-set("n", "<leader>dr", dap.continue)
-set("n", "<leader>dt", dap.terminate)
+set("n", "<leader>dr", function() dap.continue(); dapui.open() end)
+set("n", "<leader>dt", function() dap.terminate(); dapui.close() end)
 set("n", "m", dap.step_over)
 set("n", "<leader>di", dap.step_into)
 

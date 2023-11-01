@@ -32,6 +32,7 @@ return {
 
                     -- c/cpp stuff
                     "clangd",
+                    "swift_mesonls",
 
                     -- python stuff
                     "pyright",
@@ -190,6 +191,7 @@ return {
                 }
             })
 
+            -- Octave/MATLAB
             require("lspconfig")["matlab_ls"].setup({
                 on_attach = on_attach,
                 capabilities = capabilities,
@@ -222,7 +224,7 @@ return {
         dependencies = {
             {
                 "rcarriga/nvim-dap-ui",
-                config = function ()
+                config = function()
                     require("dapui").setup()
                 end
             }
@@ -250,7 +252,16 @@ return {
                     request = "launch",
                     program = function()
                         ---@diagnostic disable-next-line: redundant-parameter
-                        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+                        local project_name = vim.fn.system({"meson", "introspect", "build", "--projectinfo" })
+
+                        ---@diagnostic disable-next-line: param-type-mismatch
+                        if pcall(vim.fn.json_decode(project_name)) then
+                            ---@diagnostic disable-next-line: redundant-parameter
+                            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+                        else
+                            ---@diagnostic disable-next-line: undefined-field
+                            return vim.fn.getcwd() .. "/build/" .. vim.fn.json_decode(project_name).descriptive_name
+                        end
                     end,
                     cwd = "${workspaceFolder}",
                     stopOnEntry = false,
