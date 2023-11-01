@@ -502,14 +502,19 @@ class Audio(BaseListener):
 
     def brief(self, data: list, output) -> list:
         buff = []
-
+        
         for device in data:
+            
+            try: 
+                volvar = int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+            except AttributeError: 
+                volvar = int(device.get("volume").get("mono").get("value_percent")[:-1]),
             if output == "sink-input":
                 buff.append({
                     "index": device.get("index"),
                     "name": device.get("properties").get("application.name"),
                     "mute": device.get("mute"),
-                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                    "volume": volvar
                 })
 
             elif output == "source-output":
@@ -517,7 +522,7 @@ class Audio(BaseListener):
                     "index": device.get("index"),
                     "name": device.get("properties").get("application.name"),
                     "mute": device.get("mute"),
-                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                    "volume": volvar,
                 })
 
             elif output in ["source", "sink"]:
@@ -528,7 +533,7 @@ class Audio(BaseListener):
                     "alias": device.get("description"),
                     "bus": device.get("properties").get("device.bus"),
                     "mute": device.get("mute"),
-                    "volume": int(device.get("volume").get("front-left").get("value_percent")[:-1]),
+                    "volume": volvar,
                     "port": port[0].get("type") if port else None
                 })
 
