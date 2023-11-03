@@ -48,10 +48,7 @@ set("n", "<leader>ss", treesj.toggle)
 set("n", "<leader>sr", function() treesj.toggle({ split = { recursive = true } }) end)
 
 -- ToggleTerm
-local nvterm = require("nvterm.terminal")
-
-set({ "n", "t", "v", "i" }, "<A-t>", function() nvterm.toggle("horizontal") end)
-set({ "n", "t", "v", "i" }, "<A-f>", function() nvterm.toggle("floating") end)
+set({ "n", "t", "v", "i" }, "<A-t>", "<cmd>ToggleTerm direction=float<CR>")
 
 -- UndoTree
 set("n", "<leader>u", vim.cmd.UndotreeToggle)
