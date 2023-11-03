@@ -112,6 +112,11 @@ set("n", "<leader>gt", gitsigns.toggle_deleted)
 set("n", "<leader>g]", gitsigns.next_hunk)
 set("n", "<leader>g[", gitsigns.prev_hunk)
 
+-- Fugitive
+set("n", "<leader>gP", "<cmd>Git pull origin<CR>")
+set("n", "<leader>gps", "<cmd>Git stash<CR>")
+set("n", "<leader>gpp", "<cmd>Git stash pop<CR>")
+
 -- Peepsight
 local peepsight = require("peepsight")
 
