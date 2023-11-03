@@ -105,6 +105,9 @@ PATH=~/.local/bin:$PATH
 
 EDITOR=nvim
 alias vim="nvim"
+alias nivm="nvim"
+alias nvmi="nvim"
+alias vnim="nvim"
 
 alias untar="tar -cvzf $1"
 alias p="python3"
