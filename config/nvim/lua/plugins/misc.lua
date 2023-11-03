@@ -14,27 +14,27 @@ return {
     {
         "koenverburg/peepsight.nvim",
         opts = {
-                -- go
-                "function_declaration",
-                "method_declaration",
-                "func_literal",
+            -- go
+            "function_declaration",
+            "method_declaration",
+            "func_literal",
 
-                -- typescript
-                "class_declaration",
-                "method_definition",
-                "arrow_function",
-                "function_declaration",
-                "generator_function_declaration",
-                "object",
+            -- typescript
+            "class_declaration",
+            "method_definition",
+            "arrow_function",
+            "function_declaration",
+            "generator_function_declaration",
+            "object",
 
-                -- c/c++/python
-                "class_definition",
-                "function_definition",
+            -- c/c++/python
+            "class_definition",
+            "function_definition",
 
-                -- LaTeX
-                "math_environment",
-                "generic_environment",
-                "section"
+            -- LaTeX
+            "math_environment",
+            "generic_environment",
+            "section"
         }
     },
     {
@@ -44,5 +44,20 @@ return {
     {
         "mbbill/undotree",
         event = "VeryLazy"
+    },
+    {
+        "echasnovski/mini.nvim",
+        event = "VeryLazy",
+        version = "*",
+        config = function()
+            require('mini.align').setup()
+            require('mini.animate').setup({
+                cursor = { timing = function(_, n) return 100 / n end },
+                scroll = { enable = false },
+                resize = { enable = false },
+                open = { enable = false },
+                close = { enable = false }
+            })
+        end
     }
 }
