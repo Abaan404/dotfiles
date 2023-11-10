@@ -2,7 +2,8 @@ return {
     {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
-        event = "BufReadPre"
+        event = "BufReadPre",
+        opts = {}
     },
     {
         "NvChad/nvim-colorizer.lua",
