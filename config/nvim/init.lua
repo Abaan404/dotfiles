@@ -29,3 +29,4 @@ lazy.setup("plugins", {
 
 require("options")
 require("remaps")
+require("misc")

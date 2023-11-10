@@ -38,18 +38,3 @@ opt.timeoutlen = 2000
 opt.foldmethod = "expr"
 opt.foldexpr = "nvim_treesitter#foldexpr()"
 opt.foldlevel = 99
-
--- Open a file called question.pdf in the cwd
-vim.api.nvim_create_user_command("OpenQuestion", function()
-    local Job = require "plenary.job"
-
-    Job:new({
-        command = "zathura",
-        args = { "question.pdf" },
-    }):start()
-end, {})
-
--- open all folds before opening
-vim.api.nvim_create_autocmd({ "BufReadPost", "FileReadPost" }, { command = "normal zR" })
-
-vim.api.nvim_create_user_command("TrimWhitespace", "%s/\\s\\+$//e", {})

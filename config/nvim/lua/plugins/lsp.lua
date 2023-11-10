@@ -145,6 +145,14 @@ return {
                 })
             end
 
+            -- TODO open a PR on mason to add glsl_analyzer
+            if vim.fn.findfile("/usr/bin/glsl_analyzer") then
+                require("lspconfig")["glsl_analyzer"].setup({
+                    on_attach = on_attach,
+                    capabilities = capabilities,
+                })
+            end
+
             -- Lua
             require("lspconfig")["lua_ls"].setup({
                 on_attach = on_attach,
@@ -182,9 +190,9 @@ return {
                         forwardSearch = {
                             executable = "zathura",
                             args = {
-                                '--synctex-forward',
-                                '%l:1:%f',
-                                '%p',
+                                "--synctex-forward",
+                                "%l:1:%f",
+                                "%p",
                             }
                         }
                     }

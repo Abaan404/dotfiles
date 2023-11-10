@@ -97,6 +97,12 @@ set("n", "<leader>dt", function() dap.terminate(); dapui.close() end)
 set("n", "m", dap.step_over)
 set("n", "<leader>di", dap.step_into)
 
+-- cmake-tools
+set("n", "<leader>cmd", "<cmd>CMakeDebug<CR>")
+set("n", "<leader>cmg", "<cmd>CMakeGenerate<CR>")
+set("n", "<leader>cmb", "<cmd>CMakeBuild<CR>")
+set("n", "<leader>cmc", "<cmd>CMakeClean<CR>")
+
 -- GitSigns
 local gitsigns = require("gitsigns")
 
@@ -121,9 +127,6 @@ set("n", "<leader>gpp", "<cmd>Git stash pop<CR>")
 local peepsight = require("peepsight")
 
 set("n", "<leader>p", peepsight.toggle)
-
--- pydocstring
-set("n", "<leader>p/", "<cmd>Pydocstring<CR>")
 
 -- Persistence
 local persistence = require("persistence")

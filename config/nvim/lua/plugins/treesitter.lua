@@ -17,13 +17,17 @@ return {
                     "html",
                     "css",
                     "scss",
+                    "java",
                     "javascript",
                     "typescript",
                     "tsx",
                     "svelte",
 
                     "c",
-                    "java",
+                    "cpp",
+                    "glsl",
+                    "cmake",
+                    "meson",
 
                     "markdown",
                     "markdown_inline",
@@ -48,6 +52,11 @@ return {
                     additional_vim_regex_highlighting = false,
                 },
             })
+
+            -- attach ts to glsl ft
+            for _, value in ipairs({ "glsl", "vert", "tesc", "tese", "frag", "geom", "comp" }) do
+                vim.treesitter.language.register("glsl", value)
+            end
         end
     }
 }
