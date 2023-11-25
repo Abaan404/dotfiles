@@ -15,8 +15,6 @@ Utils.exec(`sass ${scss} ${css}`);
 globalThis.toggle_powermenu = () => toggle_window("powermenu", PowerMenuFactory());
 globalThis.toggle_audio = () => toggle_window("audio", MediaFactory());
 
-
-
 export default {
     closeWindowDelay: {
         "window-name": 500, // milliseconds

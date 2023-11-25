@@ -380,7 +380,7 @@ const Power = BarWidget({
         onHoverLost: widget => widget.child.children[1].reveal_child = false
     },
     children: [
-        Widget.Label(""),
+        Widget.Label({label: "⏼", style: "padding-right: 5px"}),
         Widget.Revealer({
             transition: "slide_left",
             transitionDuration: 500,

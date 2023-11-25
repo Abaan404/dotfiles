@@ -2,7 +2,7 @@
 
 configuration {
 	modes: "drun,window,calc";
-	font: "JetBrainsMono Nerd Font Extra-Bold 12";
+	font: "JetBrainsMono NF Extra-Bold 12";
 
 	show-icons: true;
 	icon-theme: "Tela-circle-black";

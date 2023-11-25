@@ -138,7 +138,7 @@
     background-color: transparent;
     orientation: horizontal;
 
-	font: "JetBrainsMono Nerd Font Extra-Bold 20";
+	font: "JetBrainsMono NF Extra-Bold 20";
     vertical-align: 0.5;
     horizontal-align: 0.5;
     border-radius: 20px;
