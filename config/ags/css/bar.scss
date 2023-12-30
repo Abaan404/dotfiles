@@ -3,7 +3,7 @@
 @use 'colors';
 
 .bar {
-    margin: 10px { bottom: 0px }
+    margin: 10px { bottom: 3px } // 3px for fixing hover weirdness (maybe hyprland has a way to remove padding from one edge only?)
     min-height: 30px;
 
     $all-modules: "launcher", "workspaces", "sysinfo", "systray", "player", "info", "media", "power";

@@ -1,26 +1,37 @@
-import { App, Utils } from "./imports.js";
+import App from "resource:///com/github/Aylur/ags/app.js"
+import { execAsync } from "resource:///com/github/Aylur/ags/utils.js"
 
-import { Bar } from "./modules/bar.js"
-import { PowerMenuFactory } from "./modules/powermenu.js";
-import { MediaFactory } from './modules/media.js';
+// cmake is better than this honestly
 
-import { toggle_window } from "./utils.js";
+// this does mean it needs to recompile every
+// refresh but its soo fast that it shouldnt
+// even be noticable
 
-// build scss
-const scss = App.configDir + "/style.scss";
-const css = App.configDir + "/style.css";
-Utils.exec(`sass ${scss} ${css}`);
+const dir = "/tmp/ags/js"
+const promises = [];
+const files = [
+    "/ts/main.ts",
+    "/ts/utils.ts",
+    "/ts/window.ts",
+    "/ts/windows/bar.ts",
+    "/ts/windows/powermenu.ts",
+    "/ts/windows/media.ts",
+];
 
-// declare global variables and functions to be called with `ags -r`
-globalThis.toggle_powermenu = () => toggle_window("powermenu", PowerMenuFactory());
-globalThis.toggle_audio = () => toggle_window("audio", MediaFactory());
+files.forEach(file => {
+    let outDir = dir;
+    if (file.startsWith("/ts/windows"))
+        outDir = `${dir}/windows`;
 
-export default {
-    closeWindowDelay: {
-        "window-name": 500, // milliseconds
-    },
-    style: ags.App.configDir + "/style.css",
-    windows: [
-        Bar,
-    ],
-};
+    promises.push(
+        execAsync(["bun", "build",
+            App.configDir + file,
+            "--outdir", outDir,
+            "--external", "*",
+        ])
+    );
+})
+
+await Promise.all(promises);
+const main = await import(`file://${dir}/main.js`);
+export default main.default;

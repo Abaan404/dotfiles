@@ -1,7 +1,15 @@
+# env variables
 .env
 
-/images/*
-!/images/playerart-default.png
-!/images/launcher.png
+# art and images
+images/*
+!images/playerart-default.png
+!images/launcher.png
 
-/data
+# cache
+data/
+
+# ags/ts stuff
+node_modules/
+types/
+package-lock.json

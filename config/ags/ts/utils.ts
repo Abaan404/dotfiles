@@ -1,6 +1,4 @@
-import { App, Widget } from "./imports.js";
-
-// common useful commands
+// some useful commands
 export const commands = {
     powermenu: "ags --toggle-window 'powermenu'",
     calendar: "ags --toggle-window 'glance'",
@@ -40,33 +38,4 @@ export const commands = {
 export function symbolic_strength({ value, array, max = 100 }) {
     const interp = Math.floor((value / max) * array.length);
     return array[Math.min(interp, array.length - 1)];
-}
-
-export function toggle_window(name, window) {
-    if (App.windows.has(name)) {
-        App.closeWindow(name);
-        App.removeWindow(name);
-    }
-    else {
-        App.addWindow(window);
-        App.openWindow(name);
-    }
-}
-
-export function create_window({className, children, box, ...other}) {
-    return Widget.Window({
-        name: className,
-        popup: true,
-        ...other,
-        child: Widget.Box({
-            className: className,
-            children: [
-                Widget.Box({
-                    className: "layout-box",
-                    children: children,
-                    ...box,
-                })
-            ]
-        }),
-    });
 }
