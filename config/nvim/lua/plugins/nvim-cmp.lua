@@ -50,9 +50,7 @@ return {
             ---@diagnostic disable-next-line: missing-fields
             cmp.setup({
                 snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body)
-                    end,
+                    expand = function(args) luasnip.lsp_expand(args.body) end,
                 },
                 mapping = cmp.mapping.preset.insert({
                     ["<C-k>"] = cmp.mapping.select_prev_item(),

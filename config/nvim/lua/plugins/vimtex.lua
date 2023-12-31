@@ -5,11 +5,11 @@ return {
             {
                 "iurimateus/luasnip-latex-snippets.nvim",
                 config = function()
-                    require("luasnip-latex-snippets").setup {
-                        use_treesitter = true
-                    }
+                    require("luasnip-latex-snippets").setup({
+                        use_treesitter = true,
+                    })
                 end,
-            }
+            },
         },
         event = "BufReadPre",
         config = function()
@@ -25,6 +25,6 @@ return {
 
             -- compilation handled by LSP (texlab)
             g.vimtex_compiler_enabled = false
-        end
+        end,
     },
 }

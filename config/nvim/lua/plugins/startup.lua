@@ -16,22 +16,18 @@ return {
                 "         ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
                 "                                                            ",
             }
-            require("alpha").setup(
-                startify.config
-            )
-        end
+            require("alpha").setup(startify.config)
+        end,
     },
     {
         "projekt0n/github-nvim-theme",
-        config = function()
-            vim.cmd("colorscheme github_dark_dimmed")
-        end
+        config = function() vim.cmd("colorscheme github_dark_dimmed") end,
     },
     {
         "folke/persistence.nvim",
         opts = {
             options = { "buffers", "curdir", "tabpages", "winsize", "globals" },
-            pre_save = function() vim.api.nvim_exec_autocmds("User", { pattern = "SessionSavePre" }) end
-        }
-    }
+            pre_save = function() vim.api.nvim_exec_autocmds("User", { pattern = "SessionSavePre" }) end,
+        },
+    },
 }

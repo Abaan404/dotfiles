@@ -6,7 +6,7 @@ return {
         dependencies = {
             {
                 "j-hui/fidget.nvim",
-                tag = "legacy"
+                tag = "legacy",
             },
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
@@ -28,7 +28,6 @@ return {
                     "html",
                     "tsserver",
                     "svelte",
-                    "denols",
 
                     -- c/cpp stuff
                     "clangd",
@@ -52,15 +51,26 @@ return {
                     "jdtls",
 
                     -- matlab
-                    "matlab_ls"
+                    "matlab_ls",
                 },
                 automatic_installation = true,
             })
 
             require("mason-tool-installer").setup({
                 ensure_installed = {
-                    "codelldb"
-                }
+                    -- DAP for c/cpp/rust
+                    "codelldb",
+
+                    -- web dev stuff
+                    "prettier",
+                    "eslint_d",
+
+                    -- lua
+                    "stylua",
+
+                    -- python
+                    "black",
+                },
             })
 
             -- Neodev setup before LSP config
@@ -99,13 +109,13 @@ return {
             -- This function gets run when an LSP connects to a particular buffer.
             local on_attach = function(client, bufnr)
                 if client.resolved_capabilities.document_highlight then
-                    vim.cmd [[
+                    vim.cmd([[
                     hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
                     hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
                     hi! LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-                    ]]
+                    ]])
                     vim.api.nvim_create_augroup("lsp_document_highlight", {
-                        clear = false
+                        clear = false,
                     })
                     vim.api.nvim_clear_autocmds({
                         buffer = bufnr,
@@ -123,15 +133,20 @@ return {
                     })
                 end
                 -- Create a command `:Format` local to the LSP buffer
-                vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
-                    vim.lsp.buf.format()
-                end, { desc = "Format current buffer with LSP" })
+                vim.api.nvim_buf_create_user_command(
+                    bufnr,
+                    "Format",
+                    function(_) vim.lsp.buf.format() end,
+                    { desc = "Format current buffer with LSP" }
+                )
 
                 -- Attach and configure vim-illuminate
                 require("illuminate").on_attach(client)
             end
 
-            vim.cmd [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false, scope="cursor"})]]
+            vim.cmd(
+                [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false, scope="cursor"})]]
+            )
 
             -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
             local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -185,7 +200,7 @@ return {
                             executable = "tectonic",
                             args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
                             onSave = true,
-                            forwardSearchAfter = true
+                            forwardSearchAfter = true,
                         },
                         forwardSearch = {
                             executable = "zathura",
@@ -193,10 +208,10 @@ return {
                                 "--synctex-forward",
                                 "%l:1:%f",
                                 "%p",
-                            }
-                        }
-                    }
-                }
+                            },
+                        },
+                    },
+                },
             })
 
             -- Octave/MATLAB
@@ -226,5 +241,36 @@ return {
                 },
             })
         end,
+    },
+    {
+        "stevearc/conform.nvim",
+        event = { "BufWritePre" },
+        cmd = { "ConformInfo" },
+        opts = {
+            formatters_by_ft = {
+                lua = { "stylua" },
+                python = { "black" },
+
+                -- eslint
+                javascript = { "eslint_d" },
+                typescript = { "eslint_d" },
+                javascriptreact = { "eslint_d" },
+                typescriptreact = { "eslint_d" },
+
+                -- prettier moment
+                css = { "pretter" },
+                scss = { "prettier" },
+                json = { "prettier" },
+                yaml = { "prettier" },
+                html = { "prettier" },
+                markdown = { "prettier" },
+            },
+
+            formatters = {
+                prettier = {
+                    prepend_args = { "--tab-width", "4" },
+                },
+            },
+        },
     },
 }

@@ -2,26 +2,26 @@ return {
     {
         "numToStr/Comment.nvim",
         keys = {
-            { "<leader>/",  mode = "n" },
-            { "<leader>/",  mode = "v" },
+            { "<leader>/", mode = "n" },
+            { "<leader>/", mode = "v" },
             { "<leader>\\", mode = "n" },
             { "<leader>\\", mode = "v" },
         },
         opts = {
             toggler = {
                 line = "<leader>/",
-                block = "<leader>\\"
+                block = "<leader>\\",
             },
             opleader = {
                 line = "<leader>/",
-                block = "<leader>\\"
-            }
-        }
+                block = "<leader>\\",
+            },
+        },
     },
     {
         "windwp/nvim-autopairs",
         event = "InsertEnter",
-        opts = {}
+        opts = {},
     },
     {
         "kylechui/nvim-surround",
@@ -31,14 +31,14 @@ return {
             require("nvim-surround").setup({
                 -- Configuration here, or leave empty to use defaults
             })
-        end
+        end,
     },
     {
-        'Wansmer/treesj',
-        keys = { '<space>m', '<space>j', '<space>s' },
-        dependencies = { 'nvim-treesitter/nvim-treesitter' },
+        "Wansmer/treesj",
+        keys = { "<space>m", "<space>j", "<space>s" },
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
         config = function()
-            require('treesj').setup({
+            require("treesj").setup({
                 use_default_keymaps = false,
                 max_join_length = 1200, -- gotta love js/ts lambdas
             })
@@ -58,6 +58,6 @@ return {
                 },
                 snippet_engine = "luasnip",
             })
-        end
-    }
+        end,
+    },
 }

@@ -1,14 +1,12 @@
 -- fix nvim not recognising common glsl filetypes
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     pattern = { "*.glsl", "*.vert", "*.tesc", "*.tese", "*.frag", "*.geom", "*.comp" },
-    callback = function()
-        vim.bo.filetype = "glsl"
-    end
+    callback = function() vim.bo.filetype = "glsl" end,
 })
 
 -- Open a file called question.pdf in the cwd
 vim.api.nvim_create_user_command("OpenQuestion", function()
-    local Job = require "plenary.job"
+    local Job = require("plenary.job")
 
     Job:new({
         command = "zathura",

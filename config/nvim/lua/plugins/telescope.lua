@@ -7,9 +7,9 @@ return {
         opts = {
             defaults = {
                 layout_config = {
-                    scroll_speed = 2
-                }
-            }
+                    scroll_speed = 2,
+                },
+            },
         },
-    }
+    },
 }

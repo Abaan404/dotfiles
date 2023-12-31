@@ -3,14 +3,12 @@ return {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
         event = "BufReadPre",
-        opts = {}
+        opts = {},
     },
     {
         "NvChad/nvim-colorizer.lua",
         event = "BufReadPre",
-        config = function()
-            require("colorizer").setup({})
-        end
+        config = function() require("colorizer").setup({}) end,
     },
     {
         "koenverburg/peepsight.nvim",
@@ -35,30 +33,30 @@ return {
             -- LaTeX
             "math_environment",
             "generic_environment",
-            "section"
-        }
+            "section",
+        },
     },
     {
         "0x00-ketsu/autosave.nvim",
-        event = "InsertEnter"
+        event = "InsertEnter",
     },
     {
         "mbbill/undotree",
-        event = "VeryLazy"
+        event = "VeryLazy",
     },
     {
         "echasnovski/mini.nvim",
         event = "VeryLazy",
         version = "*",
         config = function()
-            require('mini.align').setup()
-            require('mini.animate').setup({
+            require("mini.align").setup()
+            require("mini.animate").setup({
                 cursor = { timing = function(_, n) return 100 / n end },
                 scroll = { enable = false },
                 resize = { enable = false },
                 open = { enable = false },
-                close = { enable = false }
+                close = { enable = false },
             })
-        end
-    }
+        end,
+    },
 }

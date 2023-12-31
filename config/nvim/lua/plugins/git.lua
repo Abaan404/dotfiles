@@ -11,9 +11,9 @@ return {
             require("gitsigns").setup({
                 current_line_blame_opts = {
                     -- disappears on insert mode anyways
-                    delay = 0
-                }
+                    delay = 0,
+                },
             })
-        end
-    }
+        end,
+    },
 }

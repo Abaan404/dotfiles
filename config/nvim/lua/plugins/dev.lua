@@ -4,10 +4,8 @@ return {
         dependencies = {
             {
                 "rcarriga/nvim-dap-ui",
-                config = function()
-                    require("dapui").setup()
-                end
-            }
+                config = function() require("dapui").setup() end,
+            },
         },
         event = "BufReadPre",
         ft = { "c", "cpp" },
@@ -22,7 +20,7 @@ return {
                 executable = {
                     command = codelldb:get_install_path() .. "/codelldb",
                     args = { "--port", "${port}" },
-                }
+                },
             }
 
             dap.configurations.cpp = {
@@ -42,7 +40,7 @@ return {
             -- If you want to use this for Rust and C, add something like this:
             dap.configurations.c = dap.configurations.cpp
             dap.configurations.rust = dap.configurations.cpp
-        end
+        end,
     },
     {
         "Civitasv/cmake-tools.nvim",
@@ -51,6 +49,6 @@ return {
             require("cmake-tools").setup({
                 cmake_build_directory = "build/${variant:buildType}", -- this is used to specify generate directory for cmake, allows macro expansion
             })
-        end
+        end,
     },
 }

@@ -3,30 +3,30 @@ return {
         "romgrk/barbar.nvim",
         event = "BufReadPre",
         dependencies = {
-            "lewis6991/gitsigns.nvim",     -- OPTIONAL: for git status
+            "lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
             "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
         },
-        version = "^1.0.0",                -- optional: only update when a new 1.x version is released
+        version = "^1.0.0", -- optional: only update when a new 1.x version is released
         opts = {
             highlight_visible = false,
             sidebar_filetypes = {
-                NvimTree = true
+                NvimTree = true,
             },
             icons = {
                 separator = {
-                    left = "│"
+                    left = "│",
                 },
                 pinned = {
                     button = "",
-                    filename = true
+                    filename = true,
                 },
                 inactive = {
                     separator = {
-                        left = "│"
-                    }
-                }
-            }
-        }
+                        left = "│",
+                    },
+                },
+            },
+        },
     },
     {
         "nvim-lualine/lualine.nvim",
@@ -39,6 +39,6 @@ return {
                     section_separators = "",
                 },
             })
-        end
-    }
+        end,
+    },
 }
