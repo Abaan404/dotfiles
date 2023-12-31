@@ -33,6 +33,12 @@ class TemplateWriter:
 
     def write(self, template_path: Path, config_path: Path):
         for conf in template_path.iterdir():
+            # some js packages uses "!!" somewhere for some reason,
+            # instead of changing delimiter just ignore the path
+            # entirely
+            if conf.name == "node_modules":
+                continue
+
             if conf.is_dir() or not conf.exists():
                 config_path.joinpath(conf.name).mkdir(exist_ok=True)
                 self.write(template_path.joinpath(conf.name), config_path.joinpath(conf.name))

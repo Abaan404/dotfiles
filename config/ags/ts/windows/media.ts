@@ -1,5 +1,5 @@
 import Gtk from "gi://Gtk?version=3.0";
-import { Widget } from "resource:///com/github/Aylur/ags/widget.js";
+import Widget from "resource:///com/github/Aylur/ags/widget.js";
 
 // services
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
@@ -31,7 +31,7 @@ const MediaSlider = ({ label, mute, other_devices, slider }: MediaSliderProps) =
 
     return Widget.Box({
         class_name: "volume-box",
-        vertical: true,
+        orientation: Gtk.Orientation.VERTICAL,
         children: [
             Widget.Box({
                 spacing: 10,
@@ -70,45 +70,52 @@ export default () => new_window({
     class_name: "media",
     window: {
         anchor: ["top", "right"],
-        // popup: false,
     },
     box: {
         spacing: 10,
-        vertical: true,
+        orientation: Gtk.Orientation.VERTICAL,
     },
     children: [
         MediaSlider({
             label: {
                 setup: widget => {
-                    widget.hook(Audio, widget => {
-                        widget.label =
-                            // FIXME headphone-output does not get detected
-                            (Audio.speaker?.stream.port === "headphone-output" ? "  " : "  ") +
-                            (Audio.speaker?.description || "Invalid Device");
+                    widget.bind("label", Audio, "speaker", speaker => {
+                        let label = speaker?.description;
+
+                        switch (speaker?.stream.port) {
+                            case "headphone-output":
+                            case "analog-output-headphones":
+                                label = "  " + label;
+                                break;
+
+                            case undefined:
+                                label = "  Invalid Device";
+                                break;
+
+                            default:
+                                label = "  " + label;
+                                break;
+                        }
 
                         // truncate string if too long
-                        if (widget.label.length >= 35)
-                            widget.label = `${widget.label.slice(0, 35)}...`;
-                    }, "speaker-changed");
+                        if (label.length >= 35)
+                            label = `${label.slice(0, 35)}...`;
+
+                        return label;
+                    });
                 },
             },
             mute: {
                 on_primary_click: () => execAsync(commands.sink.mute),
                 setup: widget => {
-                    widget.hook(Audio, widget => {
-                        Audio.speaker?.stream.isMuted
-                            ? widget.label = "󰖁 "
-                            : widget.label = "󰕾 ";
-                    }, "speaker-changed");
+                    widget.hook(Audio, widget => widget.label = Audio.speaker?.stream.isMuted ? "󰖁 " : "󰕾 ",
+                        "speaker-changed");
                 },
             },
             slider: {
                 setup: widget => {
-                    widget.hook(Audio, widget => {
-                        if (!Audio.speaker)
-                            return;
-                        widget.value = Audio.speaker.volume * 100;
-                    }, "speaker-changed");
+                    widget.hook(Audio, widget => widget.value = (Audio.speaker?.volume || 0) * 100,
+                        "speaker-changed");
                 },
                 on_change: ({ value }) => {
                     if (!Audio.speaker)
@@ -118,64 +125,68 @@ export default () => new_window({
                 },
             },
             other_devices: Widget.Box({
+                orientation: Gtk.Orientation.VERTICAL,
+                spacing: 10,
+                hpack: "start",
                 setup: widget => {
                     widget.hook(Audio, widget => {
                         widget.children = Audio.speakers
-                            .slice(1)
+                            .filter(speaker => speaker.name !== Audio.speaker?.name)
                             .map(speaker => {
-                                // FIXME headphone-output does not get detected
-                                let label = (speaker.stream.port === "headphone-output" ? "  " : "  ")
-                                    + speaker.description;
+                                let label = speaker.description;
+                                switch (speaker.stream.port) {
+                                    case "headphone-output":
+                                    case "analog-output-headphones":
+                                        label = "  " + label;
+                                        break;
+
+                                    default:
+                                        label = "  " + label;
+                                        break;
+                                }
 
                                 // truncate string if too long
                                 if (label.length >= 40)
-                                    label = `${label.slice(0, 35)}...`;
+                                    label = `${label.slice(0, 40)}...`;
 
-                                const button = Widget.Button({
+                                return Widget.Button({
                                     class_name: "name",
-                                    on_primary_click: () => execAsync(`pactl set-default-source ${speaker.name}`),
+                                    on_primary_click: () => Audio.speaker = speaker,
                                     child: Widget.Label({
                                         hpack: "start",
                                         hexpand: true,
                                         label: label,
                                     }),
                                 });
-
-                                return button;
                             });
-                    });
+                    }, "speaker-changed");
                 },
             }),
         }),
         MediaSlider({
             label: {
                 setup: widget => {
-                    widget.hook(Audio, widget => {
-                        widget.label = "  " + (Audio.microphone?.description || "Invalid Device");
+                    widget.bind("label", Audio, "microphone", microphone => {
+                        let label = "  " + (microphone?.description || "Invalid Device");
 
                         // truncate string if too long
-                        if (widget.label.length >= 35)
-                            widget.label = `${widget.label.slice(0, 35)}...`;
+                        if (label.length >= 35)
+                            label = `${label.slice(0, 35)}...`;
+                        return label;
                     });
                 },
             },
             mute: {
                 on_primary_click: () => execAsync(commands.source.mute),
-                child: Widget.Label({
-                    connections: [[Audio, widget => {
-                        Audio.microphone?.stream.isMuted
-                            ? widget.label = " "
-                            : widget.label = " ";
-                    }]],
-                }),
+                child: Widget.Label().hook(Audio, widget => {
+                    widget.label = Audio.microphone?.stream.isMuted ? " " : " ";
+                }, "microphone-changed"),
             },
             slider: {
                 setup: widget => {
                     widget.hook(Audio, widget => {
-                        if (!Audio.microphone)
-                            return;
-                        widget.value = Audio.microphone.volume * 100;
-                    });
+                        widget.value = (Audio.microphone?.volume || 0) * 100;
+                    }, "microphone-changed");
                 },
                 on_change: ({ value }) => {
                     if (!Audio.microphone)
@@ -184,29 +195,32 @@ export default () => new_window({
                 },
             },
             other_devices: Widget.Box({
-                connections: [[Audio, widget =>
-                    widget.children = Audio.microphones
-                        .slice(1)
-                        .map(microphone => {
-                            let label = "  " + microphone.description;
+                orientation: Gtk.Orientation.VERTICAL,
+                spacing: 10,
+                hpack: "start",
+                setup: widget => {
+                    widget.hook(Audio, widget => {
+                        widget.children = Audio.microphones
+                            .filter(microphone => microphone.name !== Audio.microphone?.name)
+                            .map(microphone => {
+                                let label = "  " + microphone.description;
 
-                            // truncate string if too long
-                            if (label.length >= 40)
-                                label = label.slice(0, 35) + "...";
+                                // truncate string if too long
+                                if (label.length >= 40)
+                                    label = label.slice(0, 40) + "...";
 
-                            const button = Widget.Button({
-                                class_name: "name",
-                                on_primary_click: () => execAsync(`pactl set-default-source ${microphone.name}`),
-                                child: Widget.Label({
-                                    hpack: "start",
-                                    hexpand: true,
-                                    label: label,
-                                }),
+                                return Widget.Button({
+                                    class_name: "name",
+                                    on_primary_click: () => Audio.microphone = microphone,
+                                    child: Widget.Label({
+                                        hpack: "start",
+                                        hexpand: true,
+                                        label: label,
+                                    }),
+                                });
                             });
-
-                            return button;
-                        }),
-                ]],
+                    }, "microphone-changed");
+                },
             }),
         }),
     ],

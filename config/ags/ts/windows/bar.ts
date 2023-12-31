@@ -238,7 +238,8 @@ const BarMedia = BarWidget({
                                 widget.label = "󰖁 ";
                             else if (Audio.speaker.stream.isMuted)
                                 widget.label = "󰝟 ";
-                            else if (Audio.speaker.stream.port === "headphone-output")
+                            else if (Audio.speaker.stream.port === "headphone-output"
+                                  || Audio.speaker.stream.port === "analog-output-headphones")
                                 widget.label = " ";
                             else
                                 widget.label = symbolic_strength({
