@@ -1,5 +1,6 @@
 // core
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
+import App from "resource:///com/github/Aylur/ags/app.js";
 
 // services
 import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
@@ -90,8 +91,35 @@ const BarWorkspaces = BarWidget({
     }
 })
 
+// todo impl this
+const BarSysTray = Widget.Revealer({
+    transition: "slide_left",
+    transitionDuration: 500,
+    reveal_child: true,
+    child: BarWidget({
+        class_name: "systray",
+        box: {
+            setup: widget => {
+                widget.bind("children", SystemTray, "items", items => items.map(item => {
+                    return Widget.Button({
+                        on_primary_click: () => item.openMenu(null),
+                        child: Widget.Icon({
+                            icon: <string><unknown>item.bind('icon'),
+                            size: 18,
+                        }),
+                    })
+                }))
+            }
+        }
+    })
+})
+
 const BarSysInfo = BarWidget({
     class_name: "sysinfo",
+    eventbox: {
+        on_primary_click: () => BarSysTray.reveal_child = !BarSysTray.reveal_child,
+        on_middle_click: () => App.Inspector(),
+    },
     box: {
         spacing: 12,
         children: [
@@ -112,21 +140,6 @@ const BarSysInfo = BarWidget({
         ]
     }
 })
-
-// todo impl this
-// const BarSysTray = BarWidget({
-//     class_name: "systray",
-//     connections: [[SystemTray, widget => {
-//         SystemTray.items.forEach(item => {
-//             widget.children.push(
-//                 Widget.Button({
-//                     label: item.title,
-//                     onPrimaryClick: btn => item.openMenu(null),
-//                 })
-//             )
-//         })
-//     }]]
-// })
 
 const BarPlayer = BarWidget({
     class_name: "player",
@@ -431,7 +444,7 @@ export default () => Widget.Window({
                 BarLauncher,
                 BarWorkspaces,
                 BarSysInfo,
-                // SysTray
+                BarSysTray
             ],
         }),
         center_widget: Widget.Box({

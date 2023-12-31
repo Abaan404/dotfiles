@@ -12,9 +12,6 @@ exec(`sass ${scss} ${css}`);
 globalThis.toggle = (name: string) => toggle_window(name);
 
 export default {
-    closeWindowDelay: {
-        "window-name": 500, // milliseconds
-    },
     style: App.configDir + "/style.css",
     windows: [
         spawn_window("bar"),

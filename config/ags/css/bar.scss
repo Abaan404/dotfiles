@@ -44,30 +44,12 @@
         }
     }
 
-    .tray {
+    .systray {
         .widget {
-            padding-left: 8px;
-            padding-right: 8px;
+            padding: 2px { left: 8px; right: 8px; };
         }
-
-        menu {
-            background-color: colors.$primary;
-            padding: 10px;
-            border-radius: 10px;
-
-            menuitem {
-                @include animations.fade("&:hover", colors.$primary, colors.$accent);
-                border-radius: 10px;
-                label {
-                    padding: 2px 8px;
-                }
-            }
-        }
-
-        menubar {
-            menuitem {
-                padding: 4px;
-            }
+        button {
+            padding: 0px { left: 3px; right: 3px; };
         }
     }
 
@@ -92,3 +74,25 @@
         }
     }
 }
+
+// i have no idea which scope TrayItem stays under
+menu {
+    background-color: colors.$primary;
+    padding: 10px;
+    border-radius: 10px;
+
+    menuitem {
+        @include animations.fade("&:hover", colors.$primary, colors.$accent);
+        border-radius: 10px;
+        label {
+            padding: 2px 8px;
+        }
+    }
+}
+
+menubar {
+    menuitem {
+        padding: 4px;
+    }
+}
+
