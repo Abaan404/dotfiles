@@ -1,4 +1,4 @@
-import Gtk from 'gi://Gtk?version=3.0';
+import Gtk from "gi://Gtk?version=3.0";
 import { Widget } from "resource:///com/github/Aylur/ags/widget.js";
 
 // services
@@ -7,12 +7,12 @@ import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 // utils
 import { execAsync } from "resource:///com/github/Aylur/ags/utils.js";
 import { commands } from "../utils.js";
-import { new_window } from '../window.js';
+import { new_window } from "../window.js";
 
 // types
-import { SliderProps } from 'types/widgets/slider.js';
-import { LabelProps } from 'types/widgets/label.js';
-import { ButtonProps } from 'types/widgets/button.js';
+import { SliderProps } from "types/widgets/slider.js";
+import { LabelProps } from "types/widgets/label.js";
+import { ButtonProps } from "types/widgets/button.js";
 
 interface MediaSliderProps {
     label: LabelProps;
@@ -27,7 +27,7 @@ const MediaSlider = ({ label, mute, other_devices, slider }: MediaSliderProps) =
         transitionDuration: 500,
         css: "padding-top: 10px;",
         child: other_devices,
-    })
+    });
 
     return Widget.Box({
         class_name: "volume-box",
@@ -46,26 +46,25 @@ const MediaSlider = ({ label, mute, other_devices, slider }: MediaSliderProps) =
                     }),
                     Widget.Button({
                         class_name: "mute",
-                        ...mute
+                        ...mute,
                     }),
                     Widget.Button({
                         class_name: "list",
                         on_primary_click: () => device_revealer.reveal_child = !(device_revealer.reveal_child),
-                        child: Widget.Label(" ")
-                    })
-                ]
+                        child: Widget.Label(" "),
+                    }),
+                ],
             }),
             device_revealer,
             Widget.Slider({
                 drawValue: false,
                 min: 0,
                 max: 100,
-                ...slider
-            })
-        ]
-    })
-
-}
+                ...slider,
+            }),
+        ],
+    });
+};
 
 export default () => new_window({
     class_name: "media",
@@ -90,8 +89,8 @@ export default () => new_window({
                         // truncate string if too long
                         if (widget.label.length >= 35)
                             widget.label = `${widget.label.slice(0, 35)}...`;
-                    }, "speaker-changed")
-                }
+                    }, "speaker-changed");
+                },
             },
             mute: {
                 on_primary_click: () => execAsync(commands.sink.mute),
@@ -109,7 +108,7 @@ export default () => new_window({
                         if (!Audio.speaker)
                             return;
                         widget.value = Audio.speaker.volume * 100;
-                    }, "speaker-changed")
+                    }, "speaker-changed");
                 },
                 on_change: ({ value }) => {
                     if (!Audio.speaker)
@@ -125,7 +124,8 @@ export default () => new_window({
                             .slice(1)
                             .map(speaker => {
                                 // FIXME headphone-output does not get detected
-                                let label = (speaker.stream.port === "headphone-output" ? "  " : "  ") + speaker.description;
+                                let label = (speaker.stream.port === "headphone-output" ? "  " : "  ")
+                                    + speaker.description;
 
                                 // truncate string if too long
                                 if (label.length >= 40)
@@ -137,15 +137,15 @@ export default () => new_window({
                                     child: Widget.Label({
                                         hpack: "start",
                                         hexpand: true,
-                                        label: label
-                                    })
-                                })
+                                        label: label,
+                                    }),
+                                });
 
                                 return button;
-                            })
-                    })
-                }
-            })
+                            });
+                    });
+                },
+            }),
         }),
         MediaSlider({
             label: {
@@ -156,8 +156,8 @@ export default () => new_window({
                         // truncate string if too long
                         if (widget.label.length >= 35)
                             widget.label = `${widget.label.slice(0, 35)}...`;
-                    })
-                }
+                    });
+                },
             },
             mute: {
                 on_primary_click: () => execAsync(commands.source.mute),
@@ -165,9 +165,9 @@ export default () => new_window({
                     connections: [[Audio, widget => {
                         Audio.microphone?.stream.isMuted
                             ? widget.label = " "
-                            : widget.label = " "
-                    }]]
-                })
+                            : widget.label = " ";
+                    }]],
+                }),
             },
             slider: {
                 setup: widget => {
@@ -175,7 +175,7 @@ export default () => new_window({
                         if (!Audio.microphone)
                             return;
                         widget.value = Audio.microphone.volume * 100;
-                    })
+                    });
                 },
                 on_change: ({ value }) => {
                     if (!Audio.microphone)
@@ -192,7 +192,7 @@ export default () => new_window({
 
                             // truncate string if too long
                             if (label.length >= 40)
-                                label = label.slice(0, 35) + "..."
+                                label = label.slice(0, 35) + "...";
 
                             const button = Widget.Button({
                                 class_name: "name",
@@ -200,14 +200,14 @@ export default () => new_window({
                                 child: Widget.Label({
                                     hpack: "start",
                                     hexpand: true,
-                                    label: label
-                                })
-                            })
+                                    label: label,
+                                }),
+                            });
 
                             return button;
-                        })
-                ]]
-            })
-        })
-    ]
-})
+                        }),
+                ]],
+            }),
+        }),
+    ],
+});

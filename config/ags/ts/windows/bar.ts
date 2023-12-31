@@ -34,7 +34,7 @@ function BarWidget({ class_name, eventbox, box }: BarWidgetProps) {
             class_name: "widget",
             ...box,
         }),
-    })
+    });
 }
 
 const launcher_revealer = Widget.Revealer({
@@ -42,12 +42,14 @@ const launcher_revealer = Widget.Revealer({
     transitionDuration: 500,
     child: Widget.Label("Launcher"),
     css: "padding-left: 10px;", // add padding when shown
-})
+});
 
 const BarLauncher = BarWidget({
     class_name: "launcher",
     eventbox: {
-        on_primary_click: () => execAsync(["pkill", "rofi"]).catch(() => execAsync(["rofi", "-show", "drun"])).catch(() => undefined),
+        on_primary_click: () => execAsync(["pkill", "rofi"])
+            .catch(() => execAsync(["rofi", "-show", "drun"]))
+            .catch(() => undefined),
         on_hover: () => launcher_revealer.reveal_child = true,
         on_hover_lost: () => launcher_revealer.reveal_child = false,
     },
@@ -58,8 +60,8 @@ const BarLauncher = BarWidget({
                 size: 16,
             }),
             launcher_revealer,
-        ]
-    }
+        ],
+    },
 });
 
 const BarWorkspaces = BarWidget({
@@ -78,24 +80,24 @@ const BarWorkspaces = BarWidget({
 
                 Hyprland.workspaces
                     .sort((a, b) => a.id - b.id)
-                    .filter(ws => ws.id > workspaces[workspaces.length - 1].id) // named workspaces have negative indices
-                    .forEach(ws => workspaces.push({ id: ws.id, glyph: "" }))
+                    // named workspaces have negative indices
+                    .filter(ws => ws.id > workspaces[workspaces.length - 1].id)
+                    .forEach(ws => workspaces.push({ id: ws.id, glyph: "" }));
 
                 widget.children = workspaces.map(ws => Widget.Button({
                     class_name: Hyprland.active.workspace.id === ws.id ? "active" : "inactive",
                     child: Widget.Label({ label: `${ws.glyph}` }),
                     on_primary_click: () => execAsync(`hyprctl dispatch workspace ${ws.id}`),
                 }));
-            })
-        }
-    }
-})
+            });
+        },
+    },
+});
 
 // todo impl this
 const BarSysTray = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
-    reveal_child: true,
     child: BarWidget({
         class_name: "systray",
         box: {
@@ -104,15 +106,15 @@ const BarSysTray = Widget.Revealer({
                     return Widget.Button({
                         on_primary_click: () => item.openMenu(null),
                         child: Widget.Icon({
-                            icon: <string><unknown>item.bind('icon'),
+                            icon: <string><unknown>item.bind("icon"),
                             size: 18,
                         }),
-                    })
-                }))
-            }
-        }
-    })
-})
+                    });
+                }));
+            },
+        },
+    }),
+});
 
 const BarSysInfo = BarWidget({
     class_name: "sysinfo",
@@ -127,19 +129,19 @@ const BarSysInfo = BarWidget({
                 label: " 0.0G",
                 setup: widget => interval(2000, () => {
                     execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"])
-                        .then(out => widget.label = ` ${out}`)
+                        .then(out => widget.label = ` ${out}`);
                 }),
             }),
             Widget.Label({
                 label: " 0.0%",
                 setup: widget => interval(2000, () => {
                     execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"])
-                        .then(out => widget.label = ` ${out}%`)
+                        .then(out => widget.label = ` ${out}%`);
                 }),
             }),
-        ]
-    }
-})
+        ],
+    },
+});
 
 const BarPlayer = BarWidget({
     class_name: "player",
@@ -179,10 +181,10 @@ const BarPlayer = BarWidget({
                         break;
                     case "spotify":
                         player_glyph = "";
-                        break
+                        break;
                     case "discord":
                         player_glyph = "";
-                        break
+                        break;
                     default:
                         player_glyph = "";
                         break;
@@ -192,10 +194,10 @@ const BarPlayer = BarWidget({
                     Widget.Label(`${player_glyph}`),
                     Widget.Label(`${player_string}`),
                 ];
-            })
-        }
-    }
-})
+            });
+        },
+    },
+});
 
 const BarMedia = BarWidget({
     class_name: "media",
@@ -204,8 +206,8 @@ const BarMedia = BarWidget({
             widget.hook(Bluetooth, widget => {
                 let connected = false;
                 Bluetooth.devices.forEach(
-                    element => connected ||= element.connected
-                )
+                    element => connected ||= element.connected,
+                );
 
                 connected
                     ? widget.get_style_context().add_class("bluetooth")
@@ -242,7 +244,7 @@ const BarMedia = BarWidget({
                                 widget.label = symbolic_strength({
                                     value: Audio.speaker.volume,
                                     max: 1,
-                                    array: ["󰖀 ", "󰕾 "]
+                                    array: ["󰖀 ", "󰕾 "],
                                 });
                         }, "speaker-changed"),
 
@@ -273,17 +275,17 @@ const BarMedia = BarWidget({
 
                         Widget.Label().hook(Audio, widget => {
                             if (!Audio.microphone)
-                                return
+                                return;
 
                             widget.label = `${Math.floor(Audio.microphone.volume * 100)}%`;
-                            widget.visible = !(Audio.microphone.stream.isMuted || Audio.microphone.volume === 0)
-                        }, "microphone-changed")
+                            widget.visible = !(Audio.microphone.stream.isMuted || Audio.microphone.volume === 0);
+                        }, "microphone-changed"),
                     ],
                 }),
             }),
         ],
     },
-})
+});
 
 const cock_revealer = Widget.Revealer({
     transition: "slide_left",
@@ -295,12 +297,12 @@ const cock_revealer = Widget.Revealer({
             const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][datetime.getDay()];
             const month = [
                 "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
+                "July", "August", "September", "October", "November", "December",
             ][datetime.getMonth()];
             const year = datetime.getFullYear();
             const date = String(datetime.getDate()).padStart(2, "0");
             widget.label = `${day}, ${date} ${month} ${year}`;
-        })
+        }),
     }),
 });
 
@@ -312,7 +314,9 @@ const BarCockInfo = Widget.EventBox({
         children: [
             Widget.Label({
                 class_name: "glyph",
-                setup: widget => interval(1000, () => widget.label = new Date().toLocaleTimeString("en-gb", { hour: "2-digit", minute: "2-digit" })),
+                setup: widget => interval(1000, () => {
+                    widget.label = new Date().toLocaleTimeString("en-gb", { hour: "2-digit", minute: "2-digit" });
+                }),
             }),
             cock_revealer,
         ],
@@ -324,7 +328,7 @@ const battery_revealer = Widget.Revealer({
     transitionDuration: 500,
     css: "padding-left: 5px;", // add padding when shown
     child: Widget.Label().hook(Battery, widget => widget.label = `${Battery.percent.toString()}%`),
-})
+});
 
 const BarBatteryInfo = Widget.EventBox({
     class_name: "battery",
@@ -339,26 +343,26 @@ const BarBatteryInfo = Widget.EventBox({
                 setup: widget => {
                     widget.hook(Battery, widget => {
                         if (Battery.percent < 0) // -1 is an odd default choice but ok
-                            return
+                            return;
 
                         widget.label = symbolic_strength({
                             value: Battery.percent,
-                            array: [" ", " ", " ", " ", " "]
-                        })
+                            array: [" ", " ", " ", " ", " "],
+                        });
                     });
                 },
             }),
             battery_revealer,
         ],
     }),
-})
+});
 
 const network_revealer = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     css: "padding-left: 5px;", // add padding when shown
     child: Widget.Label().hook(Network, widget => widget.label = Network.wifi?.ssid || "Offline"),
-})
+});
 
 const BarNetworkInfo = Widget.EventBox({
     class_name: "network",
@@ -380,22 +384,22 @@ const BarNetworkInfo = Widget.EventBox({
                 else if (Network.wifi.internet === "connected")
                     widget.label = symbolic_strength({
                         value: Network.wifi.strength,
-                        array: ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 "]
+                        array: ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 "],
                     });
 
                 else if (Network.wifi.internet === "connecting")
                     widget.label = symbolic_strength({
                         value: Network.wifi.strength,
-                        array: ["󰤫 ", "󰤠 ", "󰤣 ", "󰤦 "]
+                        array: ["󰤫 ", "󰤠 ", "󰤣 ", "󰤦 "],
                     });
 
                 else
                     widget.label = "󰤭 ";
             }),
             network_revealer,
-        ]
-    })
-})
+        ],
+    }),
+});
 
 const BarInfo = BarWidget({
     class_name: "info",
@@ -407,28 +411,28 @@ const BarInfo = BarWidget({
         children: [
             BarBatteryInfo,
             BarNetworkInfo,
-            BarCockInfo
-        ]
-    }
-})
+            BarCockInfo,
+        ],
+    },
+});
 
 const power_revealer = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     child: Widget.Label("exit"),
     css: "padding-left: 10px;", // add padding when shown
-})
+});
 
 const BarPower = BarWidget({
     class_name: "power",
     eventbox: {
         on_primary_click: () => toggle_window("powermenu"),
         on_hover: () => power_revealer.reveal_child = true,
-        on_hover_lost: () => power_revealer.reveal_child = false
+        on_hover_lost: () => power_revealer.reveal_child = false,
     },
     box: {
-        children: [Widget.Label({ label: "⏼", css: "padding-right: 5px" })]
-    }
+        children: [Widget.Label({ label: "⏼", css: "padding-right: 5px" })],
+    },
 });
 
 export default () => Widget.Window({
@@ -444,15 +448,15 @@ export default () => Widget.Window({
                 BarLauncher,
                 BarWorkspaces,
                 BarSysInfo,
-                BarSysTray
+                BarSysTray,
             ],
         }),
         center_widget: Widget.Box({
             spacing: 10,
             hpack: "center",
             children: [
-                BarPlayer
-            ]
+                BarPlayer,
+            ],
         }),
         end_widget: Widget.Box({
             spacing: 10,
@@ -460,8 +464,8 @@ export default () => Widget.Window({
             children: [
                 BarMedia,
                 BarInfo,
-                BarPower
-            ]
+                BarPower,
+            ],
         }),
     }),
 });

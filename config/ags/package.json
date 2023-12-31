@@ -1,18 +1,22 @@
 {
-    "name": "ags-config",
+    "name": "dotfiles",
     "version": "1.0.0",
-    "description": "AGS starter configuration",
+    "description": "abaan404's dotfiles",
     "main": "config.js",
-    "author": "Aylur",
+    "author": "abaan404",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Aylur/ags.git"
+        "url": "git+https://github.com/abaan404/dotfiles.git"
     },
     "devDependencies": {
         "@girs/dbusmenugtk3-0.4": "^0.4.0-3.2.6",
         "@girs/gobject-2.0": "^2.78.0-3.2.6",
         "@girs/gtk-3.0": "^3.24.38-3.2.6",
         "@girs/gvc-1.0": "^1.0.0-3.2.6",
-        "@girs/nm-1.0": "^1.45.1-3.2.6"
+        "@girs/nm-1.0": "^1.45.1-3.2.6",
+        "@typescript-eslint/eslint-plugin": "^6.16.0",
+        "@typescript-eslint/parser": "^6.16.0",
+        "eslint": "^8.56.0",
+        "minimatch": "^3.0.4"
     }
 }

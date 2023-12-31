@@ -6,9 +6,9 @@ import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import Gtk from "gi://Gtk";
 
 // widgets
-import Bar from "./windows/bar.js"
-import Powermenu from "./windows/powermenu.js"
-import Media from "./windows/media.js"
+import Bar from "./windows/bar.js";
+import Powermenu from "./windows/powermenu.js";
+import Media from "./windows/media.js";
 
 // types
 import AgsWindow from "resource:///com/github/Aylur/ags/widgets/window.js";
@@ -37,15 +37,13 @@ export function spawn_window(name: string): AgsWindow | undefined {
 
 export function toggle_window(name: string) {
     const window_factory = registry.get(name);
-    if (!window_factory) {
-        return
-    }
+    if (!window_factory)
+        return;
 
-    if (App.windows.has(name)) {
+    if (App.windows.has(name))
         App.removeWindow(name);
-    } else {
-        App.addWindow(window_factory())
-    }
+    else
+        App.addWindow(window_factory());
 }
 
 interface WindowCreateProps {
@@ -67,8 +65,8 @@ export function new_window({ class_name, children, box, window }: WindowCreatePr
                     class_name: "layout-box",
                     children: children,
                     ...box,
-                })
-            ]
+                }),
+            ],
         }),
     });
 }
