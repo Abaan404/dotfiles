@@ -11,24 +11,6 @@ export const commands = {
 
     weather: "xdg-open https://openweathermap.com",
 
-    player: {
-        next: "playerctl next",
-        previous: "playerctl previous",
-        toggle: "playerctl play-pause",
-    },
-
-    sink: {
-        mute: "pamixer -t",
-        increase: "pamixer -i 5",
-        decrease: "pamixer -d 5",
-    },
-
-    source: {
-        mute: "pamixer --default-source -t",
-        increase: "pamixer --default-source -i 5",
-        decrease: "pamixer --default-source -d 5",
-    },
-
     brightness: {
         increase: "brightnessctl set 10%+",
         decrease: "brightnessctl set 10%-",

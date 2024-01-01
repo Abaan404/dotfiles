@@ -106,9 +106,13 @@ export default () => new_window({
                 },
             },
             mute: {
-                on_primary_click: () => execAsync(commands.sink.mute),
+                on_primary_click: () => {
+                    const speaker = Audio.speaker;
+                    if (speaker)
+                        speaker.is_muted = !speaker.is_muted;
+                },
                 setup: widget => {
-                    widget.hook(Audio, widget => widget.label = Audio.speaker?.stream.isMuted ? "󰖁 " : "󰕾 ",
+                    widget.hook(Audio, widget => widget.label = Audio.speaker?.is_muted ? "󰖁 " : "󰕾 ",
                         "speaker-changed");
                 },
             },
@@ -177,9 +181,13 @@ export default () => new_window({
                 },
             },
             mute: {
-                on_primary_click: () => execAsync(commands.source.mute),
+                on_primary_click: () => {
+                    const microphone = Audio.microphone;
+                    if (microphone)
+                        microphone.is_muted = !microphone.is_muted;
+                },
                 child: Widget.Label().hook(Audio, widget => {
-                    widget.label = Audio.microphone?.stream.isMuted ? " " : " ";
+                    widget.label = Audio.microphone?.is_muted ? " " : " ";
                 }, "microphone-changed"),
             },
             slider: {

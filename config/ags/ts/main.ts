@@ -13,6 +13,7 @@ globalThis.toggle = (name: string) => toggle_window(name);
 
 export default {
     style: App.configDir + "/style.css",
+    maxStreamVolume: 1.0,
     windows: [
         spawn_window("bar"),
     ],

@@ -148,8 +148,11 @@ const BarPlayer = BarWidget({
     class_name: "player",
     eventbox: {
         on_primary_click: () => toggle_window("player"),
-        on_secondary_click: () => execAsync(commands.player.next),
-        on_middle_click: () => execAsync(commands.player.toggle),
+        on_secondary_click: () => {
+            if (Mpris.players[player_selected].can_go_next)
+                Mpris.players[player_selected].next();
+        },
+        on_middle_click: () => Mpris.players[player_selected].playPause(),
     },
     box: {
         spacing: 20,
@@ -196,7 +199,7 @@ const BarMedia = BarWidget({
             });
 
             widget.hook(Audio, widget => {
-                Audio.speaker?.stream.isMuted
+                Audio.speaker?.is_muted
                     ? widget.get_style_context().add_class("muted")
                     : widget.get_style_context().remove_class("muted");
             }, "speaker-changed");
@@ -207,9 +210,21 @@ const BarMedia = BarWidget({
         spacing: 10,
         children: [
             Widget.EventBox({
-                on_scroll_up: () => execAsync(commands.sink.increase),
-                on_scroll_down: () => execAsync(commands.sink.decrease),
-                on_middle_click: () => execAsync(commands.sink.mute),
+                on_scroll_up: () => {
+                    const speaker = Audio.speaker;
+                    if (speaker)
+                        speaker.volume += 0.100;
+                },
+                on_scroll_down: () => {
+                    const speaker = Audio.speaker;
+                    if (speaker)
+                        speaker.volume -= 0.100;
+                },
+                on_middle_click: () => {
+                    const speaker = Audio.speaker;
+                    if (speaker)
+                        speaker.is_muted = !speaker.is_muted;
+                },
                 child: Widget.Box({
                     class_name: "sink",
                     spacing: 6,
@@ -217,7 +232,7 @@ const BarMedia = BarWidget({
                         Widget.Label().hook(Audio, widget => {
                             if (!Audio.speaker)
                                 widget.label = "󰖁 ";
-                            else if (Audio.speaker.stream.isMuted)
+                            else if (Audio.speaker.is_muted)
                                 widget.label = "󰝟 ";
                             else if (Audio.speaker.stream.port === "headphone-output"
                                   || Audio.speaker.stream.port === "analog-output-headphones")
@@ -235,21 +250,33 @@ const BarMedia = BarWidget({
                                 return;
 
                             widget.label = `${Math.floor(Audio.speaker.volume * 100)}%`;
-                            widget.visible = !(Audio.speaker.stream.isMuted);
+                            widget.visible = !(Audio.speaker.is_muted);
                         }, "speaker-changed"),
                     ],
                 }),
             }),
             Widget.EventBox({
-                on_scroll_up: () => execAsync(commands.source.increase),
-                on_scroll_down: () => execAsync(commands.source.decrease),
-                on_middle_click: () => execAsync(commands.source.mute),
+                on_scroll_up: () => {
+                    const microphone = Audio.microphone;
+                    if (microphone)
+                        microphone.volume += 0.100;
+                },
+                on_scroll_down: () => {
+                    const microphone = Audio.microphone;
+                    if (microphone)
+                        microphone.volume -= 0.100;
+                },
+                on_middle_click: () => {
+                    const microphone = Audio.microphone;
+                    if (microphone)
+                        microphone.is_muted = !microphone.is_muted;
+                },
                 child: Widget.Box({
                     class_name: "source",
                     spacing: 1,
                     children: [
                         Widget.Label().hook(Audio, widget => {
-                            if (!Audio.microphone || Audio.microphone.stream.isMuted || Audio.microphone.volume === 0)
+                            if (!Audio.microphone || Audio.microphone.is_muted)
                                 widget.label = " ";
                             else
                                 widget.label = " ";
@@ -260,7 +287,7 @@ const BarMedia = BarWidget({
                                 return;
 
                             widget.label = `${Math.floor(Audio.microphone.volume * 100)}%`;
-                            widget.visible = !(Audio.microphone.stream.isMuted || Audio.microphone.volume === 0);
+                            widget.visible = !(Audio.microphone.is_muted);
                         }, "microphone-changed"),
                     ],
                 }),
