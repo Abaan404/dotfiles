@@ -1,0 +1,73 @@
+@use "animations";
+@use "colors";
+
+.player {
+    @include animations.flyin("&", "top");
+
+    min-width: 384px;
+
+    .layout-box {
+        margin: 20px;
+        background-color: colors.$primary;
+        border-radius: 10px;
+
+        .left {
+            border-radius: 10px;
+            background-color: colors.$secondary;
+
+            .image {
+                border-radius: 10px;
+                margin-right: 10px;
+                min-height: 180px;
+                min-width: 180px;
+            }
+
+            .controls {
+                @include animations.fade(
+                    "button:hover label",
+                    colors.$text,
+                    white,
+                    $property: "color"
+                );
+                @include animations.fade(
+                    "button:active label",
+                    white,
+                    colors.$text,
+                    $property: "color"
+                );
+                padding: 10px {
+                    right: 14px;
+                }
+            }
+        }
+
+        .right {
+            padding: 10px;
+            padding-right: 40px;
+
+            .duration {
+                font-size: 1em;
+            }
+
+            .title {
+                font-size: 2.5em;
+                font-weight: bolder;
+            }
+
+            .artist {
+                font-size: 1.5em;
+                font-weight: bold;
+            }
+
+            progressbar {
+                margin-top: 10px;
+                border-radius: 10px;
+
+                trough {
+                    background-color: colors.$text;
+                    border-radius: 10px;
+                }
+            }
+        }
+    }
+}

@@ -13,9 +13,11 @@ const files = [
     "/ts/main.ts",
     "/ts/utils.ts",
     "/ts/window.ts",
+    "/ts/variables.ts",
     "/ts/windows/bar.ts",
     "/ts/windows/powermenu.ts",
     "/ts/windows/media.ts",
+    "/ts/windows/player.ts",
 ];
 
 files.forEach(file => {

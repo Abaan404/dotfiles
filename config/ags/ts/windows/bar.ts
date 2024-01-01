@@ -1,6 +1,8 @@
 // core
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import App from "resource:///com/github/Aylur/ags/app.js";
+import { toggle_window } from "../window.js";
+import { player_selected } from "../variables.js";
 
 // services
 import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
@@ -13,8 +15,7 @@ import SystemTray from "resource:///com/github/Aylur/ags/service/systemtray.js";
 
 // utils
 import { execAsync, interval } from "resource:///com/github/Aylur/ags/utils.js";
-import { commands, symbolic_strength } from "../utils.js";
-import { toggle_window } from "../window.js";
+import { commands, get_player_glyph, symbolic_strength } from "../utils.js";
 
 // types
 import { EventBoxProps } from "types/widgets/eventbox.js";
@@ -146,7 +147,7 @@ const BarSysInfo = BarWidget({
 const BarPlayer = BarWidget({
     class_name: "player",
     eventbox: {
-        on_primary_click: () => execAsync("eww open --toggle player"),
+        on_primary_click: () => toggle_window("player"),
         on_secondary_click: () => execAsync(commands.player.next),
         on_middle_click: () => execAsync(commands.player.toggle),
     },
@@ -154,47 +155,27 @@ const BarPlayer = BarWidget({
         spacing: 20,
         setup: widget => {
             widget.hook(Mpris, widget => {
-                const player = Mpris.getPlayer();
-                if (!player)
+                if (player_selected < 0)
                     return;
 
+                const player = Mpris.players[player_selected];
                 const title = player.track_title;
                 const artists = player.track_artists;
 
                 // display string
-                let player_string: string;
-
-                if (!artists)
-                    player_string = `${title}`;
-                else
+                let player_string = title;
+                if (artists)
                     player_string = `${artists[0]} - ${title}`;
 
                 // truncate string if too long
                 if (player_string.length >= 35)
                     player_string = player_string.slice(0, 35) + "...";
 
-                // display glyph
-                let player_glyph: string;
-                switch (player.name) {
-                    case "firefox":
-                        player_glyph = "";
-                        break;
-                    case "spotify":
-                        player_glyph = "";
-                        break;
-                    case "discord":
-                        player_glyph = "";
-                        break;
-                    default:
-                        player_glyph = "";
-                        break;
-                }
-
                 widget.children = [
-                    Widget.Label(`${player_glyph}`),
+                    Widget.Label(`${get_player_glyph(player.name)}`),
                     Widget.Label(`${player_string}`),
                 ];
-            });
+            }, "player-changed");
         },
     },
 });

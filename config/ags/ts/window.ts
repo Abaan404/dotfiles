@@ -9,6 +9,7 @@ import Gtk from "gi://Gtk";
 import Bar from "./windows/bar.js";
 import Powermenu from "./windows/powermenu.js";
 import Media from "./windows/media.js";
+import Player from "./windows/player.js";
 
 // types
 import AgsWindow from "resource:///com/github/Aylur/ags/widgets/window.js";
@@ -19,6 +20,7 @@ const registry: Map<string, () => AgsWindow> = new Map();
 registry.set("bar", Bar);
 registry.set("powermenu", Powermenu);
 registry.set("media", Media);
+registry.set("player", Player);
 
 export function spawn_window(name: string): AgsWindow | undefined {
     const window_factory = registry.get(name);
