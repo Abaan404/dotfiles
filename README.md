@@ -13,24 +13,22 @@
 > [!WARNING]
 > Several people have reported the install script DOES NOT WORK. At this moment I do not have access to a spare PC to test it with, treat this repo as a reference only until I can find a way to fix stuff (or until I switch to NixOS lol). And for those who have tried it and are still willing to try again somehow, you can open an issue and I'll see what i can do.
 
-1) Build eww with [#809](https://togithub.com/elkowar/eww/pull/809) and [#743](https://togithub.com/elkowar/eww/pull/743) and place the binary into `$PATH`.
-
-2) Run the install script
+1) Run the install script
 
 ```sh
 wget https://raw.githubusercontent.com/Abaan404/dotfiles/main/install.sh && sh install.sh
 ```
 
-3) Create a `~/.dotfiles/.env` file with the following entries.
+2) Create a `~/.dotfiles/.env` file with the following entries.
 
 ```sh
 OPENWEATHER_API_KEY= # https://openweathermap.org/api
+OPENWEATHER_LOCATION= # https://openweathermap.org/api
 UNSPLASH_ACCESS_KEY= # https://unsplash.com/developers
 ```
 
 ### Usage
 - Switch theme with SUPER + H, see `./config/hypr/keybinds.conf` for all keybinds.
-- Change weather location by editing the `--location` flag in `./config/eww/eww.yuck`'s weather command.
 
 ### Notes
 - The power profile only works for [Lenovo Ideapad Gaming 3 Laptops](https://wiki.archlinux.org/title/Lenovo_IdeaPad_Gaming_3).

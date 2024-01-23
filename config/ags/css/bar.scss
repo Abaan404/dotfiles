@@ -23,15 +23,6 @@
         }
     }
 
-    .launcher .image {
-        background: {
-            image: url("!!HOME/.config/eww/images/launcher.png");
-            size: 16px 16px;
-            repeat: no-repeat;
-            position: center;
-        }
-    }
-
     .workspaces {
         @include animations.fade(".inactive:hover label", colors.$text, white, $property: "color");
 

@@ -79,20 +79,6 @@ class TemplateWriter:
 
         subprocess.Popen("killall ags; ags", shell=True, env=os.environ.copy())
 
-    def eww(self):
-        color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
-        path = CONFIG["config_path"].joinpath("eww/images/")
-        path.mkdir(exist_ok=True)
-
-        # change all non-transparent colors in the image to "color"
-        for file in [
-            Path("~/.dotfiles/images/launcher.png"),
-            Path("~/.dotfiles/images/playerart-default.png")
-        ]:
-            img = Image.open(file.expanduser()).convert("RGBA")
-            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
-            img.save(path.joinpath(file.name))
-
     def swaylock(self):
         subprocess.Popen("killall swayidle; swayidle", shell=True)
 

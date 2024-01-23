@@ -57,7 +57,7 @@ const BarLauncher = BarWidget({
     box: {
         children: [
             Widget.Icon({
-                icon: "!!HOME/.config/eww/images/launcher.png",
+                icon: "!!HOME/.config/ags/images/launcher.png",
                 size: 16,
             }),
             launcher_revealer,
