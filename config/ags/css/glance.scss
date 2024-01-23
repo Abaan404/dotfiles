@@ -1,9 +1,9 @@
 // for future me reference https://gist.github.com/dharmx/24d7c69bb7ebc7cca72f0855a9f00117 legendary
 // also gtk3 is pain
-@use 'css/animations';
-@use 'css/colors';
+@use 'animations';
+@use 'colors';
 
-.w_glance {
+.glance {
     @include animations.flyin("&", "top");
 
     .layout-box {
@@ -15,13 +15,16 @@
         @include animations.fade("&:active", colors.$accent, colors.$color1);
 
         & > box {
-            padding: 10px {
-                right: 20px
-            }
+            padding: 10px 20px;
         }
 
-        border-radius: 10px;
+        border-radius: 20px;
         background-color: colors.$color1;
+
+        .icon {
+            min-width: 72px;
+            min-height: 72px;
+        }
 
         .description {
             font-size: 1.5em;
@@ -33,20 +36,21 @@
         }
     }
 
-    .battery {
-        padding: 10px {
-            left: 20px
-        }
+    .power {
+        padding: 10px 20px;
 
-        border-radius: 10px;
+        border-radius: 20px;
         background-color: colors.$color1;
 
-        .glyph {
+        .icon {
             font-size: 3em;
+            padding: 20px {
+                right: 0px;
+            }
         }
 
-        .status {
-            font-size: 1.5em;
+        .mode {
+            font-size: 1.75em;
             font-weight: bolder;
         }
     }
@@ -114,7 +118,7 @@
                 background-color: colors.$color4;
             }
         }
-        .time {
+        .calendar {
             background-color: colors.$color1;
             padding: 10px 0px;
             border-radius: 20px;
@@ -170,7 +174,7 @@
             }
         }
 
-        .bluetooth, .wifi {
+        .bluetooth, .network {
             background-color: colors.$color1;
             border-radius: 10px;
             padding: 10px;
@@ -205,15 +209,12 @@
                 @include animations.fade("&:active circular-progress", colors.$accent, colors.$text, $property: "color");
             }
 
-
-            label {
-                padding: 20px;
-                font-size: 1.25em;
-            }
-
             circular-progress {
+                min-width: 70px;
+                min-height: 70px;
                 background-color: colors.$color4;
                 color: colors.$text;
+                font-size: 10px;
             }
         }
     }

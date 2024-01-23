@@ -413,7 +413,7 @@ const BarNetworkInfo = Widget.EventBox({
 const BarInfo = BarWidget({
     class_name: "info",
     eventbox: {
-        on_primary_click: () => execAsync("eww open --toggle glance"),
+        on_primary_click: () => toggle_window("glance"),
     },
     box: {
         spacing: 10,

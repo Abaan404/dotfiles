@@ -55,7 +55,6 @@
 (deflisten wifi :initial "[]" "python3 -u ~/.dotfiles/scripts/listeners.py --listen wifi")
 
 ;; WINDOWS
-(include "./modules/glance.yuck")
 
 ;; DEBUG
 (include "./modules/debug.yuck")

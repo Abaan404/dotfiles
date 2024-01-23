@@ -2,28 +2,19 @@
 
 # quick and dirty script to implement https://wiki.archlinux.org/title/Lenovo_IdeaPad_Gaming_3
 
-function get_profile {
+function write_profile {
     # Make an acpi call
     echo '\_SB.PCI0.LPC0.EC0.SPMO' > /proc/acpi/call
 
     # read data
-    prof=$(tr -d '\0' < /proc/acpi/call)
-
-    # parse
-    if [[ $prof == '0x0' ]]; then
-        echo 'Cooling'
-    elif [[ $prof == '0x1' ]]; then
-        echo 'Performance'
-    elif [[ $prof == '0x2' ]]; then
-        echo 'Balanced'
-    fi
+    echo $(tr -d '\0' < /proc/acpi/call) > /tmp/lenovo_power_mode
 }
 
-# maybe theres a better systemd way to do this
-get_profile
+# maybe theres a better way to do this
+write_profile
 acpi_listen | while read -r line; do
     # if Fn + Q is pressed
     if [[ $line == "D320289E-8FEA- 000000e7 00000000" ]]; then
-        get_profile
+        write_profile
     fi
 done

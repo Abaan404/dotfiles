@@ -10,6 +10,7 @@ import Bar from "./windows/bar.js";
 import Powermenu from "./windows/powermenu.js";
 import Media from "./windows/media.js";
 import Player from "./windows/player.js";
+import Glance from "./windows/glance.js";
 
 // types
 import AgsWindow from "resource:///com/github/Aylur/ags/widgets/window.js";
@@ -21,6 +22,7 @@ registry.set("bar", Bar);
 registry.set("powermenu", Powermenu);
 registry.set("media", Media);
 registry.set("player", Player);
+registry.set("glance", Glance);
 
 export function spawn_window(name: string): AgsWindow | undefined {
     const window_factory = registry.get(name);

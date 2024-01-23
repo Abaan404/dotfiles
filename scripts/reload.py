@@ -77,7 +77,7 @@ class TemplateWriter:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
-        subprocess.Popen("killall ags; ags", shell=True)
+        subprocess.Popen("killall ags; ags", shell=True, env=os.environ.copy())
 
     def eww(self):
         color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
