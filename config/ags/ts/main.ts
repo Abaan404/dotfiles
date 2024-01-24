@@ -1,29 +1,31 @@
 import App from "resource:///com/github/Aylur/ags/app.js";
+import WindowHandler from "./window.js";
 
-// services
-import Mpris from "resource:///com/github/Aylur/ags/service/audio.js";
-
-import { exec } from "resource:///com/github/Aylur/ags/utils.js";
-import { toggle_window, spawn_window } from "./window.js";
-
-// build scss
-const scss = App.configDir + "/style.scss";
-const css = App.configDir + "/style.css";
-exec(`sass ${scss} ${css}`);
+import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 
 // for usage outside the ags process (i.e. hyprland keybinds)
-globalThis.toggle = (name: string) => toggle_window(name);
+globalThis.toggle = (name: string) => {
+    WindowHandler.toggle_window(name);
+};
+
 globalThis.mute = (type: "speaker" | "microphone") => {
-    if (type === "speaker" && Mpris.speaker)
-        Mpris.speaker.is_muted = !Mpris.speaker.is_muted
-    else if (type === "microphone" && Mpris.microphone)
-        Mpris.microphone.is_muted = !Mpris.microphone.is_muted
-}
+    if (type === "speaker" && Audio.speaker)
+        Audio.speaker.is_muted = !Audio.speaker.is_muted;
+    else if (type === "microphone" && Audio.microphone)
+        Audio.microphone.is_muted = !Audio.microphone.is_muted;
+};
+
+globalThis.volume = (type: "speaker" | "microphone", value: number) => {
+    if (type === "speaker" && Audio.speaker)
+        Audio.speaker.volume += value;
+    else if (type === "microphone" && Audio.microphone)
+        Audio.microphone.volume += value;
+};
 
 export default {
     style: App.configDir + "/style.css",
     maxStreamVolume: 1.0,
     windows: [
-        spawn_window("bar"),
+        WindowHandler.spawn_window("bar"),
     ],
 };

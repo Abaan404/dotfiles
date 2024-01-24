@@ -1,15 +1,10 @@
 import Gtk from "gi://Gtk?version=3.0";
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
+import WindowHandler from "../window.js";
+import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import { truncate } from "ts/utils.js";
 
-// services
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 
-// utils
-import { execAsync } from "resource:///com/github/Aylur/ags/utils.js";
-import { commands } from "../utils.js";
-import { new_window } from "../window.js";
-
-// types
 import { SliderProps } from "types/widgets/slider.js";
 import { LabelProps } from "types/widgets/label.js";
 import { ButtonProps } from "types/widgets/button.js";
@@ -66,7 +61,7 @@ const MediaSlider = ({ label, mute, other_devices, slider }: MediaSliderProps) =
     });
 };
 
-export default () => new_window({
+export default () => WindowHandler.new_window({
     class_name: "media",
     window: {
         anchor: ["top", "right"],
@@ -78,32 +73,22 @@ export default () => new_window({
     children: [
         MediaSlider({
             label: {
-                setup: widget => {
-                    widget.bind("label", Audio, "speaker", speaker => {
-                        let label = speaker?.description;
+                label: Audio.bind("speaker").transform(speaker => {
+                    let label = speaker?.description;
 
-                        switch (speaker?.stream.port) {
-                            case "headphone-output":
-                            case "analog-output-headphones":
-                                label = "  " + label;
-                                break;
+                    switch (speaker?.stream.port) {
+                        case "headphone-output":
+                        case "analog-output-headphones":
+                            label = "  " + label;
+                            break;
 
-                            case undefined:
-                                label = "  Invalid Device";
-                                break;
+                        default:
+                            label = "  " + label || "Invalid Device";
+                            break;
+                    }
 
-                            default:
-                                label = "  " + label;
-                                break;
-                        }
-
-                        // truncate string if too long
-                        if (label.length >= 35)
-                            label = `${label.slice(0, 35)}...`;
-
-                        return label;
-                    });
-                },
+                    return truncate(label, 38);
+                }),
             },
             mute: {
                 on_primary_click: () => {
@@ -149,17 +134,13 @@ export default () => new_window({
                                         break;
                                 }
 
-                                // truncate string if too long
-                                if (label.length >= 40)
-                                    label = `${label.slice(0, 40)}...`;
-
                                 return Widget.Button({
                                     class_name: "name",
                                     on_primary_click: () => Audio.speaker = speaker,
                                     child: Widget.Label({
                                         hpack: "start",
                                         hexpand: true,
-                                        label: label,
+                                        label: truncate(label, 46),
                                     }),
                                 });
                             });
@@ -169,16 +150,10 @@ export default () => new_window({
         }),
         MediaSlider({
             label: {
-                setup: widget => {
-                    widget.bind("label", Audio, "microphone", microphone => {
-                        let label = "  " + (microphone?.description || "Invalid Device");
-
-                        // truncate string if too long
-                        if (label.length >= 35)
-                            label = `${label.slice(0, 35)}...`;
-                        return label;
-                    });
-                },
+                label: Audio.bind("microphone").transform(microphone => {
+                    const label = "  " + (microphone?.description || "Invalid Device");
+                    return truncate(label, 38);
+                }),
             },
             mute: {
                 on_primary_click: () => {
@@ -211,11 +186,7 @@ export default () => new_window({
                         widget.children = Audio.microphones
                             .filter(microphone => microphone.name !== Audio.microphone?.name)
                             .map(microphone => {
-                                let label = "  " + microphone.description;
-
-                                // truncate string if too long
-                                if (label.length >= 40)
-                                    label = label.slice(0, 40) + "...";
+                                const label = "  " + microphone.description;
 
                                 return Widget.Button({
                                     class_name: "name",
@@ -223,7 +194,7 @@ export default () => new_window({
                                     child: Widget.Label({
                                         hpack: "start",
                                         hexpand: true,
-                                        label: label,
+                                        label: truncate(label, 46),
                                     }),
                                 });
                             });

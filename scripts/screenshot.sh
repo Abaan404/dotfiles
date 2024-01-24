@@ -24,8 +24,7 @@ grim -g "$size" $FILENAME
 # copy to clipboard
 wl-copy < $FILENAME
 
-# ags takes over the dbus notif interface, commented out for now
-# notifyaction=$(dunstify --action="swappy,swappy" "Screenshot $1 Captured" -i $FILENAME)
-# if [[ $action == "swappy" ]]; then
-#     swappy -f $FILENAME
-# fi
+notifyaction=$(dunstify --action="swappy,swappy" "Screenshot $1 Captured" -i $FILENAME)
+if [[ $action == "swappy" ]]; then
+    swappy -f $FILENAME
+fi

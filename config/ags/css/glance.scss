@@ -190,8 +190,10 @@
                 }
 
                 .icon {
-                    font-size: 3em;
-                    padding: 10px 20px;
+                    font-size: 2em;
+                    padding: 15px {
+                        left: 20px
+                    };
                 }
             }
         }
@@ -202,9 +204,6 @@
             background-color: colors.$color1;
 
             & > widget {
-                @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
-                @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
-
                 @include animations.fade("&:hover circular-progress", colors.$text, colors.$accent, $property: "color");
                 @include animations.fade("&:active circular-progress", colors.$accent, colors.$text, $property: "color");
             }

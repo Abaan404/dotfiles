@@ -78,7 +78,10 @@ set("n", "<leader>ld", vim.lsp.buf.definition)
 set("n", "<leader>lr", telescope_builtin.lsp_references)
 set("n", "<leader>ll", telescope_builtin.diagnostics)
 set("n", "<leader>li", vim.lsp.buf.implementation)
-set("n", "<leader>lk", vim.lsp.buf.hover)
+set("n", "<leader>lk", function()
+    vim.lsp.buf.hover()
+    vim.lsp.buf.hover()
+end)
 set("n", "<leader>lD", vim.lsp.buf.declaration)
 
 -- neogen

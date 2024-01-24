@@ -1,10 +1,10 @@
-// core
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import App from "resource:///com/github/Aylur/ags/app.js";
-import { toggle_window } from "../window.js";
-import { player_selected } from "../variables.js";
+import WindowHandler from "../window.js";
+import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
+import * as Variables from "../variables.js";
+import { commands, get_player_glyph, symbolic_strength, truncate } from "../utils.js";
 
-// services
 import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 import Mpris from "resource:///com/github/Aylur/ags/service/mpris.js";
 import Network from "resource:///com/github/Aylur/ags/service/network.js";
@@ -13,11 +13,6 @@ import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 import Bluetooth from "resource:///com/github/Aylur/ags/service/bluetooth.js";
 import SystemTray from "resource:///com/github/Aylur/ags/service/systemtray.js";
 
-// utils
-import { execAsync, interval } from "resource:///com/github/Aylur/ags/utils.js";
-import { commands, get_player_glyph, symbolic_strength } from "../utils.js";
-
-// types
 import { EventBoxProps } from "types/widgets/eventbox.js";
 import { BoxProps } from "types/widgets/box.js";
 
@@ -48,8 +43,8 @@ const launcher_revealer = Widget.Revealer({
 const BarLauncher = BarWidget({
     class_name: "launcher",
     eventbox: {
-        on_primary_click: () => execAsync(["pkill", "rofi"])
-            .catch(() => execAsync(["rofi", "-show", "drun"]))
+        on_primary_click: () => Utils.execAsync(["pkill", "rofi"])
+            .catch(() => Utils.execAsync(["rofi", "-show", "drun"]))
             .catch(() => undefined),
         on_hover: () => launcher_revealer.reveal_child = true,
         on_hover_lost: () => launcher_revealer.reveal_child = false,
@@ -57,7 +52,7 @@ const BarLauncher = BarWidget({
     box: {
         children: [
             Widget.Icon({
-                icon: "!!HOME/.config/ags/images/launcher.png",
+                icon: "!!HOME/.config/ags/assets/launcher.png",
                 size: 16,
             }),
             launcher_revealer,
@@ -87,32 +82,31 @@ const BarWorkspaces = BarWidget({
 
                 widget.children = workspaces.map(ws => Widget.Button({
                     class_name: Hyprland.active.workspace.id === ws.id ? "active" : "inactive",
-                    child: Widget.Label({ label: `${ws.glyph}` }),
-                    on_primary_click: () => execAsync(`hyprctl dispatch workspace ${ws.id}`),
+                    child: Widget.Label({ label: ws.glyph }),
+                    on_primary_click: () => Utils.execAsync(`hyprctl dispatch workspace ${ws.id}`),
                 }));
             });
         },
     },
 });
 
-// todo impl this
 const BarSysTray = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     child: BarWidget({
         class_name: "systray",
         box: {
-            setup: widget => {
-                widget.bind("children", SystemTray, "items", items => items.map(item => {
-                    return Widget.Button({
-                        on_primary_click: () => item.openMenu(null),
-                        child: Widget.Icon({
-                            icon: <string><unknown>item.bind("icon"),
-                            size: 18,
-                        }),
-                    });
+            // @ts-ignore https://github.com/Aylur/ags/issues/262
+            children: SystemTray.bind("items").transform(items => {
+                return items.map(item => Widget.Button({
+                    on_primary_click: () => item.openMenu(null),
+                    child: Widget.Icon({
+                        // @ts-ignore I have no idea how to deal with a pixbuff
+                        icon: item.bind("icon"),
+                        size: 18,
+                    }),
                 }));
-            },
+            }),
         },
     }),
 });
@@ -126,20 +120,12 @@ const BarSysInfo = BarWidget({
     box: {
         spacing: 12,
         children: [
-            Widget.Label({
-                label: " 0.0G",
-                setup: widget => interval(2000, () => {
-                    execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"])
-                        .then(out => widget.label = ` ${out}`);
-                }),
-            }),
-            Widget.Label({
-                label: " 0.0%",
-                setup: widget => interval(2000, () => {
-                    execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"])
-                        .then(out => widget.label = ` ${out}%`);
-                }),
-            }),
+            Widget.Label(" 0.0G").poll(5000, widget => Utils.execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"])
+                .then(out => widget.label = ` ${out}`),
+            ),
+            Widget.Label(" 0.0%").poll(5000, widget => Utils.execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"])
+                .then(out => widget.label = ` ${out}%`),
+            ),
         ],
     },
 });
@@ -147,36 +133,38 @@ const BarSysInfo = BarWidget({
 const BarPlayer = BarWidget({
     class_name: "player",
     eventbox: {
-        on_primary_click: () => toggle_window("player"),
+        visible: Variables.PlayerSelected.bind().transform(selected => <number>selected >= 0),
+        on_primary_click: () => WindowHandler.toggle_window("player"),
         on_secondary_click: () => {
-            if (Mpris.players[player_selected].can_go_next)
-                Mpris.players[player_selected].next();
+            if (Mpris.players[Variables.PlayerSelected.value]?.can_go_next)
+                Mpris.players[Variables.PlayerSelected.value].next();
         },
-        on_middle_click: () => Mpris.players[player_selected].playPause(),
+        on_middle_click: () => {
+            if (Mpris.players[Variables.PlayerSelected.value]?.can_play)
+                Mpris.players[Variables.PlayerSelected.value].playPause();
+        },
     },
     box: {
         spacing: 20,
         setup: widget => {
             widget.hook(Mpris, widget => {
-                if (player_selected < 0)
+                if (Variables.PlayerSelected.value < 0)
                     return;
 
-                const player = Mpris.players[player_selected];
+                const player = Mpris.players[Variables.PlayerSelected.value];
                 const title = player.track_title;
                 const artists = player.track_artists;
 
+                widget.visible = !(title.length || artists.join("").length);
+
                 // display string
                 let player_string = title;
-                if (artists)
-                    player_string = `${artists[0]} - ${title}`;
-
-                // truncate string if too long
-                if (player_string.length >= 35)
-                    player_string = player_string.slice(0, 35) + "...";
+                if (artists.length > 0 && artists[0].length > 0)
+                    player_string = `${truncate(artists[0], 30)} - ${truncate(title, 30)}`;
 
                 widget.children = [
-                    Widget.Label(`${get_player_glyph(player.name)}`),
-                    Widget.Label(`${player_string}`),
+                    Widget.Label(get_player_glyph(player.name)),
+                    Widget.Label(player_string),
                 ];
             }, "player-changed");
         },
@@ -204,7 +192,7 @@ const BarMedia = BarWidget({
                     : widget.get_style_context().remove_class("muted");
             }, "speaker-changed");
         },
-        on_primary_click: () => toggle_window("media"),
+        on_primary_click: () => WindowHandler.toggle_window("media"),
     },
     box: {
         spacing: 10,
@@ -213,12 +201,12 @@ const BarMedia = BarWidget({
                 on_scroll_up: () => {
                     const speaker = Audio.speaker;
                     if (speaker)
-                        speaker.volume += 0.100;
+                        speaker.volume += 0.1;
                 },
                 on_scroll_down: () => {
                     const speaker = Audio.speaker;
                     if (speaker)
-                        speaker.volume -= 0.100;
+                        speaker.volume -= 0.1;
                 },
                 on_middle_click: () => {
                     const speaker = Audio.speaker;
@@ -249,7 +237,7 @@ const BarMedia = BarWidget({
                             if (!Audio.speaker)
                                 return;
 
-                            widget.label = `${Math.floor(Audio.speaker.volume * 100)}%`;
+                            widget.label = `${Math.ceil(Audio.speaker.volume * 100)}%`;
                             widget.visible = !(Audio.speaker.is_muted);
                         }, "speaker-changed"),
                     ],
@@ -286,7 +274,7 @@ const BarMedia = BarWidget({
                             if (!Audio.microphone)
                                 return;
 
-                            widget.label = `${Math.floor(Audio.microphone.volume * 100)}%`;
+                            widget.label = `${Math.ceil(Audio.microphone.volume * 100)}%`;
                             widget.visible = !(Audio.microphone.is_muted);
                         }, "microphone-changed"),
                     ],
@@ -300,18 +288,16 @@ const cock_revealer = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     css: "padding-left: 10px;", // add padding when shown
-    child: Widget.Label({
-        setup: widget => interval(1000, () => {
-            const datetime = new Date();
-            const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][datetime.getDay()];
-            const month = [
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December",
-            ][datetime.getMonth()];
-            const year = datetime.getFullYear();
-            const date = String(datetime.getDate()).padStart(2, "0");
-            widget.label = `${day}, ${date} ${month} ${year}`;
-        }),
+    child: Widget.Label().poll(1000, widget => {
+        const datetime = new Date();
+        const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][datetime.getDay()];
+        const month = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December",
+        ][datetime.getMonth()];
+        const year = datetime.getFullYear();
+        const date = String(datetime.getDate()).padStart(2, "0");
+        widget.label = `${day}, ${date} ${month} ${year}`;
     }),
 });
 
@@ -323,10 +309,7 @@ const BarCockInfo = Widget.EventBox({
         children: [
             Widget.Label({
                 class_name: "glyph",
-                setup: widget => interval(1000, () => {
-                    widget.label = new Date().toLocaleTimeString("en-gb", { hour: "2-digit", minute: "2-digit" });
-                }),
-            }),
+            }).poll(1000, widget => widget.label = new Date().toLocaleTimeString("en-gb", { hour: "2-digit", minute: "2-digit" })),
             cock_revealer,
         ],
     }),
@@ -336,13 +319,15 @@ const battery_revealer = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     css: "padding-left: 5px;", // add padding when shown
-    child: Widget.Label().hook(Battery, widget => widget.label = `${Battery.percent.toString()}%`),
+    child: Widget.Label({
+        label: Battery.bind("percent").transform(percent => percent.toString()),
+    }),
 });
 
 const BarBatteryInfo = Widget.EventBox({
     class_name: "battery",
-    on_scroll_up: () => execAsync(commands.brightness.increase),
-    on_scroll_down: () => execAsync(commands.brightness.decrease),
+    on_scroll_up: () => Utils.execAsync(commands.brightness.increase),
+    on_scroll_down: () => Utils.execAsync(commands.brightness.decrease),
     on_hover: () => battery_revealer.reveal_child = true,
     on_hover_lost: () => battery_revealer.reveal_child = false,
     child: Widget.Box({
@@ -370,7 +355,9 @@ const network_revealer = Widget.Revealer({
     transition: "slide_left",
     transitionDuration: 500,
     css: "padding-left: 5px;", // add padding when shown
-    child: Widget.Label().hook(Network, widget => widget.label = Network.wifi?.ssid || "Offline"),
+    child: Widget.Label({
+        label: Network.wifi.bind("ssid").transform(ssid => ssid || "Offline"),
+    }),
 });
 
 const BarNetworkInfo = Widget.EventBox({
@@ -413,7 +400,7 @@ const BarNetworkInfo = Widget.EventBox({
 const BarInfo = BarWidget({
     class_name: "info",
     eventbox: {
-        on_primary_click: () => toggle_window("glance"),
+        on_primary_click: () => WindowHandler.toggle_window("glance"),
     },
     box: {
         spacing: 10,
@@ -435,7 +422,7 @@ const power_revealer = Widget.Revealer({
 const BarPower = BarWidget({
     class_name: "power",
     eventbox: {
-        on_primary_click: () => toggle_window("powermenu"),
+        on_primary_click: () => WindowHandler.toggle_window("powermenu"),
         on_hover: () => power_revealer.reveal_child = true,
         on_hover_lost: () => power_revealer.reveal_child = false,
     },

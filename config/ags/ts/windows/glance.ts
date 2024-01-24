@@ -1,19 +1,15 @@
 import Gtk from "gi://Gtk?version=3.0";
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
+import WindowHandler from "../window.js";
+import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
+import { to_timestamp, truncate } from "../utils.js";
 
-// services
 import Network from "resource:///com/github/Aylur/ags/service/network.js";
 import Bluetooth from "resource:///com/github/Aylur/ags/service/bluetooth.js";
 import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
 import PowerProfiles from "../services/powerprofiles.js";
 import Weather from "../services/weather.js";
 
-// utils
-import { interval, readFile } from "resource:///com/github/Aylur/ags/utils.js";
-import { new_window } from "../window.js";
-import { to_timestamp } from "../utils.js";
-
-// types
 import { CircularProgressProps } from "types/widgets/circularprogress.js";
 import AgsStack from "types/widgets/stack.js";
 import AgsBox from "types/widgets/box.js";
@@ -28,6 +24,7 @@ import AgsRevealer from "types/widgets/revealer.js";
 
 const GlanceWeather = () => Widget.EventBox({
     class_name: "weather",
+    on_primary_click: () => Utils.execAsync(["xdg-open", `https://openweathermap.org/city/${Weather.city_id}`]),
     on_hover: widget => (<AgsRevealer>(<AgsBox>widget.child).children[1]).reveal_child = true,
     on_hover_lost: widget => (<AgsRevealer>(<AgsBox>widget.child).children[1]).reveal_child = false,
     child: Widget.Box({
@@ -102,10 +99,7 @@ const GlancePower = () => Widget.Box({
                     class_name: "uptime",
                     vpack: "end",
                     hpack: "end",
-                    setup: widget => interval(1000, () => {
-                        widget.label = `uptime: ${to_timestamp(parseInt(readFile("/proc/uptime")))}\n`;
-                    }, widget),
-                }),
+                }).poll(1000, widget => widget.label = `uptime: ${to_timestamp(parseInt(Utils.readFile("/proc/uptime")))}\n`),
             ],
         }),
         Widget.Icon({
@@ -116,12 +110,22 @@ const GlancePower = () => Widget.Box({
 });
 
 const GlanceNetwork = () => Widget.Box({
-    class_name: "bluetooth",
+    class_name: "network",
     orientation: Gtk.Orientation.VERTICAL,
     spacing: 10,
     children: [
-        Widget.Label().hook(Network, widget => {
-            widget.label = `${Network.primary === "wifi" ? "󰤥 " : "󰈀 "} ${Network.connectivity}`;
+        Widget.Box({
+            hpack: "center",
+            hexpand: true,
+            spacing: 10,
+            children: [
+                Widget.Icon({
+                    icon: Network.bind("primary").transform(primary => primary === "wifi" ? Network.wifi.icon_name : Network.wifi.icon_name),
+                }),
+                Widget.Label({
+                    label: Network.bind("connectivity"),
+                }),
+            ],
         }),
         Widget.Scrollable({
             vexpand: true,
@@ -136,7 +140,7 @@ const GlanceNetwork = () => Widget.Box({
                                 spacing: 5,
                                 children: [
                                     Widget.Icon({ class_name: "icon", icon: device.iconName }),
-                                    Widget.Label({ class_name: "alias", label: device.ssid }),
+                                    Widget.Label({ class_name: "alias", label: truncate(device.ssid || "Unknown", 18) }),
                                 ],
                             }),
                         }));
@@ -152,9 +156,17 @@ const GlanceBluetooth = () => Widget.Box({
     orientation: Gtk.Orientation.VERTICAL,
     spacing: 10,
     children: [
-        Widget.Label().hook(Bluetooth, widget => {
-            widget.label = `  ${Bluetooth.connected_devices[0]?.alias || "Disconnected"}`;
-        }, "notify::connected-devices"),
+        Widget.Box({
+            hpack: "center",
+            hexpand: true,
+            spacing: 10,
+            children: [
+                Widget.Icon("bluetooth-symbolic"),
+                Widget.Label().hook(Bluetooth, widget => {
+                    widget.label = truncate(Bluetooth.connected_devices[0]?.alias || "Disconnected", 28);
+                }, "notify::connected-devices"),
+            ],
+        }),
         Widget.Scrollable({
             vexpand: true,
             child: Widget.Box({
@@ -167,8 +179,8 @@ const GlanceBluetooth = () => Widget.Box({
                             child: Widget.Box({
                                 spacing: 5,
                                 children: [
-                                    Widget.Label({ class_name: "icon", label: "" }),
-                                    Widget.Label({ class_name: "alias", label: device.alias }),
+                                    Widget.Icon({ class_name: "icon", icon: "bluetooth-symbolic" }),
+                                    Widget.Label({ class_name: "alias", label: truncate(device.alias || "Unknown", 18) }),
                                 ],
                             }),
                         }));
@@ -185,10 +197,9 @@ const GlanceCalendar = () => Widget.Box({
     children: [
         Widget.Label({
             class_name: "clock",
-            setup: widget => interval(1000, () => {
-                const datetime = new Date();
-                widget.label = `${String(datetime.getHours()).padStart(2, "0")} : ${String(datetime.getMinutes()).padStart(2, "0")} : ${String(datetime.getSeconds()).padStart(2, "0")}`;
-            }, widget),
+        }).poll(1000, widget => {
+            const datetime = new Date();
+            return widget.label = `${String(datetime.getHours()).padStart(2, "0")} : ${String(datetime.getMinutes()).padStart(2, "0")} : ${String(datetime.getSeconds()).padStart(2, "0")}`;
         }),
         Widget.Calendar({}),
     ],
@@ -236,7 +247,7 @@ const GlanceControls = () => Widget.Box({
                     widget.hook(Network, widget => {
                         switch (Network.primary) {
                             case "wifi":
-                                interval(5000, () => {
+                                Utils.interval(5000, () => {
                                     widget.value = Network.wifi.strength / 100;
                                 }, widget);
                                 widget.rounded = true;
@@ -300,14 +311,12 @@ const GlanceControls = () => Widget.Box({
             stack_callback: stack => stack.shown = "calendar",
             circular_progress: {
                 child: Widget.Icon({ icon: "timer-symbolic" }),
-                setup: widget => {
-                    interval(60000, () => {
-                        const datetime = new Date();
-                        const now = datetime.getHours() * 60 + datetime.getMinutes();
-                        const total = 24 * 60;
-                        widget.value = now / total;
-                    }, widget);
-                },
+                setup: widget => Utils.interval(60000, () => {
+                    const datetime = new Date();
+                    const now = datetime.getHours() * 60 + datetime.getMinutes();
+                    const total = 24 * 60;
+                    widget.value = now / total;
+                }, widget),
             },
         }),
     ],
@@ -335,7 +344,7 @@ const RowOne = () => Widget.Box({
     ],
 });
 
-export default () => new_window({
+export default () => WindowHandler.new_window({
     class_name: "glance",
     window: {
         anchor: ["top", "right"],

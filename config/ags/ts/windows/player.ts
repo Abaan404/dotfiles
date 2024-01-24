@@ -1,13 +1,11 @@
 import Gtk from "gi://Gtk";
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
+import App from "resource:///com/github/Aylur/ags/app.js";
+import WindowHandler from "../window.js";
+import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Variables from "../variables.js";
+import { get_player_glyph, to_timestamp, truncate } from "../utils.js";
 
-// services
 import Mpris from "resource:///com/github/Aylur/ags/service/mpris.js";
-
-// utils
-import { new_window } from "../window.js";
-import { player_selected, player_position } from "../variables.js";
-import { get_player_glyph, to_timestamp } from "../utils.js";
 
 const PlayerLeft = () => Widget.Box({
     class_name: "left",
@@ -16,50 +14,52 @@ const PlayerLeft = () => Widget.Box({
             class_name: "image",
             setup: widget => {
                 widget.hook(Mpris, widget => {
-                    widget.css = `background: url('${Mpris.players[player_selected].cover_path}'); background-size: 180px 180px;`;
+                    if (Variables.PlayerSelected.value < 0 || !Mpris.players[Variables.PlayerSelected.value].cover_path)
+                        widget.css = `background: url('${App.configDir + "/assets/playerart.png"}'); background-size: 180px 180px;`;
+                    else
+                        widget.css = `background: url('${Mpris.players[Variables.PlayerSelected.value].cover_path}'); background-size: 180px 180px;`;
                 }, "player-changed");
             },
         }),
         Widget.Box({
             class_name: "controls",
             orientation: Gtk.Orientation.VERTICAL,
-            valign: Gtk.Align.FILL,
             spacing: 10,
             children: [
                 Widget.Button({
                     class_name: "previous",
                     vexpand: true,
                     on_primary_click: () => {
-                        if (player_selected < 0 || !Mpris.players[player_selected].can_go_prev)
+                        if (Variables.PlayerSelected.value < 0 || !Mpris.players[Variables.PlayerSelected.value].can_go_prev)
                             return;
 
-                        return Mpris.players[player_selected].previous();
+                        Mpris.players[Variables.PlayerSelected.value].previous();
                     },
-                    child: Widget.Label(" "),
+                    child: Widget.Icon({ icon: "media-skip-backward-symbolic" }),
                 }),
                 Widget.Button({
                     class_name: "pause",
                     vexpand: true,
                     on_primary_click: () => {
-                        if (player_selected < 0)
+                        if (Variables.PlayerSelected.value < 0 || !Mpris.players[Variables.PlayerSelected.value].can_play)
                             return;
 
-                        return Mpris.players[player_selected].playPause();
+                        Mpris.players[Variables.PlayerSelected.value].playPause();
                     },
-                    child: Widget.Label().hook(Mpris, widget => {
-                        widget.label = Mpris.players[player_selected].play_back_status == "Paused" ? " " : " ";
-                    }),
+                    child: Widget.Icon().hook(Mpris, widget => {
+                        widget.icon = Mpris.players[Variables.PlayerSelected.value]?.play_back_status === "Paused" ? "media-playback-start-symbolic" : "media-playback-pause-symbolic";
+                    }, "player-changed"),
                 }),
                 Widget.Button({
                     class_name: "next",
                     vexpand: true,
                     on_primary_click: () => {
-                        if (player_selected < 0 || !Mpris.players[player_selected].can_go_next)
+                        if (Variables.PlayerSelected.value < 0 || !Mpris.players[Variables.PlayerSelected.value].can_go_next)
                             return;
 
-                        return Mpris.players[player_selected].next();
+                        Mpris.players[Variables.PlayerSelected.value].next();
                     },
-                    child: Widget.Label(" "),
+                    child: Widget.Icon({ icon: "media-skip-forward-symbolic" }),
                 }),
             ],
         }),
@@ -70,22 +70,22 @@ const PlayerRight = () => Widget.Box({
     class_name: "right",
     spacing: 10,
     orientation: Gtk.Orientation.VERTICAL,
-    valign: Gtk.Align.FILL,
     children: [
         Widget.Label({
             class_name: "name",
             halign: Gtk.Align.START,
             valign: Gtk.Align.START,
-            label: player_position.bind().transform(position => {
-                const player = Mpris.players[player_selected];
-                const track_position = to_timestamp(Math.round(<number>position * player.length));
-                const track_length = to_timestamp(Math.round(player.length));
+        }).poll(1000, widget => {
+            if (Variables.PlayerSelected.value < 0) {
+                widget.label = `${get_player_glyph("")}  No players`;
+                return;
+            }
 
-                if (player.length < 0)
-                    return `${get_player_glyph(player.name)}  ${player.name}`;
-                else
-                    return `${get_player_glyph(player.name)}  ${player.name} (${track_position} / ${track_length})`;
-            }),
+            const player = Mpris.players[Variables.PlayerSelected.value];
+            if (player.length < 0)
+                widget.label = `${get_player_glyph(player.name)}  ${player.name}`;
+            else
+                widget.label = `${get_player_glyph(player.name)}  ${player.name} (${to_timestamp(player.position)} / ${to_timestamp(player.length)})`;
         }),
         Widget.Box({
             orientation: Gtk.Orientation.VERTICAL,
@@ -97,16 +97,12 @@ const PlayerRight = () => Widget.Box({
                     halign: Gtk.Align.START,
                     setup: widget => {
                         widget.hook(Mpris, widget => {
-                            if (player_selected < 0 || !Mpris.players[player_selected].track_title) {
+                            if (Variables.PlayerSelected.value < 0 || !Mpris.players[Variables.PlayerSelected.value].track_title) {
                                 widget.label = "No Title";
                                 return;
                             }
 
-                            let label = Mpris.players[player_selected].track_title;
-                            if (label.length > 25)
-                                label = `${label.slice(0, 25)}...`;
-
-                            widget.label = label;
+                            widget.label = truncate(Mpris.players[Variables.PlayerSelected.value].track_title, 28);
                         });
                     },
                 }),
@@ -115,28 +111,30 @@ const PlayerRight = () => Widget.Box({
                     halign: Gtk.Align.START,
                     setup: widget => {
                         widget.hook(Mpris, widget => {
-                            if (player_selected < 0 || Mpris.players[player_selected].track_artists.length == 0) {
+                            if (Variables.PlayerSelected.value < 0 ||
+                                !Mpris.players[Variables.PlayerSelected.value].track_artists.length ||
+                                !Mpris.players[Variables.PlayerSelected.value].track_artists[0].length) {
                                 widget.label = "No Artist";
                                 return;
                             }
 
-                            let label = Mpris.players[player_selected].track_artists.join(", ");
-                            if (label.length > 35)
-                                label = `${label.slice(0, 35)}...`;
-
-                            widget.label = label;
+                            widget.label = truncate(Mpris.players[Variables.PlayerSelected.value].track_artists.join(", "), 38);
                         });
                     },
                 }),
-                Widget.ProgressBar({
-                    value: player_position.bind(),
+                Widget.ProgressBar().poll(1000, widget => {
+                    if (Variables.PlayerSelected.value < 0)
+                        return 0;
+
+                    const player = Mpris.players[Variables.PlayerSelected.value];
+                    widget.value = player.position / player.length;
                 }),
             ],
         }),
     ],
 });
 
-export default () => new_window({
+export default () => WindowHandler.new_window({
     class_name: "player",
     window: {
         anchor: ["top"],

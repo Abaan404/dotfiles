@@ -1,11 +1,6 @@
 # env variables
 .env
 
-# art and images
-images/*
-!images/playerart-default.png
-!images/launcher.png
-
 # cache
 data/
 

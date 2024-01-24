@@ -1,18 +1,16 @@
 import Gtk from "gi://Gtk?version=3.0";
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
-
-import { commands } from "../utils.js";
-import { execAsync } from "resource:///com/github/Aylur/ags/utils.js";
-import { new_window } from "../window.js";
+import WindowHandler from "../window.js";
+import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
 
 interface PowermenuButtonProps {
     label: string;
     class_name: string;
-    glyph: string;
-    command: string;
+    icon: string;
+    command: string[];
 }
 
-const PowermenuButton = ({ label, class_name, glyph, command }: PowermenuButtonProps) => Widget.EventBox({
+const PowermenuButton = ({ label, class_name, icon, command }: PowermenuButtonProps) => Widget.EventBox({
     class_name: class_name,
     child: Widget.Box({
         hpack: "end",
@@ -23,14 +21,14 @@ const PowermenuButton = ({ label, class_name, glyph, command }: PowermenuButtonP
                 label: label,
             }),
             Widget.Button({
-                on_primary_click: () => execAsync(command),
-                child: Widget.Label(glyph),
+                on_primary_click: () => Utils.execAsync(command),
+                child: Widget.Icon(icon),
             }),
         ],
     }),
 });
 
-export default () => new_window({
+export default () => WindowHandler.new_window({
     class_name: "powermenu",
     window: {
         anchor: ["right"],
@@ -42,23 +40,23 @@ export default () => new_window({
     children: [
         PowermenuButton({
             label: "Shutdown", class_name: "power",
-            glyph: "󰐥",
-            command: commands.poweroff,
+            icon: "system-shutdown-symbolic",
+            command: ["systemctl", "poweroff"],
         }),
         PowermenuButton({
             label: "Reboot", class_name: "reboot",
-            glyph: "",
-            command: commands.reboot,
+            icon: "system-reboot-symbolic",
+            command:  ["systemctl", "reboot"],
         }),
         PowermenuButton({
-            label: "Log Out", class_name: "logout",
-            glyph: "",
-            command: commands.logout,
+            label: "Suspend", class_name: "suspend",
+            icon: "system-suspend-symbolic",
+            command: ["swaylock"],
         }),
         PowermenuButton({
             label: "Hibernate", class_name: "hibernate",
-            glyph: "󰏤",
-            command: commands.hibernate,
+            icon: "system-hibernate-symbolic",
+            command: ["systemctl", "hibernate"],
         }),
     ],
 });

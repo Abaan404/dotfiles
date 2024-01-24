@@ -10,6 +10,7 @@ interface WeatherData {
     description: string;
     windspeed: number;
     visibility: number;
+    city_id: number;
 }
 
 class Weather extends Service {
@@ -25,6 +26,7 @@ class Weather extends Service {
                 "windspeed": ["int", "r"],
                 "visibility": ["int", "r"],
                 "image-path": ["string", "r"],
+                "city-id": ["string", "r"],
             },
         );
     }
@@ -40,6 +42,7 @@ class Weather extends Service {
     private _description = "Unavailable";
     private _windspeed = 0;
     private _visibility = 0;
+    private _city_id = 0;
     private readonly _image_path = "!!HOME/.dotfiles/data/weather.png";
 
     get location(): string { return this._location || "Unknown"; }
@@ -49,6 +52,7 @@ class Weather extends Service {
     get windspeed(): number { return this._windspeed; }
     get visibility(): number { return this._visibility; }
     get image_path(): string { return this._image_path; }
+    get city_id(): number { return this._city_id; }
 
     set location(value: string) {
         this._location = value;
@@ -101,6 +105,7 @@ class Weather extends Service {
         this.updateProperty("description", weather_data.description);
         this.updateProperty("windspeed", weather_data.windspeed);
         this.updateProperty("visibility", weather_data.visibility);
+        this.updateProperty("city_id", weather_data.city_id);
 
         const data = Utils.readFileAsync(this.cache_path)
             .then(file => JSON.parse(file))
@@ -166,6 +171,7 @@ class Weather extends Service {
                 description: weather_data.weather[0].main,
                 windspeed: weather_data.wind.speed,
                 visibility: weather_data.visibility,
+                city_id: weather_data.id,
             });
 
         } catch (error) {
@@ -177,6 +183,7 @@ class Weather extends Service {
                 description: "Unavailable",
                 windspeed: 0,
                 visibility: 0,
+                city_id: 0,
             });
 
             this.stop();

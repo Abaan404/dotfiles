@@ -1,15 +1,20 @@
 import App from "resource:///com/github/Aylur/ags/app.js"
-import { execAsync } from "resource:///com/github/Aylur/ags/utils.js"
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js"
 
-const dir = "/tmp/ags/js";
+// build scss
+await Utils.execAsync([
+    "sass",
+    App.configDir + "/style.scss",
+    App.configDir + "/style.css",
+]);
 
-await execAsync([
+await Utils.execAsync([
     "bun", "build", `${App.configDir}/ts/main.ts`,
-    "--outdir", dir,
+    "--outdir", "/tmp/ags/js",
     "--external", "resource:///*",
     "--external", "gi://*",
     "--external", "cairo",
 ]).catch(console.error);
 
-const main = await import(`file://${dir}/main.js`);
+const main = await import(`file:///tmp/ags/js/main.js`);
 export default main.default;

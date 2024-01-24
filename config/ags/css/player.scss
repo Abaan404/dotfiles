@@ -4,7 +4,8 @@
 .player {
     @include animations.flyin("&", "top");
 
-    min-width: 384px;
+    min-width: 400px;
+    min-height: 200px;
 
     .layout-box {
         margin: 20px;
@@ -24,19 +25,20 @@
 
             .controls {
                 @include animations.fade(
-                    "button:hover label",
+                    "button:hover image",
                     colors.$text,
                     white,
                     $property: "color"
                 );
                 @include animations.fade(
-                    "button:active label",
+                    "button:active image",
                     white,
                     colors.$text,
                     $property: "color"
                 );
+
                 padding: 10px {
-                    right: 14px;
+                    right: 20px;
                 }
             }
         }
@@ -61,11 +63,11 @@
 
             progressbar {
                 margin-top: 10px;
-                border-radius: 10px;
+                border-radius: 20px;
 
                 trough {
                     background-color: colors.$text;
-                    border-radius: 10px;
+                    border-radius: 20px;
                 }
             }
         }
