@@ -1,11 +1,3 @@
-// some useful commands
-export const commands = {
-    brightness: {
-        increase: "brightnessctl set 10%+",
-        decrease: "brightnessctl set 10%-",
-    },
-};
-
 export function symbolic_strength({ value, array, max = 100 }) {
     const interp = Math.floor((value / max) * array.length);
     return array[Math.min(interp, array.length - 1)];

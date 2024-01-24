@@ -3,7 +3,7 @@ import WindowHandler from "../window.js";
 import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
 import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
 import * as Variables from "../variables.js";
-import { commands, get_player_glyph, symbolic_strength, truncate } from "../utils.js";
+import { get_player_glyph, symbolic_strength, truncate } from "../utils.js";
 
 import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 import Mpris from "resource:///com/github/Aylur/ags/service/mpris.js";
@@ -12,6 +12,7 @@ import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 import Bluetooth from "resource:///com/github/Aylur/ags/service/bluetooth.js";
 import SystemTray from "resource:///com/github/Aylur/ags/service/systemtray.js";
+import Brightness from "../services/brightness.js"
 
 import { EventBoxProps } from "types/widgets/eventbox.js";
 import { BoxProps } from "types/widgets/box.js";
@@ -320,14 +321,14 @@ const battery_revealer = Widget.Revealer({
     transitionDuration: 500,
     css: "padding-left: 5px;", // add padding when shown
     child: Widget.Label({
-        label: Battery.bind("percent").transform(percent => percent.toString()),
+        label: Battery.bind("percent").transform(percent => `${percent.toString()}%`),
     }),
 });
 
 const BarBatteryInfo = Widget.EventBox({
     class_name: "battery",
-    on_scroll_up: () => Utils.execAsync(commands.brightness.increase),
-    on_scroll_down: () => Utils.execAsync(commands.brightness.decrease),
+    on_scroll_up: () => Brightness.screen_value += 0.1,
+    on_scroll_down: () => Brightness.screen_value -= 0.1,
     on_hover: () => battery_revealer.reveal_child = true,
     on_hover_lost: () => battery_revealer.reveal_child = false,
     child: Widget.Box({
