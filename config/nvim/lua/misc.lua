@@ -4,15 +4,27 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     callback = function() vim.bo.filetype = "glsl" end,
 })
 
--- Open a file called question.pdf in the cwd
-vim.api.nvim_create_user_command("OpenQuestion", function()
+-- Open a pdf file from the cwd
+vim.api.nvim_create_user_command("OpenPDF", function(opts)
     local Job = require("plenary.job")
 
     Job:new({
         command = "zathura",
-        args = { "question.pdf" },
+        args = { opts.fargs[1] },
     }):start()
-end, {})
+end, {
+    nargs = 1,
+    complete = function()
+        local dirs = require("plenary.scandir").scan_dir(".", { depth = 1 })
+        local pdf_files = {}
+
+        for _, value in ipairs(dirs) do
+            if value:match(".+%.pdf$") then table.insert(pdf_files, value) end
+        end
+
+        return pdf_files
+    end,
+})
 
 -- open all folds before opening
 vim.api.nvim_create_autocmd({ "BufReadPost", "FileReadPost" }, { command = "normal zR" })
