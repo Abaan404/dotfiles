@@ -32,6 +32,7 @@ return {
                     -- c/cpp stuff
                     "clangd",
                     "swift_mesonls",
+                    "cmake",
 
                     -- python stuff
                     "pyright",
