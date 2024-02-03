@@ -191,6 +191,15 @@ return {
                 },
             })
 
+            -- typst
+            require("lspconfig")["typst_lsp"].setup({
+                on_attach = on_attach,
+                capabilities = capabilities,
+                settings = {
+                    exportPdf = "onType", -- onSave
+                },
+            })
+
             -- Texlab
             require("lspconfig")["texlab"].setup({
                 on_attach = on_attach,
@@ -265,6 +274,9 @@ return {
                 yaml = { "prettier" },
                 html = { "prettier" },
                 markdown = { "prettier" },
+
+                -- typst TODO mason pr
+                typst = { "typstfmt" },
             },
 
             formatters = {

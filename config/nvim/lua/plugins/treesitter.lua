@@ -3,7 +3,11 @@ return {
         "nvim-treesitter/playground",
     },
     {
-        "nvim-treesitter/nvim-treesitter",
+        -- TODO wait for typst to be added to treesitter, using the PR
+        -- branch for now (probably outdated)
+        -- "nvim-treesitter/nvim-treesitter",
+        "Nagefire/nvim-treesitter",
+        branch = "feat/typst",
         config = function()
             ---@diagnostic disable-next-line: missing-fields
             require("nvim-treesitter.configs").setup({
@@ -28,6 +32,7 @@ return {
                     "glsl",
                     "cmake",
                     "meson",
+                    "typst",
 
                     "markdown",
                     "markdown_inline",
@@ -51,6 +56,13 @@ return {
                     enable = true,
                     additional_vim_regex_highlighting = false,
                 },
+            })
+
+            -- attach ts to typst ft
+            -- vim.treesitter.language.register("typst", "typ")
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+                pattern = { "*.typ" },
+                callback = function() vim.opt.filetype = "typst" end,
             })
 
             -- attach ts to glsl ft
