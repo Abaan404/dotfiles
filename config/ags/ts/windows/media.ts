@@ -6,11 +6,11 @@ import { truncate } from "ts/utils.js";
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 
 import { SliderProps } from "types/widgets/slider.js";
-import { LabelProps } from "types/widgets/label.js";
+import { Props } from "types/widgets/label.js";
 import { ButtonProps } from "types/widgets/button.js";
 
 interface MediaSliderProps {
-    label: LabelProps;
+    label: Props;
     mute: ButtonProps;
     other_devices: Gtk.Box;
     slider: SliderProps;
@@ -35,8 +35,6 @@ const MediaSlider = ({ label, mute, other_devices, slider }: MediaSliderProps) =
                         class_names: ["default", "name"],
                         hexpand: true,
                         hpack: "start",
-                        // @ts-ignore i have no idea why ts doesnt like this line
-                        // though it should be fine
                         ...label,
                     }),
                     Widget.Button({
@@ -76,7 +74,7 @@ export default () => WindowHandler.new_window({
                 label: Audio.bind("speaker").transform(speaker => {
                     let label = speaker?.description;
 
-                    switch (speaker?.stream.port) {
+                    switch (speaker.stream?.port) {
                         case "headphone-output":
                         case "analog-output-headphones":
                             label = "  " + label;
@@ -123,7 +121,7 @@ export default () => WindowHandler.new_window({
                             .filter(speaker => speaker.name !== Audio.speaker?.name)
                             .map(speaker => {
                                 let label = speaker.description;
-                                switch (speaker.stream.port) {
+                                switch (speaker.stream?.port) {
                                     case "headphone-output":
                                     case "analog-output-headphones":
                                         label = "  " + label;

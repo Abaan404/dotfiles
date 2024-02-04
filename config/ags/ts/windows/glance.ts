@@ -10,11 +10,6 @@ import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
 import PowerProfiles from "../services/powerprofiles.js";
 import Weather from "../services/weather.js";
 
-import { CircularProgressProps } from "types/widgets/circularprogress.js";
-import AgsStack from "types/widgets/stack.js";
-import AgsBox from "types/widgets/box.js";
-import AgsRevealer from "types/widgets/revealer.js";
-
 // TODO implement entrybox for wifi and bluetooth once
 // https://github.com/hyprwm/Hyprland/commit/c4da4b026deefd58f532353b64e9f17130e760ca
 // available on latest release
@@ -22,65 +17,69 @@ import AgsRevealer from "types/widgets/revealer.js";
 
 // TODO create a better schedule tracker that i can actually find useful
 
-const GlanceWeather = () => Widget.EventBox({
-    class_name: "weather",
-    on_primary_click: () => Utils.execAsync(["xdg-open", `https://openweathermap.org/city/${Weather.city_id}`]),
-    on_hover: widget => (<AgsRevealer>(<AgsBox>widget.child).children[1]).reveal_child = true,
-    on_hover_lost: widget => (<AgsRevealer>(<AgsBox>widget.child).children[1]).reveal_child = false,
-    child: Widget.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        children: [
-            Widget.Box({
-                spacing: 10,
-                halign: Gtk.Align.START,
-                children: [
-                    Widget.Box({
-                        class_name: "icon",
-                        css: Weather.bind("image_path").transform(image_path => {
-                            return `background: url('file://${image_path}'); background-size: 72px;`;
-                        }),
-                    }),
-                    Widget.Box({
-                        orientation: Gtk.Orientation.VERTICAL,
-                        homogeneous: true,
-                        children: [
-                            Widget.Label({
-                                class_name: "description",
-                                halign: Gtk.Align.START,
-                                valign: Gtk.Align.END,
-                                label: Weather.bind("description"),
-                            }),
-                            Widget.Label({
-                                class_name: "temperature",
-                                halign: Gtk.Align.START,
-                                valign: Gtk.Align.START,
-                                // WHAT THE FUCK IS A KILOMETERRRRRRR RAHHHHH
-                                label: Weather.bind("temperature").transform(temp => `${(temp - 273.15).toFixed(1)}°C`),
-                            }),
-                        ],
-                    }),
-                ],
-            }),
-            Widget.Revealer({
-                transition: "slide_down",
-                child: Widget.Box({
-                    class_name: "footer",
-                    homogeneous: true,
+const GlanceWeather = () => {
+    const revealer = Widget.Revealer({
+        transition: "slide_down",
+        child: Widget.Box({
+            class_name: "footer",
+            homogeneous: true,
+            children: [
+                Widget.Label({
+                    halign: Gtk.Align.START,
+                    label: Weather.bind("windspeed").transform(v => `${v}km/h`),
+                }),
+                Widget.Label({
+                    halign: Gtk.Align.END,
+                    label: Weather.bind("feels_like").transform(temp => `${(temp - 273.15).toFixed(1)}°C`),
+                }),
+            ],
+        }),
+    });
+
+    return Widget.EventBox({
+        class_name: "weather",
+        on_primary_click: () => Utils.execAsync(["xdg-open", `https://openweathermap.org/city/${Weather.city_id}`]),
+        on_hover: () => revealer.reveal_child = true,
+        on_hover_lost: () => revealer.reveal_child = false,
+        child: Widget.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            children: [
+                Widget.Box({
+                    spacing: 10,
+                    halign: Gtk.Align.START,
                     children: [
-                        Widget.Label({
-                            halign: Gtk.Align.START,
-                            label: Weather.bind("windspeed").transform(v => `${v}km/h`),
+                        Widget.Box({
+                            class_name: "icon",
+                            css: Weather.bind("image_path").transform(image_path => {
+                                return `background: url('file://${image_path}'); background-size: 72px;`;
+                            }),
                         }),
-                        Widget.Label({
-                            halign: Gtk.Align.END,
-                            label: Weather.bind("feels_like").transform(temp => `${(temp - 273.15).toFixed(1)}°C`),
+                        Widget.Box({
+                            orientation: Gtk.Orientation.VERTICAL,
+                            homogeneous: true,
+                            children: [
+                                Widget.Label({
+                                    class_name: "description",
+                                    halign: Gtk.Align.START,
+                                    valign: Gtk.Align.END,
+                                    label: Weather.bind("description"),
+                                }),
+                                Widget.Label({
+                                    class_name: "temperature",
+                                    halign: Gtk.Align.START,
+                                    valign: Gtk.Align.START,
+                                    // WHAT THE FUCK IS A KILOMETERRRRRRR RAHHHHH
+                                    label: Weather.bind("temperature").transform(temp => `${(temp - 273.15).toFixed(1)}°C`),
+                                }),
+                            ],
                         }),
                     ],
                 }),
-            }),
-        ],
-    }),
-});
+                revealer,
+            ],
+        }),
+    });
+};
 
 const GlancePower = () => Widget.Box({
     class_name: "power",
@@ -205,122 +204,112 @@ const GlanceCalendar = () => Widget.Box({
     ],
 });
 
-const GlancePages = () => Widget.Stack({
-    transition: "slide_up_down",
-    items: [
-        ["network", GlanceNetwork()],
-        ["bluetooth", GlanceBluetooth()],
-        ["calendar", GlanceCalendar()],
-    ],
-    setup: widget => {
-        widget.shown = "calendar";
-    },
-});
+const GlanceSettings = () => {
+    const GlancePages = Widget.Stack({
+        transition: "slide_up_down",
+        children: {
+            ["network"]: GlanceNetwork(),
+            ["bluetooth"]: GlanceBluetooth(),
+            ["calendar"]: GlanceCalendar(),
+        },
+        setup: widget => widget.shown = "calendar",
+    });
 
-interface GlanceControlButtonProps {
-    stack_callback: (stack: AgsStack) => void;
-    circular_progress: CircularProgressProps;
-}
+    const GlanceControls = Widget.Box({
+        class_name: "controls",
+        spacing: 20,
+        valign: Gtk.Align.FILL,
+        orientation: Gtk.Orientation.VERTICAL,
+        homogeneous: true,
+        children: [
+            // Network
+            Widget.EventBox({
+                on_primary_click: () => GlancePages.shown = "network",
+                child: Widget.CircularProgress({
+                    rounded: true,
+                    setup: widget => {
+                        widget.hook(Network, widget => {
+                            switch (Network.primary) {
+                                case "wifi":
+                                    Utils.interval(5000, () => {
+                                        widget.value = Network.wifi.strength / 100;
+                                    }, widget);
+                                    widget.rounded = true;
+                                    widget.child = Widget.Icon({
+                                        icon: Network.wifi.bind("icon_name"),
+                                    });
+                                    break;
 
-const GlanceControlButton = ({ stack_callback, circular_progress }: GlanceControlButtonProps) => Widget.EventBox({
-    on_primary_click: widget => {
-        stack_callback(<AgsStack>(<AgsBox>widget.parent.parent).children[0]);
-    },
-    child: Widget.CircularProgress({
-        rounded: true,
-        ...circular_progress,
-    }),
-});
+                                case "wired":
+                                    widget.value = 1.0,
+                                    widget.child = Widget.Icon({
+                                        icon: Network.wired.bind("icon_name"),
+                                    });
 
-const GlanceControls = () => Widget.Box({
-    class_name: "controls",
-    spacing: 20,
-    valign: Gtk.Align.FILL,
-    orientation: Gtk.Orientation.VERTICAL,
-    homogeneous: true,
-    children: [
-        // Network
-        GlanceControlButton({
-            stack_callback: stack => stack.shown = "network",
-            circular_progress: {
-                setup: widget => {
-                    widget.hook(Network, widget => {
-                        switch (Network.primary) {
-                            case "wifi":
-                                Utils.interval(5000, () => {
-                                    widget.value = Network.wifi.strength / 100;
-                                }, widget);
+                                default:
+                                    widget.rounded = false;
+                                    widget.child = Widget.Icon({
+                                        icon: "network-wireless-signal-none-symbolic",
+                                    });
+                                    break;
+                            }
+
+                            widget.show_all();
+                        });
+                    },
+                }),
+            }),
+
+            // bluetooth
+            Widget.EventBox({
+                on_primary_click: () => GlancePages.shown = "bluetooth",
+                child: Widget.CircularProgress({
+                    rounded: true,
+                    child: Widget.Icon({ icon: "bluetooth-symbolic" }),
+                    setup: widget => {
+                        widget.hook(Bluetooth, widget => {
+                            if (Bluetooth.connected_devices.length > 0) {
+                                widget.value = Bluetooth.connected_devices[0].battery_percentage / 100;
                                 widget.rounded = true;
-                                widget.child = Widget.Icon({
-                                    icon: Network.wifi.bind("icon_name"),
-                                });
-                                break;
-
-                            case "wired":
-                                widget.value = 1.0,
-                                widget.child = Widget.Icon({
-                                    // @ts-ignore: why?
-                                    icon: Network.wired.bind("icon_name"),
-                                });
-
-                            default:
+                            }
+                            else {
+                                widget.value = 0.0;
                                 widget.rounded = false;
-                                widget.child = Widget.Icon({
-                                    icon: "network-wireless-signal-none-symbolic",
-                                });
-                                break;
-                        }
+                            }
+                        });
+                    },
+                }),
+            }),
 
-                        widget.show_all();
-                    });
-                },
-            },
-        }),
+            // battery
+            Widget.EventBox({
+                child: Widget.CircularProgress({
+                    value: Battery.bind("percent").transform(val => val / 100),
+                    child: Widget.Icon({ icon: Battery.bind("icon_name") }),
+                }),
+            }),
 
-        // bluetooth
-        GlanceControlButton({
-            stack_callback: stack => stack.shown = "bluetooth",
-            circular_progress: {
-                child: Widget.Icon({ icon: "bluetooth-symbolic" }),
-                setup: widget => {
-                    widget.hook(Bluetooth, widget => {
-                        if (Bluetooth.connected_devices.length > 0) {
-                            widget.value = Bluetooth.connected_devices[0].battery_percentage / 100;
-                            widget.rounded = true;
-                        }
-                        else {
-                            widget.value = 0.0;
-                            widget.rounded = false;
-                        }
-                    });
-                },
-            },
-        }),
+            // day percent (calendar)
+            Widget.EventBox({
+                on_primary_click: () => GlancePages.shown = "calendar",
+                child: Widget.CircularProgress({
+                    child: Widget.Icon({ icon: "timer-symbolic" }),
+                    setup: widget => Utils.interval(60000, () => {
+                        const datetime = new Date();
+                        const now = datetime.getHours() * 60 + datetime.getMinutes();
+                        const total = 24 * 60;
+                        widget.value = now / total;
+                    }, widget),
+                }),
+            }),
+        ],
+    });
 
-        // battery
-        GlanceControlButton({
-            stack_callback: () => null,
-            circular_progress: {
-                value: Battery.bind("percent").transform(val => val / 100),
-                child: Widget.Icon({ icon: Battery.bind("icon_name") }),
-            },
-        }),
-
-        // day percent (calendar)
-        GlanceControlButton({
-            stack_callback: stack => stack.shown = "calendar",
-            circular_progress: {
-                child: Widget.Icon({ icon: "timer-symbolic" }),
-                setup: widget => Utils.interval(60000, () => {
-                    const datetime = new Date();
-                    const now = datetime.getHours() * 60 + datetime.getMinutes();
-                    const total = 24 * 60;
-                    widget.value = now / total;
-                }, widget),
-            },
-        }),
-    ],
-});
+    return [
+        GlancePages,
+        GlanceControls,
+    ];
+};
 
 const RowOne = () => Widget.Box({
     spacing: 20,
@@ -336,10 +325,7 @@ const RowOne = () => Widget.Box({
         Widget.Box({
             class_name: "quick-settings",
             spacing: 20,
-            children: [
-                GlancePages(),
-                GlanceControls(),
-            ],
+            children: GlanceSettings(),
         }),
     ],
 });

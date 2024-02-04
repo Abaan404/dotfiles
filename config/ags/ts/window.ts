@@ -20,7 +20,7 @@ interface WindowCreateProps {
 }
 
 class WindowHandler {
-    private registry: Map<string, () => AgsWindow> = new Map();
+    private registry: Map<string, () => AgsWindow<any, any>> = new Map();
 
     constructor() {
         this.registry.set("bar", Bar);
@@ -30,14 +30,15 @@ class WindowHandler {
         this.registry.set("glance", Glance);
     }
 
-    spawn_window(name: string): AgsWindow | undefined {
+    spawn_window(name: string): AgsWindow<any, any> | undefined {
         const window_factory = this.registry.get(name);
         if (!window_factory) {
             logError("Could not find a window " + name);
             return;
         }
 
-        if (App.windows.has(name)) {
+        const window_names = App.windows.map(window => window.name);
+        if (window_names.includes(name)) {
             logError("window already exists " + name);
             return;
         }
@@ -50,7 +51,8 @@ class WindowHandler {
         if (!window_factory)
             return;
 
-        if (App.windows.has(name))
+        const window_names = App.windows.map(window => window.name);
+        if (window_names.includes(name))
             App.removeWindow(name);
         else
             App.addWindow(window_factory());

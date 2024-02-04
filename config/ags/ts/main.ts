@@ -22,9 +22,11 @@ globalThis.volume = (type: "speaker" | "microphone", value: number) => {
         Audio.microphone.volume += value;
 };
 
+// service setups
+Audio.maxStreamVolume = 1.0;
+
 export default {
     style: App.configDir + "/style.css",
-    maxStreamVolume: 1.0,
     windows: [
         WindowHandler.spawn_window("bar"),
     ],

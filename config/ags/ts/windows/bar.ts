@@ -97,12 +97,10 @@ const BarSysTray = Widget.Revealer({
     child: BarWidget({
         class_name: "systray",
         box: {
-            // @ts-ignore https://github.com/Aylur/ags/issues/262
             children: SystemTray.bind("items").transform(items => {
                 return items.map(item => Widget.Button({
                     on_primary_click: () => item.openMenu(null),
                     child: Widget.Icon({
-                        // @ts-ignore I have no idea how to deal with a pixbuff
                         icon: item.bind("icon"),
                         size: 18,
                     }),
@@ -223,8 +221,8 @@ const BarMedia = BarWidget({
                                 widget.label = "󰖁 ";
                             else if (Audio.speaker.is_muted)
                                 widget.label = "󰝟 ";
-                            else if (Audio.speaker.stream.port === "headphone-output"
-                                  || Audio.speaker.stream.port === "analog-output-headphones")
+                            else if (Audio.speaker.stream?.port === "headphone-output"
+                                  || Audio.speaker.stream?.port === "analog-output-headphones")
                                 widget.label = " ";
                             else
                                 widget.label = symbolic_strength({
