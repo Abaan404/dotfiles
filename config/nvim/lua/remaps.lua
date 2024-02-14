@@ -89,6 +89,11 @@ local neogen = require("neogen")
 
 set("n", "<leader>lg", neogen.generate)
 
+-- ufo
+local ufo = require("ufo")
+vim.keymap.set("n", "zR", ufo.openAllFolds)
+vim.keymap.set("n", "zM", ufo.closeAllFolds)
+
 -- nvim-dap
 local dap = require("dap")
 local dapui = require("dapui")

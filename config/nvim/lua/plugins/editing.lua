@@ -60,4 +60,16 @@ return {
             })
         end,
     },
+    {
+        "kevinhwang91/nvim-ufo",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "kevinhwang91/promise-async",
+        },
+        config = function()
+            require("ufo").setup({
+                provider_selector = function(_) return { "treesitter", "indent" } end,
+            })
+        end,
+    },
 }
