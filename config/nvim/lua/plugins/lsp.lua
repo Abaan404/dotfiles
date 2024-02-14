@@ -4,10 +4,7 @@ return {
         "neovim/nvim-lspconfig",
         -- event = "InsertEnter", -- lazy loading this causes it to not auto-attach?
         dependencies = {
-            {
-                "j-hui/fidget.nvim",
-                tag = "legacy",
-            },
+            "j-hui/fidget.nvim",
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
             "WhoIsSethDaniel/mason-tool-installer.nvim",
@@ -88,7 +85,7 @@ return {
             end
 
             -- Diagnostic config
-            local config = {
+            vim.diagnostic.config({
                 virtual_text = true,
                 signs = {
                     active = signs,
@@ -96,84 +93,14 @@ return {
                 update_in_insert = true,
                 underline = true,
                 severity_sort = true,
-                float = {
-                    focusable = true,
-                    style = "minimal",
-                    border = "rounded",
-                    source = "always",
-                    header = "",
-                    prefix = "",
-                },
-            }
-            vim.diagnostic.config(config)
-
-            -- This function gets run when an LSP connects to a particular buffer.
-            local on_attach = function(client, bufnr)
-                if client.resolved_capabilities.document_highlight then
-                    vim.cmd([[
-                    hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-                    hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-                    hi! LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-                    ]])
-                    vim.api.nvim_create_augroup("lsp_document_highlight", {
-                        clear = false,
-                    })
-                    vim.api.nvim_clear_autocmds({
-                        buffer = bufnr,
-                        group = "lsp_document_highlight",
-                    })
-                    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-                        group = "lsp_document_highlight",
-                        buffer = bufnr,
-                        callback = vim.lsp.buf.document_highlight,
-                    })
-                    vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-                        group = "lsp_document_highlight",
-                        buffer = bufnr,
-                        callback = vim.lsp.buf.clear_references,
-                    })
-                end
-                -- Create a command `:Format` local to the LSP buffer
-                vim.api.nvim_buf_create_user_command(
-                    bufnr,
-                    "Format",
-                    function(_) vim.lsp.buf.format() end,
-                    { desc = "Format current buffer with LSP" }
-                )
-
-                -- Attach and configure vim-illuminate
-                require("illuminate").on_attach(client)
-            end
-
-            vim.cmd(
-                [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false, scope="cursor"})]]
-            )
+            })
 
             -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-            -- setup lsp for all other server installed by mason
-            for _, server in pairs(require("mason-lspconfig").get_installed_servers()) do
-                require("lspconfig")[server].setup({
-                    on_attach = on_attach,
-                    capabilities = capabilities,
-                })
-            end
-
-            -- TODO open a PR on mason to add glsl_analyzer
-            if vim.fn.findfile("/usr/bin/glsl_analyzer") then
-                require("lspconfig")["glsl_analyzer"].setup({
-                    on_attach = on_attach,
-                    capabilities = capabilities,
-                })
-            end
-
-            -- Lua
-            require("lspconfig")["lua_ls"].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-                settings = {
+            local settings = {
+                lua_ls = {
                     Lua = {
                         completion = {
                             callSnippet = "Replace",
@@ -189,22 +116,10 @@ return {
                         },
                     },
                 },
-            })
-
-            -- typst
-            require("lspconfig")["typst_lsp"].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-                settings = {
+                typst_lsp = {
                     exportPdf = "onType", -- onSave
                 },
-            })
-
-            -- Texlab
-            require("lspconfig")["texlab"].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-                settings = {
+                texlab = {
                     texlab = {
                         build = {
                             executable = "tectonic",
@@ -222,13 +137,7 @@ return {
                         },
                     },
                 },
-            })
-
-            -- Octave/MATLAB
-            require("lspconfig")["matlab_ls"].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-                settings = {
+                matlab_ls = {
                     matlab = {
                         indexWorkspace = true,
                         installPath = "/usr/local/MATLAB/R2023b",
@@ -236,20 +145,23 @@ return {
                         telemetry = true,
                     },
                 },
-            })
+            }
 
-            -- Python
-            require("lspconfig")["pyright"].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-                settings = {
-                    pyright = {
-                        plugins = {
-                            pylint = { enabled = true },
-                        },
-                    },
-                },
-            })
+            -- setup lsp for all servers installed by mason
+            for _, server in pairs(require("mason-lspconfig").get_installed_servers()) do
+                require("lspconfig")[server].setup({
+                    capabilities = capabilities,
+                    settings = settings[server],
+                })
+            end
+
+            -- TODO open a PR on mason to add glsl_analyzer
+            if vim.fn.findfile("/usr/bin/glsl_analyzer") then
+                require("lspconfig")["glsl_analyzer"].setup({
+                    capabilities = capabilities,
+                    settings = settings["glsl_analyzer"],
+                })
+            end
         end,
     },
     {
