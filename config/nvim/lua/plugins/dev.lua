@@ -2,10 +2,8 @@ return {
     {
         "mfussenegger/nvim-dap",
         dependencies = {
-            {
-                "rcarriga/nvim-dap-ui",
-                config = function() require("dapui").setup() end,
-            },
+            "rcarriga/nvim-dap-ui",
+            "neovim/nvim-lspconfig",
         },
         event = "BufReadPre",
         ft = { "c", "cpp" },
@@ -40,6 +38,39 @@ return {
             -- If you want to use this for Rust and C, add something like this:
             dap.configurations.c = dap.configurations.cpp
             dap.configurations.rust = dap.configurations.cpp
+        end,
+    },
+    {
+        "rcarriga/nvim-dap-ui",
+        config = function()
+            require("dapui").setup({
+                layouts = {
+                    {
+                        elements = {
+                            {
+                                id = "scopes",
+                                size = 0.5,
+                            },
+                            {
+                                id = "stacks",
+                                size = 0.5,
+                            },
+                        },
+                        position = "right",
+                        size = 60,
+                    },
+                    {
+                        elements = {
+                            {
+                                id = "console",
+                                size = 1.0,
+                            },
+                        },
+                        position = "bottom",
+                        size = 15,
+                    },
+                },
+            })
         end,
     },
     {
