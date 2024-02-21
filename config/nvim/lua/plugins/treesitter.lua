@@ -3,11 +3,7 @@ return {
         "nvim-treesitter/playground",
     },
     {
-        -- TODO wait for typst to be added to treesitter, using the PR
-        -- branch for now (probably outdated)
-        -- "nvim-treesitter/nvim-treesitter",
-        "Nagefire/nvim-treesitter",
-        branch = "feat/typst",
+        "nvim-treesitter/nvim-treesitter",
         config = function()
             ---@diagnostic disable-next-line: missing-fields
             require("nvim-treesitter.configs").setup({
