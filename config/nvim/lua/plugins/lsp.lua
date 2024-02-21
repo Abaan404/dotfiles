@@ -93,6 +93,18 @@ return {
                 update_in_insert = true,
                 underline = true,
                 severity_sort = true,
+                float = {
+                    focusable = true,
+                    style = "minimal",
+                    border = "rounded",
+                    source = "always",
+                    header = "",
+                    prefix = "",
+                },
+            })
+
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+                callback = function() vim.diagnostic.open_float(nil, {focus=false, scope="cursor"}) end,
             })
 
             -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
