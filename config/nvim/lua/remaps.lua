@@ -34,6 +34,7 @@ set("n", "<leader>fa", function() telescope_builtin.find_files({ follow = true, 
 set("n", "<leader>fw", telescope_builtin.live_grep)
 set("n", "<leader>fb", telescope_builtin.buffers)
 set("n", "<leader>fh", telescope_builtin.help_tags)
+set("n", "<leader>fm", telescope_builtin.marks)
 set("n", "<leader>fo", telescope_builtin.oldfiles)
 set("n", "<leader>fz", telescope_builtin.current_buffer_fuzzy_find)
 
@@ -100,6 +101,7 @@ local dapui = require("dapui")
 
 set("n", "<leader>dd", dapui.toggle)
 set("n", "<leader>db", dap.toggle_breakpoint)
+set("n", "<S-CR>", dap.step_into)
 set("n", "<leader>dr", function()
     dap.continue()
     dapui.open()
@@ -108,8 +110,6 @@ set("n", "<leader>dt", function()
     dap.terminate()
     dapui.close()
 end)
-set("n", "m", dap.step_over)
-set("n", "<leader>di", dap.step_into)
 
 -- cmake-tools
 set("n", "<leader>cmd", "<cmd>CMakeDebug<CR>")

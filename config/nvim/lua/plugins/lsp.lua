@@ -129,7 +129,7 @@ return {
                     },
                 },
                 typst_lsp = {
-                    exportPdf = "onType", -- onSave
+                    exportPdf = "onSave", -- onSave
                 },
                 texlab = {
                     texlab = {
