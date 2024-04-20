@@ -1,12 +1,14 @@
 import Gtk from "gi://Gtk";
 import App from "resource:///com/github/Aylur/ags/app.js";
 import * as Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
 
 import Bar from "./windows/bar.js";
 import Powermenu from "./windows/powermenu.js";
 import Media from "./windows/media.js";
 import Player from "./windows/player.js";
 import Glance from "./windows/glance.js";
+import Debug from "./windows/debug.js";
 
 import AgsWindow from "resource:///com/github/Aylur/ags/widgets/window.js";
 import { BoxProps } from "types/widgets/box.js";
@@ -28,19 +30,22 @@ class WindowHandler {
         this.registry.set("media", Media);
         this.registry.set("player", Player);
         this.registry.set("glance", Glance);
+        this.registry.set("debug", Debug);
     }
 
-    spawn_window(name: string): AgsWindow<any, any> | undefined {
+    spawn_window(name: string): AgsWindow<any, any> {
         const window_factory = this.registry.get(name);
         if (!window_factory) {
             logError("Could not find a window " + name);
-            return;
+            App.quit();
+            throw "App.quit() called"; // make tsserver not angry
         }
 
         const window_names = App.windows.map(window => window.name);
         if (window_names.includes(name)) {
             logError("window already exists " + name);
-            return;
+            App.quit();
+            throw "App.quit() called"; // make tsserver not angry
         }
 
         return window_factory();
@@ -53,7 +58,8 @@ class WindowHandler {
 
         const window_names = App.windows.map(window => window.name);
         if (window_names.includes(name))
-            App.removeWindow(name);
+            // hyprland bug, 200ms timeout workaround
+            Utils.timeout(200, () => App.removeWindow(name));
         else
             App.addWindow(window_factory());
     }
@@ -61,7 +67,6 @@ class WindowHandler {
     new_window({ class_name, children, box, window }: WindowCreateProps) {
         return Widget.Window({
             name: class_name,
-            popup: true,
             ...window,
             child: Widget.Box({
                 class_name: class_name,

@@ -12,7 +12,7 @@ import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 import Bluetooth from "resource:///com/github/Aylur/ags/service/bluetooth.js";
 import SystemTray from "resource:///com/github/Aylur/ags/service/systemtray.js";
-import Brightness from "../services/brightness.js"
+import Brightness from "../services/brightness.js";
 
 import { EventBoxProps } from "types/widgets/eventbox.js";
 import { BoxProps } from "types/widgets/box.js";
