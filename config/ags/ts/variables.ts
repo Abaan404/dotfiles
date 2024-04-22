@@ -1,6 +1,8 @@
 import Variable from "resource:///com/github/Aylur/ags/variable.js";
 
+import Recorder from "./services/recorder.js";
 import Mpris from "resource:///com/github/Aylur/ags/service/mpris.js";
+import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
 
 const ignored_bus_names = ["org.mpris.MediaPlayer2.playerctld"];
 export const PlayerSelected = Variable(-1);
@@ -29,4 +31,12 @@ Mpris.connect("player-closed", () => {
                 PlayerSelected.value = i;
                 return;
             }
+});
+
+// Pause replay on battery
+Battery.connect("changed", () => {
+    if ((Battery.charged || Battery.charging) && Recorder.is_replay_paused ||
+        !(Battery.charged || Battery.charging) && !Recorder.is_replay_paused) {
+        Recorder.replay_playpause();
+    }
 });

@@ -6,11 +6,11 @@ import { truncate } from "ts/utils.js";
 import Audio from "resource:///com/github/Aylur/ags/service/audio.js";
 
 import { SliderProps } from "types/widgets/slider.js";
-import { Props } from "types/widgets/label.js";
+import { LabelProps } from "types/widgets/label.js";
 import { ButtonProps } from "types/widgets/button.js";
 
 interface MediaSliderProps {
-    label: Props;
+    label: LabelProps;
     mute: ButtonProps;
     other_devices: Gtk.Box;
     slider: SliderProps;

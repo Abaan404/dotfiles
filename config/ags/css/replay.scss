@@ -1,0 +1,76 @@
+@use 'animations';
+@use 'colors';
+
+$button-open-height: 40px;
+$button-highlight-height: 30px;
+
+.replay {
+    background-color: transparent;
+    margin: 20px;
+    margin-left: 40px;
+
+    min-width: 500px;
+
+    .layout-box {
+        @include animations.flyin("&", "left");
+        @include animations.fade("button:hover", colors.$primary, colors.$secondary);
+
+        button {
+            padding: $button-open-height $button-open-height;
+            border-radius: 10px;
+            background-color: colors.$primary;
+            min-width: 50px;
+            min-height: 60px;
+
+            image {
+                color: colors.$accent;
+                font-size: 40px;
+            }
+        }
+
+        .transition-text {
+            font-weight: bolder;
+            font-size: 16px;
+            padding-left: 20px;
+            color: transparent;
+        }
+
+        .record {
+            @include animations.fade(".recording", colors.$primary, colors.$good);
+            @include animations.fade(".paused", colors.$primary, colors.$warning);
+        }
+
+        .replay {
+            @include animations.fade(".paused", colors.$primary, colors.$bad);
+        }
+
+        .microphone {
+            @include animations.fade(".disabled", colors.$primary, colors.$bad);
+        }
+
+        @each $selector in "replay", "record", "microphone" {
+            .#{$selector}:hover button {
+                transition: 100ms linear padding;
+                padding-top: $button-highlight-height;
+                padding-bottom: $button-highlight-height;
+            }
+
+            .#{$selector}:not(:hover) button {
+                transition: 100ms linear padding;
+                padding-top: $button-open-height;
+                padding-bottom: $button-open-height;
+            }
+
+            .#{$selector}:hover .transition-text {
+                @include animations.flyin("&", "left");
+                transition: 200ms linear color;
+                color: colors.$accent;
+            }
+
+            .#{$selector}:not(:hover) .transition-text {
+                transition: 200ms linear color;
+                color: transparent;
+            }
+        }
+    }
+}

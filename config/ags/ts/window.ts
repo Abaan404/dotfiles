@@ -9,6 +9,7 @@ import Media from "./windows/media.js";
 import Player from "./windows/player.js";
 import Glance from "./windows/glance.js";
 import Debug from "./windows/debug.js";
+import Replay from "./windows/replay.js";
 
 import AgsWindow from "resource:///com/github/Aylur/ags/widgets/window.js";
 import { BoxProps } from "types/widgets/box.js";
@@ -31,6 +32,7 @@ class WindowHandler {
         this.registry.set("player", Player);
         this.registry.set("glance", Glance);
         this.registry.set("debug", Debug);
+        this.registry.set("replay", Replay);
     }
 
     spawn_window(name: string): AgsWindow<any, any> {

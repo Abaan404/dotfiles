@@ -74,6 +74,7 @@ yay -S --needed --noconfirm \
     tela-icon-theme bibata-cursor-theme-bin ttf-jetbrains-mono-nerd otf-font-awesome nwg-look \
     oh-my-zsh-git zsh-autosuggestions \
     aylurs-gtk-shell bun-bin \
+    gpu-screen-recorder-git \
     codelldb
 
 if __read_yn "Install nvidia drivers? [y/N] " -1; then
