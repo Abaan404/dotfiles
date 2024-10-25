@@ -1,6 +1,0 @@
-[Service]
-Type=oneshot
-ExecStart=%h/.local/bin/hyprlaunch
-
-[Install]
-WantedBy=default.target

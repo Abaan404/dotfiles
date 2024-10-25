@@ -51,7 +51,7 @@ export default () => WindowHandler.new_window({
         PowermenuButton({
             label: "Suspend", class_name: "suspend",
             icon: "system-suspend-symbolic",
-            command: ["swaylock"],
+            command: ["hyprlock"],
         }),
         PowermenuButton({
             label: "Hibernate", class_name: "hibernate",

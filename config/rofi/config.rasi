@@ -1,7 +1,7 @@
 @theme "theme"
 
 configuration {
-	modes: "drun,window,calc";
+	modes: "drun,window";
 	font: "JetBrainsMono NF Extra-Bold 12";
 
 	show-icons: true;

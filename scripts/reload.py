@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # i tried ok
 
@@ -77,10 +77,7 @@ class TemplateWriter:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
-        subprocess.Popen("killall ags; ags", shell=True, env=os.environ.copy())
-
-    def swaylock(self):
-        subprocess.Popen("killall swayidle; swayidle", shell=True)
+        subprocess.Popen("killall .ags-wrapped; ags", shell=True, env=os.environ.copy())
 
     def hypr(self):
         if subprocess.run(["pidof", "obs"], check=False, stdout=subprocess.PIPE).stdout: # hyprland crashes if configs get updated while obs is running
@@ -88,27 +85,27 @@ class TemplateWriter:
         subprocess.Popen(["hyprctl", "reload"])
 
     def dunst(self):
-        subprocess.Popen("killall dunst; dusnt", shell=True)
+        subprocess.Popen("killall dunst; dunst", shell=True)
 
     def kvantum(self):
         # qt
         subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"])
 
-        # gtk
-        oomox = Path("~/.cache/wal/colors-oomox").expanduser()
-        configs = "\n".join([
-            f"FG={self.mappings['text']}",
-            f"SEL_FG={self.mappings['text']}",
-            "SPACING=2",
-            "ROUNDNESS=5",
-            "BTN_OUTLINE_WIDTH=1",
-            "BTN_OUTLINE_OFFSET=-3"
-        ])
-
-        with open(oomox, "a") as f:
-            f.write(configs)
-
-        subprocess.Popen(["/opt/oomox/plugins/theme_oomox/change_color.sh", oomox])
+        # gtk FIXME: figure out a better way to handle color themes with nix
+        # oomox = Path("~/.cache/wal/colors-oomox").expanduser()
+        # configs = "\n".join([
+        #     f"FG={self.mappings['text']}",
+        #     f"SEL_FG={self.mappings['text']}",
+        #     "SPACING=2",
+        #     "ROUNDNESS=5",
+        #     "BTN_OUTLINE_WIDTH=1",
+        #     "BTN_OUTLINE_OFFSET=-3"
+        # ])
+        #
+        # with open(oomox, "a") as f:
+        #     f.write(configs)
+        #
+        # subprocess.Popen(["/opt/oomox/plugins/theme_oomox/change_color.sh", oomox])
 
     def rofi(self):
         # a 512x512 image centered on the wallpaper
@@ -116,7 +113,7 @@ class TemplateWriter:
         box = (
             *((ax - 512) // 2 for ax in img.size),
             *((ax + 512) // 2 for ax in img.size))
-        img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png"))
+        img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png")) # pyright: ignore
 
 
 def unsplash(query):
