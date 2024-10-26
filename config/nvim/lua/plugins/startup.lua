@@ -24,10 +24,13 @@ return {
         config = function() vim.cmd("colorscheme github_dark_dimmed") end,
     },
     {
-        "folke/persistence.nvim",
-        opts = {
-            options = { "buffers", "curdir", "tabpages", "winsize", "globals" },
-            pre_save = function() vim.api.nvim_exec_autocmds("User", { pattern = "SessionSavePre" }) end,
-        },
+        "rmagatti/auto-session",
+        config = function()
+            vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
+            require("auto-session").setup({
+                auto_restore = false,
+            })
+        end,
     },
 }

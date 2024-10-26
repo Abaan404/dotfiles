@@ -6,17 +6,14 @@ return {
             "neovim/nvim-lspconfig",
         },
         event = "BufReadPre",
-        ft = { "c", "cpp" },
         config = function()
             local dap = require("dap")
-            local mason_registry = require("mason-registry")
 
-            local codelldb = mason_registry.get_package("codelldb")
             dap.adapters.codelldb = {
                 type = "server",
                 port = "${port}",
                 executable = {
-                    command = codelldb:get_install_path() .. "/codelldb",
+                    command = "codelldb",
                     args = { "--port", "${port}" },
                 },
             }
@@ -52,6 +49,20 @@ return {
                     {
                         elements = {
                             {
+                                id = "repl",
+                                size = 0.5,
+                            },
+                            {
+                                id = "console",
+                                size = 0.5,
+                            },
+                        },
+                        position = "bottom",
+                        size = 15,
+                    },
+                    {
+                        elements = {
+                            {
                                 id = "scopes",
                                 size = 0.5,
                             },
@@ -62,16 +73,6 @@ return {
                         },
                         position = "right",
                         size = 60,
-                    },
-                    {
-                        elements = {
-                            {
-                                id = "console",
-                                size = 1.0,
-                            },
-                        },
-                        position = "bottom",
-                        size = 15,
                     },
                 },
             })

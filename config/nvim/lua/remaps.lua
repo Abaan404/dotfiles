@@ -20,11 +20,9 @@ for i = 1, 9, 1 do
     set("n", string.format("<A-%s>", i), string.format("<Cmd>BufferGoto %s<CR>", i))
 end
 
--- NvimTree
-local nvimtree = require("nvim-tree.api")
-
-set("n", "<C-n>", function() nvimtree.tree.toggle({ focus = false }) end)
-set("n", "<leader>e", nvimtree.tree.focus)
+-- Neotree
+set("n", "<C-n>", "<Cmd>Neotree toggle<CR>");
+set("n", "<leader>e", "<Cmd>Neotree action=focus<CR>");
 
 -- Telescope
 local telescope_builtin = require("telescope.builtin")
@@ -67,8 +65,6 @@ set("n", "<A-w>", "<Cmd>BufferClose<CR>")
 set("n", "<A-W>", "<Cmd>BufferCloseAllButCurrentOrPinned<CR>")
 
 -- LSP
-set("n", "<leader>M", "<cmd>Mason<cr>")
-
 set("n", "<leader>lc", vim.lsp.buf.rename)
 set("n", "<leader>la", vim.lsp.buf.code_action)
 set("n", "<leader>lt", vim.lsp.buf.type_definition)
@@ -99,13 +95,12 @@ vim.keymap.set("n", "zM", ufo.closeAllFolds)
 local dap = require("dap")
 local dapui = require("dapui")
 
-set("n", "<leader>dd", dapui.toggle)
+set("n", "<C-d>", dapui.toggle)
 set("n", "<leader>db", dap.toggle_breakpoint)
+set("n", "<leader>dc", function() dap.toggle_breakpoint(vim.fn.input("Set Condition: ")) end)
 set("n", "<S-CR>", dap.step_into)
-set("n", "<leader>dr", function()
-    dap.continue()
-    dapui.open()
-end)
+set("n", "<CR>", dap.step_over)
+set("n", "<leader>dr", function() dap.continue() end)
 set("n", "<leader>dt", function()
     dap.terminate()
     dapui.close()
@@ -115,7 +110,10 @@ end)
 set("n", "<leader>cmd", "<cmd>CMakeDebug<CR>")
 set("n", "<leader>cmg", "<cmd>CMakeGenerate<CR>")
 set("n", "<leader>cmb", "<cmd>CMakeBuild<CR>")
+set("n", "<leader>cmr", "<cmd>CMakeRun<CR>")
 set("n", "<leader>cmc", "<cmd>CMakeClean<CR>")
+set("n", "<leader>cmtr", "<cmd>CMakeSelectLaunchTarget<CR>")
+set("n", "<leader>cmtt", "<cmd>CMakeRunTest<CR>")
 set("n", "<C-c>", "<cmd>ClangdSwitchSourceHeader<CR>")
 
 -- GitSigns
@@ -143,6 +141,5 @@ local peepsight = require("peepsight")
 
 set("n", "<leader>p", peepsight.toggle)
 
--- Persistence
-local persistence = require("persistence")
-set("n", "<leader>ql", persistence.load)
+-- auto-session
+set("n", "<leader>ql", "<Cmd>SessionRestore<CR>")

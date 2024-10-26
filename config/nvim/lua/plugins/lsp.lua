@@ -5,77 +5,16 @@ return {
         -- event = "InsertEnter", -- lazy loading this causes it to not auto-attach?
         dependencies = {
             "j-hui/fidget.nvim",
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
-            "WhoIsSethDaniel/mason-tool-installer.nvim",
             "folke/neodev.nvim",
             "RRethy/vim-illuminate",
             "hrsh7th/cmp-nvim-lsp",
         },
         config = function()
-            -- Set up Mason before anything else
-            require("mason").setup()
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    -- lua stuff
-                    "lua_ls",
-
-                    -- web dev stuff
-                    "cssls",
-                    "html",
-                    "tsserver",
-                    "svelte",
-
-                    -- c/cpp stuff
-                    "clangd",
-                    "swift_mesonls",
-                    "cmake",
-
-                    -- python stuff
-                    "pyright",
-
-                    -- docker stuff
-                    "docker_compose_language_service",
-                    "dockerls",
-
-                    -- bash stuff
-                    "bashls",
-
-                    -- typesetting stuff
-                    "texlab",
-                    "typst_lsp",
-
-                    -- Java
-                    "jdtls",
-
-                    -- matlab
-                    "matlab_ls",
-                },
-                automatic_installation = true,
-            })
-
-            require("mason-tool-installer").setup({
-                ensure_installed = {
-                    -- DAP for c/cpp/rust
-                    "codelldb",
-
-                    -- web dev stuff
-                    "prettier",
-                    "eslint_d",
-
-                    -- lua
-                    "stylua",
-
-                    -- python
-                    "black",
-                },
-            })
-
             -- Neodev setup before LSP config
             require("neodev").setup()
 
             -- Turn on LSP status information
-            require("fidget").setup()
+            require("fidget").setup({})
 
             -- Set up cool signs for diagnostics
             local signs = { Error = "", Warn = "", Hint = "", Info = " " }
@@ -97,14 +36,14 @@ return {
                     focusable = true,
                     style = "minimal",
                     border = "rounded",
-                    source = "always",
+                    source = true,
                     header = "",
                     prefix = "",
                 },
             })
 
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-                callback = function() vim.diagnostic.open_float(nil, {focus=false, scope="cursor"}) end,
+                callback = function() vim.diagnostic.open_float(nil, { focus = false, scope = "cursor" }) end,
             })
 
             -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
@@ -157,29 +96,52 @@ return {
                         telemetry = true,
                     },
                 },
+                nil_ls = {
+                    ["nil"] = {
+                        formatting = {
+                            command = { "nixfmt" },
+                        },
+                    },
+                },
             }
 
-            -- setup lsp for all servers installed by mason
-            for _, server in pairs(require("mason-lspconfig").get_installed_servers()) do
+            -- NOTE: servers are downloaded externally, mason is no longer used in these dots
+            local servers = {
+                "clangd",
+                "glsl_analyzer",
+                "cmake",
+                "mesonlsp",
+                "html",
+                "cssls",
+                "jsonls",
+                "lua_ls",
+                "ts_ls",
+                "kotlin_language_server",
+                "jdtls",
+                "bashls",
+                "yamlls",
+                "vimls",
+                "verible",
+                "matlab_ls",
+                "pyright",
+                "dockerls",
+                "docker_compose_language_service",
+                "texlab",
+                "typst_lsp",
+                "nil_ls",
+            }
+
+            -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)
+            for _, server in ipairs(servers) do
                 require("lspconfig")[server].setup({
                     capabilities = capabilities,
                     settings = settings[server],
-                })
-            end
-
-            -- TODO open a PR on mason to add glsl_analyzer
-            if vim.fn.findfile("/usr/bin/glsl_analyzer") then
-                require("lspconfig")["glsl_analyzer"].setup({
-                    capabilities = capabilities,
-                    settings = settings["glsl_analyzer"],
                 })
             end
         end,
     },
     {
         "stevearc/conform.nvim",
-        event = { "BufWritePre" },
-        cmd = { "ConformInfo" },
         opts = {
             formatters_by_ft = {
                 lua = { "stylua" },
@@ -199,7 +161,6 @@ return {
                 html = { "prettier" },
                 markdown = { "prettier" },
 
-                -- typst TODO mason pr
                 typst = { "typstfmt" },
             },
 
@@ -209,5 +170,19 @@ return {
                 },
             },
         },
+    },
+    {
+        "mfussenegger/nvim-jdtls",
+        ft = { "java" },
+        dependencies = {
+            "neovim/nvim-lspconfig",
+        },
+        config = function()
+            local config = {
+                cmd = { "jdtls" },
+                root_dir = vim.fs.dirname(vim.fs.find({ "gradlew", ".git", "mvnw" }, { upward = true })[1]),
+            }
+            require("jdtls").start_or_attach(config)
+        end,
     },
 }
