@@ -149,7 +149,7 @@ class Weather extends Service {
 
             // https://openweathermap.org/weather-conditions
             // get associated weather image
-            await Utils.fetch(`https://openweathermap.org/img/wn/${weather_data.weather[0].icon}@2x.png`)
+            await Utils.fetch(`https://openweathermap.org/img/wn/${weather_data.weather[0].icon}@4x.png`)
                 .then(async req => {
                     if (req.status !== 200) {
                         this.stop();

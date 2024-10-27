@@ -7,6 +7,7 @@
     pkgs.ffmpeg-full
     pkgs.xdg-utils
     pkgs.playerctl
+    pkgs.quickemu
     pkgs.neofetch
     pkgs.killall
     pkgs.glxinfo
@@ -15,6 +16,8 @@
     pkgs.p7zip
     pkgs.cava
     pkgs.wget
+    pkgs.qemu
+    pkgs.file
     pkgs.curl
     pkgs.tree
     pkgs.bat

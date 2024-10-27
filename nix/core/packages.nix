@@ -47,4 +47,8 @@
     package = pkgs-master.gpu-screen-recorder;
     enable = true;
   };
+
+  programs.virt-manager = {
+    enable = true;
+  };
 }

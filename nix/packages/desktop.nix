@@ -38,11 +38,9 @@
     pkgs.kolourpaint
     pkgs.inkscape
     pkgs.swappy
+    pkgs.kooha
     pkgs.krita
     pkgs.gimp
-
-    # codecs
-    pkgs.nv-codec-headers-12
 
     # theming
     pkgs.kdePackages.qtstyleplugin-kvantum
