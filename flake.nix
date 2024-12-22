@@ -63,7 +63,7 @@
     in
     {
       nixosConfigurations = {
-        nixos = nixpkgs.lib.nixosSystem {
+        asus = nixpkgs.lib.nixosSystem {
           inherit system;
 
           specialArgs = {
@@ -73,8 +73,25 @@
           };
 
           modules = [
-            ./nix/configuration.nix
-            nixos-hardware.nixosModules.lenovo-ideapad-15arh05 # change for your laptop here!
+            ./nix/core/common
+            ./nix/core/asus
+            "${nixpkgs-master}/nixos/modules/programs/gpu-screen-recorder.nix" # FIXME: remove once gpu-screen-recorder-4.2.3 is merged into stable/unstable
+          ];
+        };
+
+        lenovo = nixpkgs.lib.nixosSystem {
+          inherit system;
+
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+            inherit pkgs-master;
+          };
+
+          modules = [
+            nixos-hardware.nixosModules.lenovo-ideapad-15arh05
+            ./nix/core/common
+            ./nix/core/lenovo
             "${nixpkgs-master}/nixos/modules/programs/gpu-screen-recorder.nix" # FIXME: remove once gpu-screen-recorder-4.2.3 is merged into stable/unstable
           ];
         };
@@ -89,7 +106,7 @@
             inherit pkgs-unstable;
           };
 
-          modules = [ (import ./nix/home.nix flake-overlays) ];
+          modules = [ (import ./nix/home/home.nix flake-overlays) ];
         };
       };
     };

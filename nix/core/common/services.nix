@@ -19,12 +19,6 @@
     udisks2.enable = true;
     openssh.enable = true;
     flatpak.enable = true;
-
-    xserver.videoDrivers = [
-      "amdgpu"
-      "nvidia"
-    ];
-
   };
 
   virtualisation = {

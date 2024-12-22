@@ -1,29 +1,6 @@
 { ... }:
 
 {
-  imports = [
-    ./core/hardware-configuration.nix
-    ./core/networking.nix
-    ./core/services.nix
-    ./core/security.nix
-    ./core/packages.nix
-    ./core/locale.nix
-    ./core/shell.nix
-    ./core/boot.nix
-  ];
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.abaan404 = {
-    isNormalUser = true;
-    description = "abaan404";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-      "docker"
-      "wireshark"
-    ];
-  };
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
