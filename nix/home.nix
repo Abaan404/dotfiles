@@ -29,7 +29,6 @@ flake-overlays:
 
   home.sessionVariables = {
     EDITOR = "nvim";
-    TERM = "xterm-256color";
     CMAKE_GENERATOR = "Ninja Multi-Config";
     NIXOS_OZONE_WL = "1";
     # NIX_BUILD_SHELL = "zsh"; # messes up nix-shell environments
@@ -37,6 +36,7 @@ flake-overlays:
 
   programs.git = {
     enable = true;
+    lfs.enable = true;
     userName = "abaan404";
     userEmail = "67100191+Abaan404@users.noreply.github.com";
   };

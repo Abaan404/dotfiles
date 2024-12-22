@@ -93,6 +93,7 @@
       update_check_interval = 0;
       window_margin_width = 10;
       background_opacity = "0.5";
+      term = "xterm-256color";
     };
   };
 }
