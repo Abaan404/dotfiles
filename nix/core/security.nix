@@ -9,6 +9,12 @@
   networking.firewall = {
     enable = true;
 
+    allowedTCPPorts = [
+      22
+      8080
+      8000
+    ];
+
     allowedTCPPortRanges = [
       # KDE Connect
       {
