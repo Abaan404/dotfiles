@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   home.packages = [
@@ -7,6 +7,7 @@
 
     # file manager
     pkgs.dolphin
+    pkgs.qdirstat
     pkgs.kdePackages.ark
 
     # media
@@ -15,6 +16,7 @@
     pkgs.vlc
 
     # word processing
+    pkgs-unstable.typst
     pkgs.libreoffice-fresh
     pkgs.hunspell
     pkgs.hunspellDicts.uk_UA
@@ -22,7 +24,6 @@
     pkgs.zathura
     pkgs.swayimg
     pkgs.okular
-    pkgs.typst
 
     # gamging
     pkgs.tetrio-desktop
@@ -47,10 +48,13 @@
     pkgs.libsForQt5.qtstyleplugin-kvantum
     pkgs.qt6ct
     pkgs.qt5ct
+    pkgs.gnome.zenity
 
     # networking
     pkgs.blueman
     pkgs.networkmanagerapplet
+    pkgs.openconnect
+    pkgs.networkmanager-openconnect
   ];
 
   services.kdeconnect = {

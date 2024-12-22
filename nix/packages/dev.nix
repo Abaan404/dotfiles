@@ -11,6 +11,7 @@
     # C/C++
     # pkgs.clang
     pkgs.clang-tools
+    pkgs.valgrind
     pkgs.gnumake
     pkgs.cmake
     pkgs.ninja
@@ -41,6 +42,7 @@
     pkgs.verible
 
     # debugging
+    pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter
     pkgs.gdb
     pkgs.lldb
     pkgs.wireshark
@@ -48,7 +50,9 @@
     # lsp
     pkgs-unstable.typescript-language-server
     pkgs-unstable.bash-language-server
+    pkgs-unstable.typst-lsp
     pkgs-unstable.mesonlsp
+    pkgs-unstable.jdt-language-server
     pkgs.dockerfile-language-server-nodejs
     pkgs.docker-compose-language-service
     pkgs.vscode-langservers-extracted
@@ -58,18 +62,17 @@
     pkgs.yaml-language-server
     pkgs.vim-language-server
     pkgs.lua-language-server
-    pkgs.jdt-language-server
     pkgs.glsl_analyzer
-    pkgs.typst-lsp
+    pkgs.asm-lsp
     pkgs.pyright
     pkgs.texlab
     pkgs.nil
 
     # formatters
+    pkgs-unstable.typstfmt
     pkgs.nixfmt-rfc-style
     pkgs.prettierd
     pkgs.eslint_d
-    pkgs.typstfmt
     pkgs.stylua
     pkgs.black
 
