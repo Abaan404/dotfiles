@@ -34,13 +34,6 @@
 
   programs.ags = {
     enable = true;
-
-    # additional packages to add to gjs's runtime
-    extraPackages = [
-      pkgs.gtksourceview
-      pkgs.webkitgtk
-      pkgs.accountsservice
-    ];
   };
 
   wayland.windowManager.hyprland = {

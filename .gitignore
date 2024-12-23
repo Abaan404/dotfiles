@@ -5,6 +5,4 @@
 data/
 
 # ags/ts stuff
-node_modules/
-types/
-package-lock.json
+@girs/

@@ -1,7 +1,7 @@
 // for future me reference https://gist.github.com/dharmx/24d7c69bb7ebc7cca72f0855a9f00117 legendary
 // also gtk3 is pain
-@use 'animations';
-@use 'colors';
+@use "animations";
+@use "colors";
 
 .glance {
     @include animations.flyin("&", "top");
@@ -44,6 +44,7 @@
 
         .icon {
             font-size: 3em;
+
             padding: 20px {
                 right: 0px;
             }
@@ -67,7 +68,12 @@
                 }
 
                 .event-add {
-                    @include animations.fade("&:hover", colors.$secondary, colors.$good, $property: "background-color");
+                    @include animations.fade(
+                        "&:hover",
+                        colors.$secondary,
+                        colors.$good,
+                        $property: "background-color"
+                    );
 
                     background-color: colors.$secondary;
                     padding: 0px 10px;
@@ -77,7 +83,6 @@
                         font-size: 1.5em;
                     }
                 }
-
             }
 
             .entry {
@@ -92,13 +97,19 @@
 
                 .footer {
                     margin-top: 2px;
+
                     label {
                         font-size: 0.8em;
                     }
                 }
 
                 .event-remove {
-                    @include animations.fade("&:hover label", colors.$text, colors.$bad, $property: "color");
+                    @include animations.fade(
+                        "&:hover label",
+                        colors.$text,
+                        colors.$bad,
+                        $property: "color"
+                    );
                     padding-left: 5px;
                 }
 
@@ -109,8 +120,6 @@
                 }
             }
 
-
-
             .seperator {
                 margin: 2px;
                 padding: 2.5px;
@@ -118,6 +127,7 @@
                 background-color: colors.$color4;
             }
         }
+
         .calendar {
             background-color: colors.$color1;
             padding: 10px 0px;
@@ -133,8 +143,19 @@
                 padding-right: 0px;
 
                 button {
-                    @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
-                    @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
+                    @include animations.fade(
+                        "&:hover label",
+                        colors.$text,
+                        colors.$accent,
+                        $property: "color"
+                    );
+                    @include animations.fade(
+                        "&:active label",
+                        colors.$accent,
+                        colors.$text,
+                        $property: "color"
+                    );
+
                     label {
                         padding: 0px;
                     }
@@ -174,13 +195,23 @@
             }
         }
 
-        .bluetooth, .network {
+        .bluetooth,
+        .network {
             background-color: colors.$color1;
             border-radius: 10px;
             padding: 10px;
+
             .entry {
-                @include animations.fade("&:hover", colors.$secondary, colors.$accent);
-                @include animations.fade("&:active", colors.$accent, colors.$secondary);
+                @include animations.fade(
+                    "&:hover",
+                    colors.$secondary,
+                    colors.$accent
+                );
+                @include animations.fade(
+                    "&:active",
+                    colors.$accent,
+                    colors.$secondary
+                );
 
                 border-radius: 10px;
                 background-color: colors.$secondary;
@@ -191,9 +222,18 @@
 
                 .icon {
                     font-size: 2em;
+
                     padding: 15px {
-                        left: 20px
-                    };
+                        left: 20px;
+                    }
+                }
+            }
+
+            .input {
+                background-color: colors.$primary;
+
+                entry {
+                    background-color: green;
                 }
             }
         }
@@ -204,8 +244,18 @@
             background-color: colors.$color1;
 
             & > widget {
-                @include animations.fade("&:hover circular-progress", colors.$text, colors.$accent, $property: "color");
-                @include animations.fade("&:active circular-progress", colors.$accent, colors.$text, $property: "color");
+                @include animations.fade(
+                    "&:hover circular-progress",
+                    colors.$text,
+                    colors.$accent,
+                    $property: "color"
+                );
+                @include animations.fade(
+                    "&:active circular-progress",
+                    colors.$accent,
+                    colors.$text,
+                    $property: "color"
+                );
             }
 
             circular-progress {

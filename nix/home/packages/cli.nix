@@ -21,6 +21,7 @@
     pkgs.curl
     pkgs.tree
     pkgs.bat
+    pkgs.fzf
     pkgs.jq
     pkgs.fd
     pkgs.bc

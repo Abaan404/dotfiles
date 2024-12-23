@@ -1,0 +1,58 @@
+@use "sass:string";
+
+@mixin kf-flyin($direction, $offset, $push, $id) {
+    @keyframes flyin-#{$id} {
+        0% {
+            margin-#{$direction}: -$offset;
+        }
+        50% {
+            margin-#{$direction}: 0px;
+        }
+
+        75% {
+            margin-#{$direction}: $offset * $push;
+        }
+
+        100% {
+            margin-#{$direction}: 0px;
+        }
+    }
+}
+
+@mixin kf-fade($from, $to, $property, $id) {
+    @keyframes fade-#{$id} {
+        from {
+            #{$property}: $from;
+        }
+        to {
+            #{$property}: $to;
+        }
+    }
+}
+
+@mixin flyin(
+    $selector,
+    $direction,
+    $offset: 80px,
+    $push: 0.1,
+    $duration: 500ms
+) {
+    $unique: unique-id();
+    @include kf-flyin($direction, $offset, $push, $id: $unique);
+    animation: $duration flyin-#{$unique}; // bezier is kinda buggy?
+}
+
+@mixin fade(
+    $selector,
+    $color,
+    $color-hover,
+    $duration: 200ms,
+    $property: "background-color"
+) {
+    #{$selector} {
+        $unique: unique-id();
+        @include kf-fade($color, $color-hover, $property, $id: $unique);
+        animation: $duration fade-#{$unique};
+        #{$property}: $color-hover;
+    }
+}

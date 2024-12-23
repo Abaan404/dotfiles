@@ -1,5 +1,5 @@
-@use 'animations';
-@use 'colors';
+@use "animations";
+@use "colors";
 
 .media {
     @include animations.flyin("&", "top");
@@ -15,9 +15,20 @@
         .volume-box {
             margin: 5px 0px;
 
-            .mute, .list {
-                @include animations.fade("&:hover label", colors.$text, colors.$accent, $property: "color");
-                @include animations.fade("&:active label", colors.$accent, colors.$text, $property: "color");
+            .mute,
+            .list {
+                @include animations.fade(
+                    "&:hover label",
+                    colors.$text,
+                    colors.$accent,
+                    "color"
+                );
+                @include animations.fade(
+                    "&:active label",
+                    colors.$accent,
+                    colors.$text,
+                    "color"
+                );
             }
 
             .mute label {
@@ -45,8 +56,16 @@
             }
 
             .name {
-                @include animations.fade("&:hover", colors.$primary, colors.$accent);
-                @include animations.fade("&:active", colors.$accent, colors.$primary);
+                @include animations.fade(
+                    "&:hover",
+                    colors.$primary,
+                    colors.$accent
+                );
+                @include animations.fade(
+                    "&:active",
+                    colors.$accent,
+                    colors.$primary
+                );
 
                 background-color: colors.$primary;
                 padding: 0px 10px;
@@ -61,8 +80,18 @@
 
     .mixer {
         .buttons button {
-            @include animations.fade("&:hover", colors.$primary, colors.$accent, $property: "background-color");
-            @include animations.fade("&:active", colors.$accent, colors.$primary, $property: "background-color");
+            @include animations.fade(
+                "&:hover",
+                colors.$primary,
+                colors.$accent,
+                $property: "background-color"
+            );
+            @include animations.fade(
+                "&:active",
+                colors.$accent,
+                colors.$primary,
+                $property: "background-color"
+            );
 
             background-color: colors.$primary;
             border-radius: 20px;

@@ -1,18 +1,29 @@
 @use "sass:list";
-@use 'animations';
-@use 'colors';
+@use "animations";
+@use "colors";
 
 .bar {
-    margin: 10px { bottom: 3px } // 3px for fixing hover weirdness (maybe hyprland has a way to remove padding from one edge only?)
+    margin: 10px {
+        // 3px for fixing hover weirdness (maybe hyprland has a way to remove padding from one edge only?)
+        bottom: 3px;
+    }
     min-height: 30px;
 
-    $all-modules: "launcher", "workspaces", "sysinfo", "systray", "player", "info", "media", "power";
+    $all-modules: "launcher", "workspaces", "sysinfo", "systray", "player",
+        "info", "media", "power";
     @each $modules in $all-modules {
-
         .#{$modules} {
             @if not list.index("workspaces", $modules) {
-                @include animations.fade("&:hover", colors.$primary, colors.$accent);
-                @include animations.fade("&:active", colors.$accent, colors.$primary);
+                @include animations.fade(
+                    "&:hover",
+                    colors.$primary,
+                    colors.$accent
+                );
+                @include animations.fade(
+                    "&:active",
+                    colors.$accent,
+                    colors.$primary
+                );
             }
             border-radius: 10px;
             background-color: colors.$primary;
@@ -24,7 +35,12 @@
     }
 
     .workspaces {
-        @include animations.fade(".inactive:hover label", colors.$text, white, $property: "color");
+        @include animations.fade(
+            ".inactive:hover label",
+            colors.$text,
+            white,
+            $property: "color"
+        );
 
         & > box > button > label {
             min-width: 24px;
@@ -37,10 +53,16 @@
 
     .systray {
         .widget {
-            padding: 2px { left: 8px; right: 8px; };
+            padding: 2px {
+                left: 8px;
+                right: 8px;
+            }
         }
         button {
-            padding: 0px { left: 3px; right: 3px; };
+            padding: 0px {
+                left: 3px;
+                right: 3px;
+            }
         }
     }
 
@@ -86,4 +108,3 @@ menubar {
         padding: 4px;
     }
 }
-

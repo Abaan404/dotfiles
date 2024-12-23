@@ -1,6 +1,12 @@
 return {
     {
         "numToStr/Comment.nvim",
+        dependencies = {
+            {
+                "JoosepAlviste/nvim-ts-context-commentstring",
+                lazy = false, -- breaks otherwise
+            },
+        },
         keys = {
             { "<leader>/", mode = "n" },
             { "<leader>/", mode = "v" },
@@ -8,6 +14,7 @@ return {
             { "<leader>\\", mode = "v" },
         },
         opts = {
+            pre_hook = function() return vim.bo.commentstring end,
             toggler = {
                 line = "<leader>/",
                 block = "<leader>\\",

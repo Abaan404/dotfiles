@@ -7,8 +7,16 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
-    # ags
-    ags.url = "github:Aylur/ags";
+    # astal/ags
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    ags = {
+      url = "github:aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # matlab
     matlab = {
@@ -37,6 +45,7 @@
       nixpkgs-master,
       nixos-hardware,
       ags,
+      astal,
       matlab,
       home-manager,
       ...
@@ -95,6 +104,36 @@
             "${nixpkgs-master}/nixos/modules/programs/gpu-screen-recorder.nix" # FIXME: remove once gpu-screen-recorder-4.2.3 is merged into stable/unstable
           ];
         };
+      };
+
+      packages.${system}.default = pkgs.stdenvNoCC.mkDerivation rec {
+        name = "sparklypants";
+        src = ./config/ags;
+
+        nativeBuildInputs = [
+          ags.packages.${system}.default
+          pkgs.wrapGAppsHook
+          pkgs.gobject-introspection
+        ];
+
+        buildInputs = with astal.packages.${system}; [
+          astal3
+          io
+          apps
+          auth
+          battery
+          hyprland
+          mpris
+          network
+          powerprofiles
+          tray
+          wireplumber
+        ];
+
+        installPhase = ''
+          mkdir -p $out/bin
+          ags bundle app.ts $out/bin/${name}
+        '';
       };
 
       homeConfigurations = {

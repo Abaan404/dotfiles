@@ -1,16 +1,23 @@
-@use 'animations';
-@use 'colors';
+@use "animations";
+@use "colors";
 
 $button-open-height: 40px;
 $button-highlight-height: 30px;
 
-.powermenu {
+.replay {
     background-color: transparent;
-    margin-right: 40px;
+    margin: 20px;
+    margin-left: 40px;
+
+    min-width: 500px;
 
     .layout-box {
-        @include animations.flyin("&", "right");
-        @include animations.fade("button:hover", colors.$primary, colors.$secondary);
+        @include animations.flyin("&", "left");
+        @include animations.fade(
+            "button:hover",
+            colors.$primary,
+            colors.$secondary
+        );
 
         button {
             padding: $button-open-height $button-open-height;
@@ -28,11 +35,32 @@ $button-highlight-height: 30px;
         .transition-text {
             font-weight: bolder;
             font-size: 16px;
-            padding-right: 20px;
+            padding-left: 20px;
             color: transparent;
         }
 
-        @each $selector in "power", "reboot", "suspend", "hibernate" {
+        .record {
+            @include animations.fade(
+                ".recording",
+                colors.$primary,
+                colors.$good
+            );
+            @include animations.fade(
+                ".paused",
+                colors.$primary,
+                colors.$warning
+            );
+        }
+
+        .replay {
+            @include animations.fade(".paused", colors.$primary, colors.$bad);
+        }
+
+        .microphone {
+            @include animations.fade(".disabled", colors.$primary, colors.$bad);
+        }
+
+        @each $selector in "replay", "record", "microphone" {
             .#{$selector}:hover button {
                 transition: 100ms linear padding;
                 padding-top: $button-highlight-height;
@@ -46,7 +74,7 @@ $button-highlight-height: 30px;
             }
 
             .#{$selector}:hover .transition-text {
-                @include animations.flyin("&", "right");
+                @include animations.flyin("&", "left");
                 transition: 200ms linear color;
                 color: colors.$accent;
             }
@@ -55,10 +83,6 @@ $button-highlight-height: 30px;
                 transition: 200ms linear color;
                 color: transparent;
             }
-        }
-
-        .power button image {
-            color: colors.$bad;
         }
     }
 }
