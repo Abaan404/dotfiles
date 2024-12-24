@@ -15,6 +15,7 @@
     gvfs.enable = true;
     dbus.enable = true;
     upower.enable = true;
+    power-profiles-daemon.enable = true;
     accounts-daemon.enable = true;
     udisks2.enable = true;
     openssh.enable = true;

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 FILENAME=~/Pictures/screenshots/$(date +'%Y%m%d-%H%M%S_screenshot.png')
+mkdir -p ~/Pictures/screenshots
 
 # grab res
 if [[ $1 == "region" ]]; then

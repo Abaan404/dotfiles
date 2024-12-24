@@ -36,7 +36,7 @@ class TemplateWriter:
             # some js packages uses "!!" somewhere for some reason,
             # instead of changing delimiter just ignore the path
             # entirely
-            if conf.name == "@girs":
+            if conf.name in ["@girs", "node_modules"]:
                 continue
 
             if conf.is_dir() or not conf.exists():

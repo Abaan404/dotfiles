@@ -1,20 +1,32 @@
-// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
-$theme_fg_color: "@theme_fg_color";
-$theme_bg_color: "@theme_bg_color";
+@use 'scss/colors';
 
-window.Bar {
-    background: transparent;
-    color: #{$theme_bg_color};
-    font-weight: bold;
+// window stuff
+@use 'scss/bar';
+// @use 'scss/player';
+// @use 'scss/glance';
+// @use 'scss/powermenu';
+// @use 'scss/media';
+// @use 'scss/replay';
 
-    >centerbox {
-        background: #{$theme_bg_color};
-        border-radius: 10px;
-        margin: 8px;
+* {
+    all: initial;
+    font: {
+        family: JetBrainsMono NF;
+        size: 14px;
+        weight: bold;
     }
 
-    button {
-        border-radius: 8px;
-        margin: 2px;
+    label {
+        color: colors.$text;
     }
+
+    image {
+        color: colors.$text;
+    }
+}
+
+tooltip label {
+    background-color: colors.$primary;
+    padding: 5px 15px;
+    border-radius: 20px;
 }

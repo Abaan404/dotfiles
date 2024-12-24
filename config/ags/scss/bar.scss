@@ -13,6 +13,9 @@
         "info", "media", "power";
     @each $modules in $all-modules {
         .#{$modules} {
+            border-radius: 10px;
+            background-color: colors.$primary;
+
             @if not list.index("workspaces", $modules) {
                 @include animations.fade(
                     "&:hover",
@@ -25,8 +28,6 @@
                     colors.$primary
                 );
             }
-            border-radius: 10px;
-            background-color: colors.$primary;
 
             .widget {
                 padding: 0px 14px;
@@ -95,8 +96,10 @@ menu {
     border-radius: 10px;
 
     menuitem {
-        @include animations.fade("&:hover", colors.$primary, colors.$accent);
         border-radius: 10px;
+
+        @include animations.fade("&:hover", colors.$primary, colors.$accent);
+
         label {
             padding: 2px 8px;
         }

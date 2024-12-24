@@ -70,9 +70,9 @@
 
     # formatters
     pkgs-unstable.typstfmt
+    pkgs-unstable.eslint_d
     pkgs.nixfmt-rfc-style
     pkgs.prettierd
-    pkgs.eslint_d
     pkgs.stylua
     pkgs.black
 
