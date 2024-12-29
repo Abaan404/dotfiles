@@ -2,6 +2,7 @@
 
 {
   home.packages = [
+    pkgs.gpu-screen-recorder
     pkgs.brightnessctl
     pkgs.wl-clipboard
     pkgs.ffmpeg-full

@@ -46,9 +46,9 @@
     # theming
     pkgs.kdePackages.qtstyleplugin-kvantum
     pkgs.libsForQt5.qtstyleplugin-kvantum
+    pkgs.libsForQt5.qt5ct
     pkgs.qt6ct
-    pkgs.qt5ct
-    pkgs.gnome.zenity
+    pkgs.zenity
 
     # networking
     pkgs.blueman

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-master, ... }:
+{ pkgs, ... }:
 
 {
   # Allow unfree packages
@@ -14,7 +14,6 @@
     pkgs.usbutils
     # acpi-call # TODO figure out acpi_call
     pkgs.pciutils
-    pkgs-master.gpu-screen-recorder
   ];
 
   programs.dconf = {
@@ -44,7 +43,6 @@
   };
 
   programs.gpu-screen-recorder = {
-    package = pkgs-master.gpu-screen-recorder;
     enable = true;
   };
 

@@ -32,7 +32,6 @@
 
     # java
     pkgs-unstable.gradle
-    pkgs.vscode-extensions.vscjava.vscode-java-debug
     pkgs.openjdk21
     # pkgs.jdk17
     # pkgs.jdk8
@@ -43,16 +42,16 @@
 
     # debugging
     pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter
+    pkgs.vscode-extensions.vscjava.vscode-java-debug
     pkgs.gdb
     pkgs.lldb
     pkgs.wireshark
 
     # lsp
-    pkgs-unstable.typescript-language-server
-    pkgs-unstable.bash-language-server
-    pkgs-unstable.typst-lsp
-    pkgs-unstable.mesonlsp
-    pkgs-unstable.jdt-language-server
+    pkgs.typescript-language-server
+    pkgs.bash-language-server
+    pkgs.mesonlsp
+    pkgs.jdt-language-server
     pkgs.dockerfile-language-server-nodejs
     pkgs.docker-compose-language-service
     pkgs.vscode-langservers-extracted
@@ -63,6 +62,7 @@
     pkgs.vim-language-server
     pkgs.lua-language-server
     pkgs.glsl_analyzer
+    pkgs.tinymist
     pkgs.asm-lsp
     pkgs.pyright
     pkgs.texlab

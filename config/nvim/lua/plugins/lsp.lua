@@ -67,8 +67,9 @@ return {
                         },
                     },
                 },
-                typst_lsp = {
-                    exportPdf = "onSave", -- onSave
+                tinymist = {
+                    exportPdf = "onType",
+                    outputPath = "$root/$dir/$name",
                 },
                 texlab = {
                     texlab = {
@@ -127,7 +128,7 @@ return {
                 "dockerls",
                 "docker_compose_language_service",
                 "texlab",
-                "typst_lsp",
+                "tinymist",
                 "nil_ls",
             }
 
