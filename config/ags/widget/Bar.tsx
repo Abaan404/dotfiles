@@ -10,14 +10,16 @@ import Battery from "gi://AstalBattery?version=0.1";
 
 import { get_player_glyph, symbolic_strength } from "../utils/glyphs";
 import { truncate } from "../utils/strings";
-import { PlayerSelected } from "../variables";
 import { clamp } from "../utils/math";
+
+import { PlayerSelected } from "../helpers/variables";
+import window_handler from "../helpers/window";
 
 function Launcher() {
     const reveal = Variable(false);
 
     return (
-        <eventbox
+        <button
             className="launcher"
             onClick="bash -c 'pkill rofi || rofi -show drun'"
             onHover={() => reveal.set(true)}
@@ -33,7 +35,7 @@ function Launcher() {
                     <label label="Launcher" />
                 </revealer>
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -70,12 +72,12 @@ function Workspaces() {
     });
 
     return (
-        <eventbox
+        <button
             className="workspaces">
             <box spacing={20} className="widget">
                 {workspaces()}
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -89,7 +91,7 @@ function SysInfo() {
         .poll(5000, ["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]);
 
     return (
-        <eventbox
+        <button
             onClick={() => showSystray.set(!showSystray.get())}
             className="sysinfo">
             <box
@@ -99,7 +101,7 @@ function SysInfo() {
                 {ram().as(val => ` ${val}`)}
                 {cpu().as(val => ` ${val}%`)}
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -112,7 +114,7 @@ function SysTray() {
             revealChild={showSystray()}
             transitionDuration={500}>
 
-            <eventbox
+            <button
                 className="systray">
                 <box
                     className="widget">
@@ -127,14 +129,14 @@ function SysTray() {
                         </menubutton>
                     )))}
                 </box>
-            </eventbox>
+            </button>
         </revealer>
     );
 }
 
 function Player() {
     return (
-        <eventbox
+        <button
             className="player"
 
             onClick={(_, e) => {
@@ -193,7 +195,7 @@ function Player() {
                 })} />
 
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -218,7 +220,7 @@ function Media() {
         }
 
         return (
-            <eventbox
+            <button
                 onScroll={(_, e) => {
                     if (!endpoint) {
                         return;
@@ -259,7 +261,7 @@ function Media() {
                     <label label={glyph()} />
                     <label label={volume()} visible={visible()} />
                 </box>
-            </eventbox>
+            </button>
         );
     }
 
@@ -314,7 +316,7 @@ function Media() {
     }
 
     return (
-        <eventbox
+        <button
             className={class_names()}>
             <box
                 className="widget"
@@ -322,7 +324,7 @@ function Media() {
                 <EndpointWidget endpoint={audio?.default_speaker} glyph={speaker_glyph} spacing={6} />
                 <EndpointWidget endpoint={audio?.default_microphone} glyph={microphone_glyph} spacing={1} />
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -333,7 +335,7 @@ function Info() {
 
         const reveal = Variable(false);
         return (
-            <eventbox
+            <button
                 className="clock"
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
@@ -348,7 +350,7 @@ function Info() {
                         <label label={time("%a, %d %B %Y")()} />
                     </revealer>
                 </box>
-            </eventbox>
+            </button>
         );
     }
 
@@ -405,7 +407,7 @@ function Info() {
 
         const reveal = Variable(false);
         return (
-            <eventbox
+            <button
                 className="network"
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
@@ -422,7 +424,7 @@ function Info() {
                         <label label={bind(network.wifi, "ssid")} />
                     </revealer>
                 </box>
-            </eventbox>
+            </button>
         );
     }
 
@@ -431,7 +433,7 @@ function Info() {
 
         const reveal = Variable(false);
         return (
-            <eventbox
+            <button
                 className="battery"
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
@@ -445,7 +447,7 @@ function Info() {
                         <label label={bind(battery, "percentage").as(percentage => `${(percentage * 100).toString()}%`)} />
                     </revealer>
                 </box>
-            </eventbox>
+            </button>
         );
     }
 
@@ -463,14 +465,24 @@ function Info() {
     );
 }
 
-function Power() {
+function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     const reveal = Variable(false);
 
     return (
-        <eventbox
+        <button
             className="power"
             onHover={() => reveal.set(true)}
-            onHoverLost={() => reveal.set(false)}>
+            onHoverLost={() => reveal.set(false)}
+            onClick={(_, e) => {
+                switch (e.button) {
+                    case Astal.MouseButton.PRIMARY:
+                        window_handler.toggle_window("powermenu", gdkmonitor);
+                        break;
+
+                    default:
+                        break;
+                }
+            }}>
             <box
                 className="widget">
                 <label label="⏼" css="padding-right: 5px" />
@@ -482,7 +494,7 @@ function Power() {
                     <label label="exit" />
                 </revealer>
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -508,7 +520,6 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
                     <SysInfo />
                     <SysTray />
                 </box>
-
                 <box
                     spacing={10}
                     halign={Gtk.Align.CENTER}>
@@ -519,9 +530,8 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
                     halign={Gtk.Align.END}>
                     <Media />
                     <Info />
-                    <Power />
+                    <Power gdkmonitor={gdkmonitor} />
                 </box>
-
             </centerbox>
         </window>
     );
