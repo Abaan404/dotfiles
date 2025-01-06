@@ -2,12 +2,14 @@ import { App } from "astal/gtk3";
 import Hyprland from "gi://AstalHyprland";
 
 import style from "./style.scss";
-import Bar from "./widget/Bar";
-import PowerMenu from "./widget/PowerMenu";
+import Bar from "./windows/Bar";
+import PowerMenu from "./windows/PowerMenu";
+import Mpris from "./windows/Mpris"
 
 import window_handler from "./helpers/window";
 
 window_handler.register_window("powermenu", PowerMenu);
+window_handler.register_window("mpris", Mpris);
 
 App.start({
     css: style,

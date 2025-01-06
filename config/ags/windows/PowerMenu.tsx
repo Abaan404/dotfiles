@@ -1,5 +1,6 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk3";
-import { WindowHandler } from "../helpers/window";
+import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
+
+import { BoxedWindow } from "../widgets/BoxedWindow";
 
 function MenuButton({ label, class_name, icon, command }: {
     label: string;
@@ -27,40 +28,37 @@ function MenuButton({ label, class_name, icon, command }: {
     );
 }
 
-export default function PowerMenu(gdkmonitor: Gdk.Monitor) {
-    return WindowHandler.new_window({
-        name: "powermenu",
-        window_props: {
-            gdkmonitor: gdkmonitor,
-            anchor: Astal.WindowAnchor.RIGHT,
-            application: App,
-        },
-        box_props: {
-            spacing: 20,
-            orientation: Gtk.Orientation.VERTICAL,
-        },
-        children: [
+export default function (gdkmonitor: Gdk.Monitor) {
+    return (
+        <BoxedWindow
+            name="powermenu"
+            gdkmonitor={gdkmonitor}
+            anchor={Astal.WindowAnchor.RIGHT}
+            application={App}
+            layout_box_props={{
+                spacing: 20,
+                orientation: Gtk.Orientation.VERTICAL,
+            }}>
             <MenuButton
                 class_name="power"
                 label="Shutdown"
                 icon="system-shutdown-symbolic"
-                command={["systemctl", "poweroff"]} />,
+                command={["systemctl", "poweroff"]} />
             <MenuButton
                 class_name="reboot"
                 label="Reboot"
                 icon="system-reboot-symbolic"
-                command={["systemctl", "reboot"]} />,
+                command={["systemctl", "reboot"]} />
             <MenuButton
                 class_name="suspend"
                 label="Suspend"
                 icon="system-suspend-symbolic"
-                command={["hyprlock"]} />,
+                command={["hyprlock"]} />
             <MenuButton
                 class_name="hibernate"
                 label="Hibernate"
                 icon="system-hibernate-symbolic"
-                command={["systemctl", "hibernate"]} />,
-        ],
-        gdkmonitor: gdkmonitor,
-    });
+                command={["systemctl", "hibernate"]} />
+        </BoxedWindow>
+    ) as Widget.Window;
 }

@@ -134,7 +134,7 @@ function SysTray() {
     );
 }
 
-function Player() {
+function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     return (
         <button
             className="player"
@@ -147,7 +147,7 @@ function Player() {
 
                 switch (e.button) {
                     case Astal.MouseButton.PRIMARY:
-                        // TODO player window
+                        window_handler.toggle_window("mpris", gdkmonitor);
                         break;
 
                     case Astal.MouseButton.SECONDARY:
@@ -498,7 +498,7 @@ function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     );
 }
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
+export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
             className="bar"
@@ -523,7 +523,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
                 <box
                     spacing={10}
                     halign={Gtk.Align.CENTER}>
-                    <Player />
+                    <Player gdkmonitor={gdkmonitor} />
                 </box>
                 <box
                     spacing={10}

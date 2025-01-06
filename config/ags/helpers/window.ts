@@ -1,4 +1,4 @@
-import { App, Gtk, Gdk, Widget } from "astal/gtk3";
+import { App, Gdk, Widget } from "astal/gtk3";
 
 export class WindowHandler {
     private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Widget.Window>();
@@ -27,7 +27,7 @@ export class WindowHandler {
 
         const window_factory = this.get_window_factory(name);
         if (window_factory) {
-            const window = window_factory(gdkmonitor)
+            const window = window_factory(gdkmonitor);
             App.add_window(window);
 
             return;
@@ -36,21 +36,6 @@ export class WindowHandler {
 
     register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Widget.Window) {
         this.registry.set(name, window_factory);
-    }
-
-    static new_window({ name, gdkmonitor, children, box_props, window_props }: { name: string; gdkmonitor: Gdk.Monitor; children: Gtk.Widget[]; box_props: Widget.BoxProps; window_props: Widget.WindowProps }) {
-        return <window
-            name={name}
-            gdkmonitor={gdkmonitor}
-            {...window_props}>
-            <box className={name}>
-                <box
-                    className="layout-box"
-                    {...box_props}>
-                    {children}
-                </box>
-            </box>
-        </window> as Widget.Window;
     }
 }
 

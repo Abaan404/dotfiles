@@ -1,9 +1,11 @@
-export function get_player_glyph(name: string) {
-    name = name
+export function get_player_name(name: string) {
+    return name
         .replace(/org\.mpris\.MediaPlayer2\./, "")
         .replace(/\..*/, "");
+}
 
-    switch (name) {
+export function get_player_glyph(name: string) {
+    switch (get_player_name(name)) {
         case "firefox":
             return "";
         case "spotify":
