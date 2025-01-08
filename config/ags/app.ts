@@ -5,11 +5,13 @@ import style from "./style.scss";
 import Bar from "./windows/Bar";
 import PowerMenu from "./windows/PowerMenu";
 import Mpris from "./windows/Mpris"
+import Media from "./windows/Media";
 
 import window_handler from "./helpers/window";
 
 window_handler.register_window("powermenu", PowerMenu);
 window_handler.register_window("mpris", Mpris);
+window_handler.register_window("media", Media);
 
 App.start({
     css: style,

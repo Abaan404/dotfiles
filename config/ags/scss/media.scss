@@ -2,11 +2,8 @@
 @use "colors";
 
 .media {
-    @include animations.flyin("&", "top");
-
-    min-width: 480px;
-
     .layout-box {
+        min-width: 480px;
         margin: 20px;
         background-color: colors.$color1;
         border-radius: 10px;
@@ -21,13 +18,13 @@
                     "&:hover label",
                     colors.$text,
                     colors.$accent,
-                    "color"
+                    $property: "color"
                 );
                 @include animations.fade(
                     "&:active label",
                     colors.$accent,
                     colors.$text,
-                    "color"
+                    $property: "color"
                 );
             }
 
@@ -56,6 +53,11 @@
             }
 
             .name {
+                min-height: 2em;
+                background-color: colors.$primary;
+                padding: 0px 14px;
+                border-radius: 10px;
+
                 @include animations.fade(
                     "&:hover",
                     colors.$primary,
@@ -66,10 +68,6 @@
                     colors.$accent,
                     colors.$primary
                 );
-
-                background-color: colors.$primary;
-                padding: 0px 10px;
-                border-radius: 10px;
             }
 
             .default {
@@ -80,6 +78,12 @@
 
     .mixer {
         .buttons button {
+            background-color: colors.$primary;
+            border-radius: 20px;
+            label {
+                padding: 10px;
+            }
+
             @include animations.fade(
                 "&:hover",
                 colors.$primary,
@@ -92,12 +96,8 @@
                 colors.$primary,
                 $property: "background-color"
             );
-
-            background-color: colors.$primary;
-            border-radius: 20px;
-            label {
-                padding: 10px;
-            }
         }
     }
+
+    @include animations.flyin("&", "top");
 }

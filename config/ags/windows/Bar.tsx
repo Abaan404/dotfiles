@@ -199,7 +199,7 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     );
 }
 
-function Media() {
+function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     const bluetooth = Bluetooth.get_default();
     const audio = WirePlumber.get_default()?.audio;
 
@@ -265,7 +265,7 @@ function Media() {
         );
     }
 
-    let class_names = Variable("media muted");
+    let class_names = Variable("audio muted");
     let speaker_glyph = Variable("󰖁 ");
     let microphone_glyph = Variable(" ");
 
@@ -273,7 +273,7 @@ function Media() {
         class_names = Variable.derive(
             [bind(bluetooth, "is_connected"), bind(audio, "default_speaker"), bind(audio.default_speaker, "mute")],
             (is_connected, _, mute) => {
-                const ret = ["media"];
+                const ret = ["audio"];
 
                 is_connected
                     ? ret.push("bluetooth")
@@ -317,7 +317,17 @@ function Media() {
 
     return (
         <button
-            className={class_names()}>
+            className={class_names()}
+            onClick={(_, e) => {
+                switch (e.button) {
+                    case Astal.MouseButton.PRIMARY:
+                        window_handler.toggle_window("media", gdkmonitor);
+                        break;
+
+                    default:
+                        break;
+                }
+            }}>
             <box
                 className="widget"
                 spacing={10}>
@@ -528,7 +538,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 <box
                     spacing={10}
                     halign={Gtk.Align.END}>
-                    <Media />
+                    <Audio gdkmonitor={gdkmonitor} />
                     <Info />
                     <Power gdkmonitor={gdkmonitor} />
                 </box>

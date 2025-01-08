@@ -10,7 +10,7 @@
     min-height: 30px;
 
     $all-modules: "launcher", "workspaces", "sysinfo", "systray", "player",
-        "info", "media", "power";
+        "info", "audio", "power";
     @each $modules in $all-modules {
         .#{$modules} {
             border-radius: 10px;
@@ -67,7 +67,7 @@
         }
     }
 
-    // media
+    // audio
     .bluetooth {
         background-color: colors.$bluetooth;
     }
