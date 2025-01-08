@@ -28,6 +28,9 @@
     pkgs.dunst
     pkgs.libnotify
 
+    # onscreen keyboard
+    pkgs.wvkbd
+
     # misc
     pkgs.wev
   ];
@@ -59,12 +62,18 @@
 
     extraConfig = ''
       monitor=,preferred,auto,1
+      monitor=eDP-1,preferred,auto,1,transform,0
 
       source=~/.config/hypr/environment.conf
       source=~/.config/hypr/scripts.conf
       source=~/.config/hypr/keybinds.conf
       source=~/.config/hypr/rules.conf
       source=~/.config/hypr/animations.conf
+      source=~/.config/hypr/hyprgrass.conf
     '';
+
+    plugins = [
+      pkgs.hyprlandPlugins.hyprgrass
+    ];
   };
 }

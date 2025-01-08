@@ -5,5 +5,6 @@
   imports = [
     ./hardware-configuration.nix
     ./services.nix
+    ./iio.nix
   ];
 }

@@ -17,6 +17,7 @@
     upower.enable = true;
     power-profiles-daemon.enable = true;
     accounts-daemon.enable = true;
+    input-remapper.enable = true;
     udisks2.enable = true;
     openssh.enable = true;
     flatpak.enable = true;
