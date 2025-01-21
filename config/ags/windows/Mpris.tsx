@@ -30,7 +30,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
             gdkmonitor={gdkmonitor}
             anchor={Astal.WindowAnchor.TOP}
             application={App}
-            box_props={{
+            layout_box_props={{
                 spacing: 10,
             }}>
 

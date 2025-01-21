@@ -12,7 +12,6 @@
     # hardware
     pkgs.lshw
     pkgs.usbutils
-    # acpi-call # TODO figure out acpi_call
     pkgs.pciutils
   ];
 

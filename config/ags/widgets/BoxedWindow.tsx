@@ -1,29 +1,26 @@
-import { Gdk, Widget } from "astal/gtk3";
-import Binding from "astal/binding";
+import { Binding } from "astal";
+import { Widget } from "astal/gtk3";
 
-export function BoxedWindow({
-    name,
-    gdkmonitor,
-    layout_box_props = {},
-    children,
-    ...window_props
-}: {
+export interface BoxedWindowProps extends Widget.WindowProps {
     name: string;
-    gdkmonitor: Gdk.Monitor;
     layout_box_props?: Widget.BoxProps;
+    child?: JSX.Element;
     children?: JSX.Element[] | Binding<JSX.Element[]>;
-    [key: string]: any;
-},
-) {
+}
+
+export function BoxedWindow(window_props: BoxedWindowProps) {
+    const { name, layout_box_props, child, children, ...props } = window_props;
+
     return (
         <window
             name={name}
-            {...window_props}>
+            {...props}>
             <box
                 className={name}>
                 <box
                     className="layout-box"
                     {...layout_box_props}>
+                    {child}
                     {children}
                 </box>
             </box>

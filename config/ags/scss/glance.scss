@@ -4,16 +4,11 @@
 @use "colors";
 
 .glance {
-    @include animations.flyin("&", "top");
-
     .layout-box {
         margin: 20px;
     }
 
     .weather {
-        @include animations.fade("&:hover", colors.$color1, colors.$accent);
-        @include animations.fade("&:active", colors.$accent, colors.$color1);
-
         & > box {
             padding: 10px 20px;
         }
@@ -34,6 +29,9 @@
         .temperature {
             font-size: 1.25em;
         }
+
+        @include animations.fade("&:hover", colors.$color1, colors.$accent);
+        @include animations.fade("&:active", colors.$accent, colors.$color1);
     }
 
     .power {
@@ -68,13 +66,6 @@
                 }
 
                 .event-add {
-                    @include animations.fade(
-                        "&:hover",
-                        colors.$secondary,
-                        colors.$good,
-                        $property: "background-color"
-                    );
-
                     background-color: colors.$secondary;
                     padding: 0px 10px;
                     border-radius: 20px;
@@ -82,6 +73,13 @@
                     label {
                         font-size: 1.5em;
                     }
+
+                    @include animations.fade(
+                        "&:hover",
+                        colors.$secondary,
+                        colors.$good,
+                        $property: "background-color"
+                    );
                 }
             }
 
@@ -104,13 +102,14 @@
                 }
 
                 .event-remove {
+                    padding-left: 5px;
+
                     @include animations.fade(
                         "&:hover label",
                         colors.$text,
                         colors.$bad,
                         $property: "color"
                     );
-                    padding-left: 5px;
                 }
 
                 .event-time {
@@ -202,21 +201,10 @@
             padding: 10px;
 
             .entry {
-                @include animations.fade(
-                    "&:hover",
-                    colors.$secondary,
-                    colors.$accent
-                );
-                @include animations.fade(
-                    "&:active",
-                    colors.$accent,
-                    colors.$secondary
-                );
-
                 border-radius: 10px;
                 background-color: colors.$secondary;
 
-                label {
+                .value {
                     font-size: 1.5em;
                 }
 
@@ -227,6 +215,17 @@
                         left: 20px;
                     }
                 }
+
+                @include animations.fade(
+                    "&:hover",
+                    colors.$secondary,
+                    colors.$accent
+                );
+                @include animations.fade(
+                    "&:active",
+                    colors.$accent,
+                    colors.$secondary
+                );
             }
 
             .input {
@@ -243,22 +242,22 @@
             border-radius: 20px;
             background-color: colors.$color1;
 
-            & > widget {
+            & > button {
                 @include animations.fade(
-                    "&:hover circular-progress",
+                    "&:hover circularprogress",
                     colors.$text,
                     colors.$accent,
                     $property: "color"
                 );
                 @include animations.fade(
-                    "&:active circular-progress",
+                    "&:active circularprogress",
                     colors.$accent,
                     colors.$text,
                     $property: "color"
                 );
             }
 
-            circular-progress {
+            circularprogress {
                 min-width: 70px;
                 min-height: 70px;
                 background-color: colors.$color4;
@@ -267,4 +266,6 @@
             }
         }
     }
+
+    @include animations.flyin("&", "top");
 }

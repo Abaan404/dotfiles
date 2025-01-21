@@ -2,20 +2,22 @@ import { App } from "astal/gtk3";
 import Hyprland from "gi://AstalHyprland";
 
 import style from "./style.scss";
-import Bar from "./windows/Bar";
-import PowerMenu from "./windows/PowerMenu";
-import Mpris from "./windows/Mpris"
-import Media from "./windows/Media";
-
 import window_handler from "./helpers/window";
 
-window_handler.register_window("powermenu", PowerMenu);
-window_handler.register_window("mpris", Mpris);
-window_handler.register_window("media", Media);
+import Bar from "./windows/Bar";
+import PowerMenu from "./windows/PowerMenu";
+import Mpris from "./windows/Mpris";
+import Media from "./windows/Media";
+import Glance from "./windows/Glance";
 
 App.start({
     css: style,
     main() {
+        window_handler.register_window("powermenu", PowerMenu);
+        window_handler.register_window("mpris", Mpris);
+        window_handler.register_window("media", Media);
+        window_handler.register_window("glance", Glance);
+
         App.get_monitors().map(Bar);
     },
 

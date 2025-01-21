@@ -199,6 +199,7 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     );
 }
 
+// FIXME: update component whenever an audio device is detected
 function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     const bluetooth = Bluetooth.get_default();
     const audio = WirePlumber.get_default()?.audio;
@@ -338,7 +339,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     );
 }
 
-function Info() {
+function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     function TimeInfo() {
         const time = (format: string) => Variable("").poll(1000, () =>
             GLib.DateTime.new_now_local().format(format)!);
@@ -347,15 +348,24 @@ function Info() {
         return (
             <button
                 className="clock"
+                onClick={(_, e) => {
+                    switch (e.button) {
+                        case Astal.MouseButton.PRIMARY:
+                            window_handler.toggle_window("glance", gdkmonitor);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }}
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
                 <box>
                     <label label={time("%H:%M")()} />
-
                     <revealer
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
-                        css="padding-left: 5px;"
+                        css="padding-left: 10px;"
                         reveal_child={reveal()}>
                         <label label={time("%a, %d %B %Y")()} />
                     </revealer>
@@ -419,6 +429,16 @@ function Info() {
         return (
             <button
                 className="network"
+                onClick={(_, e) => {
+                    switch (e.button) {
+                        case Astal.MouseButton.PRIMARY:
+                            window_handler.toggle_window("glance", gdkmonitor);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }}
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
                 <box>
@@ -431,7 +451,7 @@ function Info() {
                         transitionDuration={500}
                         css="padding-left: 5px;"
                         reveal_child={reveal()}>
-                        <label label={bind(network.wifi, "ssid")} />
+                        <label label={bind(network.wifi, "ssid").as(ssid => ssid || "unknown")} />
                     </revealer>
                 </box>
             </button>
@@ -445,6 +465,16 @@ function Info() {
         return (
             <button
                 className="battery"
+                onClick={(_, e) => {
+                    switch (e.button) {
+                        case Astal.MouseButton.PRIMARY:
+                            window_handler.toggle_window("glance", gdkmonitor);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }}
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
                 <box>
@@ -463,7 +493,17 @@ function Info() {
 
     return (
         <eventbox
-            className="info">
+            className="info"
+            onClick={(_, e) => {
+                switch (e.button) {
+                    case Astal.MouseButton.PRIMARY:
+                        window_handler.toggle_window("glance", gdkmonitor);
+                        break;
+
+                    default:
+                        break;
+                }
+            }}>
             <box
                 className="widget"
                 spacing={10}>
@@ -539,7 +579,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                     spacing={10}
                     halign={Gtk.Align.END}>
                     <Audio gdkmonitor={gdkmonitor} />
-                    <Info />
+                    <Info gdkmonitor={gdkmonitor} />
                     <Power gdkmonitor={gdkmonitor} />
                 </box>
             </centerbox>
