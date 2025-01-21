@@ -7,6 +7,7 @@ import Bluetooth from "gi://AstalBluetooth";
 import Network from "gi://AstalNetwork";
 import WirePlumber from "gi://AstalWp?version=0.1";
 import Battery from "gi://AstalBattery?version=0.1";
+import Brightness from "../services/brightness";
 
 import { get_player_glyph, symbolic_strength } from "../utils/glyphs";
 import { truncate } from "../utils/strings";
@@ -460,6 +461,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
     function BatteryInfo() {
         const battery = Battery.get_default();
+        const brightness = Brightness.get_default();
 
         const reveal = Variable(false);
         return (
@@ -474,6 +476,13 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         default:
                             break;
                     }
+                }}
+                onScroll={(_, e) => {
+                    brightness.devices.forEach((device) => {
+                        if (device.type == "backlight") {
+                            device.percentage += e.delta_y;
+                        }
+                    });
                 }}
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
