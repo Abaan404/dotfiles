@@ -48,6 +48,7 @@
     pkgs.wireshark
 
     # lsp
+    pkgs.vala-language-server
     pkgs.typescript-language-server
     pkgs.bash-language-server
     pkgs.mesonlsp
