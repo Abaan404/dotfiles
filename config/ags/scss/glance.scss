@@ -35,7 +35,9 @@
     }
 
     .power {
-        padding: 10px 20px;
+        & > box {
+            padding: 10px 30px;
+        }
 
         border-radius: 20px;
         background-color: colors.$color1;
@@ -52,6 +54,9 @@
             font-size: 1.75em;
             font-weight: bolder;
         }
+
+        @include animations.fade("&:hover", colors.$color1, colors.$accent);
+        @include animations.fade("&:active", colors.$accent, colors.$color1);
     }
 
     .quick-settings {

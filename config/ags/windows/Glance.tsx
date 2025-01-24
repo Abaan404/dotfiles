@@ -1,27 +1,46 @@
 import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
-import { GLib, Variable, bind } from "astal";
+import { GLib, Variable, bind, execAsync } from "astal";
 import { readFileAsync } from "astal/file";
 
 import AstalNetwork from "gi://AstalNetwork?version=0.1";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
 import AstalBluetooth from "gi://AstalBluetooth?version=0.1";
 import AstalBattery from "gi://AstalBattery?version=0.1";
+import Weather from "../services/weather";
 
 import { BoxedWindow } from "../widgets/BoxedWindow";
 import { Calendar } from "../widgets/Calendar";
 import { to_timestamp } from "../utils/strings";
 
-function Weather() {
+function WeatherInfo() {
+    const weather = Weather.get_default();
+
+    const reveal = Variable(false);
+
     return (
         <eventbox
-            className="weather">
+            className="weather"
+            hexpand={true}
+            onHover={() => reveal.set(true)}
+            onHoverLost={() => reveal.set(false)}
+            onClick={(_, e) => {
+                switch (e.button) {
+                    case Astal.MouseButton.PRIMARY:
+                        execAsync(["xdg-open", `https://openweathermap.org/city/${weather.city_id}`]);
+                        break;
+
+                    default:
+                        break;
+                }
+            }}>
             <box
                 orientation={Gtk.Orientation.VERTICAL}>
                 <box
                     spacing={10}
                     halign={Gtk.Align.START}>
                     <box
-                        className="icon">
+                        className="icon"
+                        css={bind(weather, "image_path").as(image_path => `background: url('file://${image_path}'); background-size: 72px;`)}>
                     </box>
                     <box
                         homogeneous={true}
@@ -29,24 +48,27 @@ function Weather() {
                         <label
                             halign={Gtk.Align.START}
                             valign={Gtk.Align.END}
-                            className="description" />
+                            className="description"
+                            label={bind(weather, "description")} />
                         <label
                             halign={Gtk.Align.START}
                             valign={Gtk.Align.START}
-                            className="temperature" />
+                            className="temperature"
+                            label={bind(weather, "temperature").as(temperature => `${(temperature - 273.15).toFixed(1)}°C`)} />
                     </box>
                 </box>
                 <revealer
+                    revealChild={reveal()}
                     transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
                     <box
                         className="footer"
                         homogeneous={true}>
                         <label
                             halign={Gtk.Align.START}
-                            className="description" />
+                            label={bind(weather, "windspeed").as(windspeed => `${windspeed}km/h`)} />
                         <label
                             halign={Gtk.Align.END}
-                            className="temperature" />
+                            label={bind(weather, "feels_like").as(feels_like => `${(feels_like - 273.15).toFixed(1)}°C`)} />
                     </box>
                 </revealer>
             </box>
@@ -54,7 +76,7 @@ function Weather() {
     );
 }
 
-function Power() {
+function PowerInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
 
     const uptime = Variable(0).poll(
@@ -65,41 +87,70 @@ function Power() {
     );
 
     return (
-        <box
-            className="power">
-            <box
-                orientation={Gtk.Orientation.VERTICAL}
-                homogeneous={true}>
-                <label
-                    className="mode"
-                    valign={Gtk.Align.END}
-                    halign={Gtk.Align.END}
-                    label={bind(powerprofiles, "active_profile").as((active_profile) => {
-                        switch (active_profile) {
+        <eventbox
+            className="power"
+            onClick={(_, e) => {
+                switch (e.button) {
+                    case Astal.MouseButton.PRIMARY:
+                        switch (powerprofiles.get_active_profile()) {
                             case "power-saver":
-                                return "Power Saving";
+                                powerprofiles.set_active_profile("balanced");
+                                break;
 
                             case "balanced":
-                                return "Balanced";
+                                powerprofiles.set_active_profile("performance");
+                                break;
 
                             case "performance":
-                                return "Performance";
+                                powerprofiles.set_active_profile("power-saver");
+                                break;
 
                             default:
-                                return "Performance";
+                                break;
                         }
-                    })} />
+                        break;
 
-                <label
-                    className="uptime"
-                    valign={Gtk.Align.CENTER}
-                    halign={Gtk.Align.END}
-                    label={uptime().as(uptime => `uptime: ${to_timestamp(uptime)}`)} />
+                    default:
+                        break;
+                }
+            }}>
+            <box
+                halign={Gtk.Align.END}
+                spacing={5}>
+                <box
+                    orientation={Gtk.Orientation.VERTICAL}
+                    homogeneous={true}>
+                    <label
+                        className="mode"
+                        valign={Gtk.Align.END}
+                        halign={Gtk.Align.END}
+                        label={bind(powerprofiles, "active_profile").as((active_profile) => {
+                            switch (active_profile) {
+                                case "power-saver":
+                                    return "Power Saving";
+
+                                case "balanced":
+                                    return "Balanced";
+
+                                case "performance":
+                                    return "Performance";
+
+                                default:
+                                    return "Performance";
+                            }
+                        })} />
+
+                    <label
+                        className="uptime"
+                        valign={Gtk.Align.CENTER}
+                        halign={Gtk.Align.END}
+                        label={uptime().as(uptime => `uptime: ${to_timestamp(uptime)}`)} />
+                </box>
+                <icon
+                    className="icon"
+                    icon={bind(powerprofiles, "icon_name")} />
             </box>
-            <icon
-                className="icon"
-                icon={bind(powerprofiles, "icon_name")} />
-        </box>
+        </eventbox>
     );
 }
 
@@ -327,8 +378,8 @@ function QuickInfo() {
         <box
             spacing={20}
             orientation={Gtk.Orientation.VERTICAL}>
-            <Weather />
-            <Power />
+            <WeatherInfo />
+            <PowerInfo />
         </box>
     );
 }

@@ -39,6 +39,8 @@
     enable = true;
 
     extraPackages = [
+      pkgs.libsoup_3
+      pkgs.glib-networking
       inputs.astal.packages.${pkgs.system}.astal3
       inputs.astal.packages.${pkgs.system}.io
       inputs.astal.packages.${pkgs.system}.apps
