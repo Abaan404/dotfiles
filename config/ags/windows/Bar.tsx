@@ -185,8 +185,8 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         return "";
                     }
 
-                    const title = player.get_title();
-                    const artists = player.get_artist();
+                    const title = player.get_title() || "No Title";
+                    const artists = player.get_artist() || "";
 
                     let player_string = title;
                     if (artists.length > 0)
