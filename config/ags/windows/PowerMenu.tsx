@@ -1,32 +1,7 @@
 import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
 
 import { BoxedWindow } from "../widgets/BoxedWindow";
-
-function MenuButton({ label, class_name, icon, command }: {
-    label: string;
-    class_name: string;
-    icon: string;
-    command: string[];
-}) {
-    return (
-        <eventbox
-            className={class_name}>
-            <box
-                halign={Gtk.Align.END}
-                spacing={15}>
-                <box
-                    halign={Gtk.Align.END}
-                    hexpand={false}>
-                    <label className="transition-text" label={label} />
-                </box>
-                <button
-                    onClick={command}>
-                    <icon icon={icon} />
-                </button>
-            </box>
-        </eventbox>
-    );
-}
+import { MenuList } from "../widgets/MenuList";
 
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
@@ -39,26 +14,42 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 spacing: 20,
                 orientation: Gtk.Orientation.VERTICAL,
             }}>
-            <MenuButton
+            <MenuList
                 class_name="power"
                 label="Shutdown"
-                icon="system-shutdown-symbolic"
-                command={["systemctl", "poweroff"]} />
-            <MenuButton
+                align="right">
+                <button
+                    onClick={["systemctl", "poweroff"]}>
+                    <icon icon="system-shutdown-symbolic" />
+                </button>
+            </MenuList>
+            <MenuList
                 class_name="reboot"
                 label="Reboot"
-                icon="system-reboot-symbolic"
-                command={["systemctl", "reboot"]} />
-            <MenuButton
+                align="right">
+                <button
+                    onClick={["systemctl", "reboot"]}>
+                    <icon icon="system-reboot-symbolic" />
+                </button>
+            </MenuList>
+            <MenuList
                 class_name="suspend"
                 label="Suspend"
-                icon="system-suspend-symbolic"
-                command={["hyprlock"]} />
-            <MenuButton
+                align="right">
+                <button
+                    onClick={["systemctl", "suspend"]}>
+                    <icon icon="system-suspend-symbolic" />
+                </button>
+            </MenuList>
+            <MenuList
                 class_name="hibernate"
                 label="Hibernate"
-                icon="system-hibernate-symbolic"
-                command={["systemctl", "hibernate"]} />
+                align="right">
+                <button
+                    onClick={["systemctl", "hibernate"]}>
+                    <icon icon="system-hibernate-symbolic" />
+                </button>
+            </MenuList>
         </BoxedWindow>
     ) as Widget.Window;
 }

@@ -12,7 +12,7 @@ function ReplayButton() {
         <MenuList
             class_name="replay"
             label="Replay"
-            align={Gtk.Align.START}>
+            align="left">
             <button
                 className={bind(recorder, "is_replaying").as(is_replaying => is_replaying ? "" : "disabled")}
                 onClick={(_, e) => {
@@ -40,7 +40,7 @@ function RecordButton() {
         <MenuList
             class_name="record"
             label="Record"
-            align={Gtk.Align.START}>
+            align="left">
             <button
                 className={bind(recorder, "is_recording").as(is_recording => is_recording ? "recording" : "")}
                 onClick={(_, e) => {
@@ -88,7 +88,7 @@ function MicButton() {
         <MenuList
             class_name="microphone"
             label="Toggle Mic"
-            align={Gtk.Align.START}>
+            align="left">
             <button
                 className={bind(recorder, "is_mic_enabled").as(is_mic_enabled => is_mic_enabled ? "" : "disabled")}
                 onClick={(_, e) => {
