@@ -228,19 +228,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         return;
                     }
 
-                    const delta = 0.1;
-                    switch (e.direction) {
-                        case Gdk.ScrollDirection.UP:
-                            endpoint.volume = clamp(endpoint.volume + delta, 0, 1);
-                            break;
-
-                        case Gdk.ScrollDirection.DOWN:
-                            endpoint.volume = clamp(endpoint.volume - delta, 0, 1);
-                            break;
-
-                        default:
-                            break;
-                    }
+                    endpoint.volume = clamp(endpoint.volume - e.delta_y / 15, 0, 1);
                 }}
 
                 onClick={(_, e) => {
@@ -249,6 +237,10 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                     }
 
                     switch (e.button) {
+                        case Astal.MouseButton.PRIMARY:
+                            window_handler.toggle_window("media", gdkmonitor);
+                            break;
+
                         case Astal.MouseButton.MIDDLE:
                             endpoint.mute = !endpoint.mute;
                             break;
@@ -318,7 +310,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     }
 
     return (
-        <button
+        <eventbox
             className={class_names()}
             onClick={(_, e) => {
                 switch (e.button) {
@@ -336,7 +328,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 <EndpointWidget endpoint={audio?.default_speaker} glyph={speaker_glyph} spacing={6} />
                 <EndpointWidget endpoint={audio?.default_microphone} glyph={microphone_glyph} spacing={1} />
             </box>
-        </button>
+        </eventbox>
     );
 }
 
@@ -480,7 +472,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 onScroll={(_, e) => {
                     brightness.devices.forEach((device) => {
                         if (device.type == "backlight") {
-                            device.percentage += e.delta_y;
+                            device.percentage -= e.delta_y / 15;
                         }
                     });
                 }}

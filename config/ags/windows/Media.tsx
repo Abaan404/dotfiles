@@ -92,7 +92,7 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                 min={0}
                 max={1}
                 value={bind(default_endpoint, "volume")}
-                onDragged={self => self.set_value(default_endpoint.get_volume())} />
+                onDragged={self => default_endpoint.set_volume(self.get_value())} />
         </box>
     );
 }

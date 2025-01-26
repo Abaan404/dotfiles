@@ -2,6 +2,7 @@ import { App } from "astal/gtk3";
 import GObject, { register, property } from "astal/gobject";
 import { monitorFile, readFileAsync } from "astal/file";
 import { exec, execAsync } from "astal/process";
+import { clamp } from "../utils/math";
 
 @register({ GTypeName: "Brightness" })
 export default class Brightness extends GObject.Object {
@@ -76,11 +77,7 @@ class BrightnessDevice extends GObject.Object {
     }
 
     set percentage(percent: number) {
-        if (percent < 0)
-            percent = 0;
-
-        if (percent > 1)
-            percent = 1;
+        percent = clamp(percent, 0, 1);
 
         execAsync(`brightnessctl set ${Math.floor(percent * 100)}% -q`)
             .then(() => this.notify("percentage"))
