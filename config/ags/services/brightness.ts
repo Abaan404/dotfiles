@@ -79,7 +79,7 @@ class BrightnessDevice extends GObject.Object {
     set percentage(percent: number) {
         percent = clamp(percent, 0, 1);
 
-        execAsync(`brightnessctl set ${Math.floor(percent * 100)}% -q`)
+        execAsync(`brightnessctl set -d ${this._name} ${Math.floor(percent * 100)}% -q`)
             .then(() => this.notify("percentage"))
             .catch(console.error);
     }
