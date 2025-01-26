@@ -5,8 +5,8 @@ import Hyprland from "gi://AstalHyprland";
 import Tray from "gi://AstalTray";
 import Bluetooth from "gi://AstalBluetooth";
 import Network from "gi://AstalNetwork";
-import WirePlumber from "gi://AstalWp?version=0.1";
-import Battery from "gi://AstalBattery?version=0.1";
+import WirePlumber from "gi://AstalWp";
+import Battery from "gi://AstalBattery";
 import Brightness from "../services/brightness";
 
 import { get_player_glyph, symbolic_strength } from "../utils/glyphs";

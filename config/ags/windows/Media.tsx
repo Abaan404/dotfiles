@@ -1,7 +1,7 @@
 import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
 import { bind, Variable } from "astal";
 
-import WirePlumber from "gi://AstalWp?version=0.1";
+import WirePlumber from "gi://AstalWp";
 
 import { BoxedWindow } from "../widgets/BoxedWindow";
 import { truncate } from "../utils/strings";

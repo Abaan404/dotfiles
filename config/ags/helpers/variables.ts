@@ -1,5 +1,5 @@
 import { bind, Variable } from "astal";
-import AstalBattery from "gi://AstalBattery?version=0.1";
+import AstalBattery from "gi://AstalBattery";
 import AstalMpris from "gi://AstalMpris";
 import Recorder from "../services/recorder";
 

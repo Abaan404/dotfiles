@@ -2,10 +2,10 @@ import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
 import { GLib, Variable, bind, execAsync } from "astal";
 import { readFileAsync } from "astal/file";
 
-import AstalNetwork from "gi://AstalNetwork?version=0.1";
-import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
-import AstalBluetooth from "gi://AstalBluetooth?version=0.1";
-import AstalBattery from "gi://AstalBattery?version=0.1";
+import AstalNetwork from "gi://AstalNetwork";
+import AstalPowerProfiles from "gi://AstalPowerProfiles";
+import AstalBluetooth from "gi://AstalBluetooth";
+import AstalBattery from "gi://AstalBattery";
 import Weather from "../services/weather";
 
 import { BoxedWindow } from "../widgets/BoxedWindow";

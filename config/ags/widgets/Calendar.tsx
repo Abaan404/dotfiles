@@ -1,4 +1,4 @@
-import GObject from "gi://GObject";
+import GObject from "astal/gobject"
 import { Gtk, astalify, type ConstructProps } from "astal/gtk3";
 
 export class Calendar extends astalify(Gtk.Calendar) {
