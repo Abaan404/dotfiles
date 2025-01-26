@@ -1,11 +1,13 @@
-import { Variable } from "astal";
-import Mpris from "gi://AstalMpris";
+import { bind, Variable } from "astal";
+import AstalBattery from "gi://AstalBattery?version=0.1";
+import AstalMpris from "gi://AstalMpris";
+import Recorder from "../services/recorder";
 
-export const PlayerSelected: Variable<Mpris.Player | undefined> = Variable(undefined);
+export const PlayerSelected: Variable<AstalMpris.Player | undefined> = Variable(undefined);
 
-const mpris = Mpris.get_default();
+const mpris = AstalMpris.get_default();
 const ignored_bus_names: string[] = ["org.mpris.MediaPlayer2.playerctld"];
-const player_prev_map = new Map<string, [Mpris.PlaybackStatus, string]>();
+const player_prev_map = new Map<string, [AstalMpris.PlaybackStatus, string]>();
 
 mpris.get_players().reverse().forEach((player) => {
     if (!PlayerSelected.get() && !ignored_bus_names.includes(player.get_bus_name())) {
@@ -78,3 +80,8 @@ mpris.connect("player-closed", (self, player) => {
         PlayerSelected.set(undefined);
     }
 });
+
+const battery = AstalBattery.get_default();
+const recorder = Recorder.get_default();
+
+bind(battery, "charging").subscribe(charging => recorder.is_replaying = charging);

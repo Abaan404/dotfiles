@@ -9,15 +9,8 @@ $button-highlight-height: 30px;
     margin: 20px;
     margin-left: 40px;
 
-    min-width: 500px;
-
     .layout-box {
-        @include animations.flyin("&", "left");
-        @include animations.fade(
-            "button:hover",
-            colors.$primary,
-            colors.$secondary
-        );
+        min-width: 300px;
 
         button {
             padding: $button-open-height $button-open-height;
@@ -26,7 +19,7 @@ $button-highlight-height: 30px;
             min-width: 50px;
             min-height: 60px;
 
-            image {
+            icon {
                 color: colors.$accent;
                 font-size: 40px;
             }
@@ -53,7 +46,7 @@ $button-highlight-height: 30px;
         }
 
         .replay {
-            @include animations.fade(".paused", colors.$primary, colors.$bad);
+            @include animations.fade(".disabled", colors.$primary, colors.$bad);
         }
 
         .microphone {
@@ -74,9 +67,10 @@ $button-highlight-height: 30px;
             }
 
             .#{$selector}:hover .transition-text {
-                @include animations.flyin("&", "left");
                 transition: 200ms linear color;
                 color: colors.$accent;
+
+                @include animations.flyin("&", "left");
             }
 
             .#{$selector}:not(:hover) .transition-text {
@@ -84,5 +78,12 @@ $button-highlight-height: 30px;
                 color: transparent;
             }
         }
+
+        @include animations.flyin("&", "left");
+        @include animations.fade(
+            "button:hover",
+            colors.$primary,
+            colors.$secondary
+        );
     }
 }

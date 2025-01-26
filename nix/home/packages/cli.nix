@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   home.packages = [
-    pkgs.gpu-screen-recorder
+    pkgs-unstable.gpu-screen-recorder
     pkgs.brightnessctl
     pkgs.wl-clipboard
     pkgs.ffmpeg-full

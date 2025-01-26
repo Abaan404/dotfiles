@@ -9,6 +9,7 @@ import PowerMenu from "./windows/PowerMenu";
 import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
 import Glance from "./windows/Glance";
+import Replay from "./windows/Replay";
 
 App.start({
     css: style,
@@ -17,6 +18,7 @@ App.start({
         window_handler.register_window("mpris", Mpris);
         window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
+        window_handler.register_window("replay", Replay);
 
         App.get_monitors().map(Bar);
     },
