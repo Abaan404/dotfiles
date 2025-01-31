@@ -16,6 +16,7 @@
     pkgs.cmake
     pkgs.ninja
     pkgs.meson
+    pkgs.just
 
     # rust
     pkgs.cargo
