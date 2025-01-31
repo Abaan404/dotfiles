@@ -14,15 +14,13 @@
     pkgs.grim
 
     # polkit
-    pkgs.kdePackages.polkit-kde-agent-1
-    pkgs.kdePackages.kirigami
-    pkgs.kdePackages.qtwayland
+    pkgs.hyprpolkitagent
 
     # launcher
     pkgs.rofi-wayland
 
     # wallpaper
-    pkgs.swww
+    inputs.swww.packages.${pkgs.system}.swww
 
     # notifications
     pkgs.dunst
@@ -33,6 +31,7 @@
 
     # misc
     pkgs.wev
+    inputs.envycontrol.packages.${pkgs.system}.envycontrol
   ];
 
   programs.ags = {
@@ -53,6 +52,7 @@
       inputs.astal.packages.${pkgs.system}.powerprofiles
       inputs.astal.packages.${pkgs.system}.tray
       inputs.astal.packages.${pkgs.system}.wireplumber
+      inputs.astal.packages.${pkgs.system}.notifd
     ];
   };
 

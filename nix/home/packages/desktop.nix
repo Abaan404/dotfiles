@@ -13,10 +13,13 @@
     # media
     pkgs.pavucontrol
     pkgs.spotify
+    pkgs.sonusmix
     pkgs.vlc
 
     # word processing
     pkgs-unstable.typst
+    pkgs.styluslabs-write
+    pkgs.fritzing
     pkgs.libreoffice-fresh
     pkgs.hunspell
     pkgs.hunspellDicts.uk_UA
@@ -55,6 +58,9 @@
     pkgs.networkmanagerapplet
     pkgs.openconnect
     pkgs.networkmanager-openconnect
+
+    # vnc
+    pkgs.tigervnc
   ];
 
   services.kdeconnect = {

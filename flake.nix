@@ -2,7 +2,7 @@
   description = "abaan404's NixOS dotfiles";
 
   inputs = {
-    # nixpkgs 
+    # nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
@@ -30,7 +30,16 @@
     };
 
     # envycontrol (optimus PRIME)
-    envycontrol.url = "github:bayasdev/envycontrol";
+    envycontrol = {
+      url = "github:bayasdev/envycontrol";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # swww-git (FIXME: remove when v0.9.6 has been released)
+    swww = {
+      url = "github:LGFae/swww";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # preconfig hardware
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -46,6 +55,7 @@
       astal,
       matlab,
       home-manager,
+      swww,
       ...
     }@inputs:
     let
