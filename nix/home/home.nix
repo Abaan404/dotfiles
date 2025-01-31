@@ -1,6 +1,9 @@
-flake-overlays:
-
-{ config, inputs, ... }:
+{
+  flake-overlays,
+  username,
+  inputs,
+  ...
+}:
 
 {
   imports = [
@@ -21,11 +24,9 @@ flake-overlays:
     })
   ] ++ flake-overlays;
 
-  home.username = "abaan404";
-  home.homeDirectory = "/home/abaan404";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "24.05";
-
-  home.packages = [ inputs.envycontrol.packages.x86_64-linux.default ];
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -37,8 +38,6 @@ flake-overlays:
   programs.git = {
     enable = true;
     lfs.enable = true;
-    userName = "abaan404";
-    userEmail = "67100191+Abaan404@users.noreply.github.com";
   };
 
   programs.home-manager.enable = true;

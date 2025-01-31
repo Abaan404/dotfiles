@@ -69,6 +69,8 @@
           inherit system;
 
           specialArgs = {
+            username = "abaan404";
+
             inherit inputs;
             inherit pkgs-unstable;
           };
@@ -83,6 +85,8 @@
           inherit system;
 
           specialArgs = {
+            username = "abaan404";
+
             inherit inputs;
             inherit pkgs-unstable;
           };
@@ -100,11 +104,22 @@
           inherit pkgs;
 
           extraSpecialArgs = {
+            username = "abaan404";
+
             inherit inputs;
             inherit pkgs-unstable;
+            inherit flake-overlays;
           };
 
-          modules = [ (import ./nix/home/home.nix flake-overlays) ];
+          modules = [
+            ./nix/home/home.nix
+            {
+              programs.git = {
+                userName = "abaan404";
+                userEmail = "67100191+Abaan404@users.noreply.github.com";
+              };
+            }
+          ];
         };
       };
     };
