@@ -115,7 +115,7 @@ function SysTray() {
             revealChild={showSystray()}
             transitionDuration={500}>
 
-            <button
+            <eventbox
                 className="systray">
                 <box
                     className="widget">
@@ -130,7 +130,7 @@ function SysTray() {
                         </menubutton>
                     )))}
                 </box>
-            </button>
+            </eventbox>
         </revealer>
     );
 }
