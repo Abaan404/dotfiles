@@ -7,6 +7,11 @@
 
     # file manager
     pkgs.dolphin
+    pkgs.kdePackages.kdegraphics-thumbnailers
+    pkgs.kdePackages.kio-extras-kf5
+    pkgs.kdePackages.kio-fuse
+    pkgs.kdePackages.qtsvg
+    pkgs.kdePackages.qtimageformats
     pkgs.qdirstat
     pkgs.kdePackages.ark
 

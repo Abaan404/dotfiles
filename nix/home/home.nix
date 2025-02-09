@@ -14,6 +14,7 @@
     ./packages/dev.nix
 
     ./files/matlab.nix
+    ./files/dolphin.nix
 
     inputs.ags.homeManagerModules.default
   ];
