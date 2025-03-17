@@ -8,6 +8,11 @@
   # enable git
   programs.git.enable = true;
 
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
