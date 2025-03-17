@@ -19,8 +19,8 @@ export default class Recorder extends GObject.Object {
     private readonly _size = "300";
     private readonly _framerate = "60";
     private readonly _container = "mp4";
-    private readonly _quality = "very_high";
-    private readonly _video_codec = "hevc";
+    private readonly _quality = "medium";
+    private readonly _video_codec = "h264"; // discord doesnt support h265/hvec
     private readonly _audio_codec = "opus";
 
     private _is_paused = true;
