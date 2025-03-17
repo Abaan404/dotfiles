@@ -131,6 +131,7 @@ return {
                 "tinymist",
                 "nil_ls",
                 "vala_ls",
+                "tailwindcss",
             }
 
             -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)
@@ -163,11 +164,14 @@ return {
                 html = { "prettier" },
                 markdown = { "prettier" },
 
-                typst = { "typstfmt" },
+                typst = { "typstyle" },
             },
 
             formatters = {
                 prettier = {
+                    prepend_args = { "--tab-width", "4" },
+                },
+                typstyle = {
                     prepend_args = { "--tab-width", "4" },
                 },
             },

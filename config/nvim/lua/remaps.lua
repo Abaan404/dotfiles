@@ -126,10 +126,9 @@ set("n", "<leader>ghS", gitsigns.stage_buffer)
 set("n", "<leader>gb", telescope_builtin.git_branches)
 set("n", "<leader>gB", gitsigns.toggle_current_line_blame)
 set("n", "<leader>ghp", gitsigns.preview_hunk)
-set("n", "<leader>ghu", gitsigns.undo_stage_hunk)
-set("n", "<leader>gt", gitsigns.toggle_deleted)
-set("n", "<leader>g]", gitsigns.next_hunk)
-set("n", "<leader>g[", gitsigns.prev_hunk)
+set("n", "<leader>gt", gitsigns.preview_hunk_inline)
+set("n", "<leader>g]", function() gitsigns.nav_hunk("next") end)
+set("n", "<leader>g[", function() gitsigns.nav_hunk("prev") end)
 
 -- Fugitive
 set("n", "<leader>gP", "<cmd>Git pull origin<CR>")

@@ -57,6 +57,7 @@
     pkgs.dockerfile-language-server-nodejs
     pkgs.docker-compose-language-service
     pkgs.vscode-langservers-extracted
+    pkgs.tailwindcss-language-server
     pkgs.kotlin-language-server
     pkgs.matlab-language-server
     pkgs.cmake-language-server
@@ -72,7 +73,7 @@
 
     # formatters
     pkgs.nodePackages.prettier
-    pkgs-unstable.typstfmt
+    pkgs-unstable.typstyle
     pkgs-unstable.eslint_d
     pkgs.nixfmt-rfc-style
     pkgs.stylua
