@@ -1,9 +1,10 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, inputs, ... }:
 
 {
   home.packages = [
     # browser
     pkgs.firefox
+    inputs.zen-browser.packages.${pkgs.system}.twilight-official
 
     # file manager
     pkgs.dolphin
