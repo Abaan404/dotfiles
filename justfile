@@ -29,16 +29,16 @@ switch-nixos system:
 switch-hm:
     home-manager switch --flake ~/.dotfiles
 
-test-nixos system:
-    sudo nixos-rebuild switch --flake .#{{system}}
+switch system:
+    just switch-nixos {{system}}
+    just switch-hm
 
 rollback:
     sudo nixos-rebuild switch --rollback
 
 update system:
     nix flake update
-    just switch-nixos {{system}}
-    just switch-hm
+    just switch {{system}}
 
 gc:
     # why cant both be one command?
