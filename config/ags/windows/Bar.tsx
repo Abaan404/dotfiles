@@ -27,7 +27,7 @@ function Launcher() {
             onHoverLost={() => reveal.set(false)}>
             <box
                 className="widget">
-                <icon icon="!!HOME/.config/ags/assets/launcher.png" />
+                <icon icon="launcher-symbolic" />
                 <revealer
                     transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                     transitionDuration={500}

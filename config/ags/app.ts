@@ -19,6 +19,7 @@ import Brightness from "./services/brightness";
 
 App.start({
     css: style,
+    icons: `!!HOME/.dotfiles/assets`,
     main() {
         window_handler.register_window("powermenu", PowerMenu);
         window_handler.register_window("mpris", Mpris);

@@ -70,7 +70,6 @@ class TemplateWriter:
 
         # change all non-transparent colors in the image to "color"
         for file in [
-            Path("~/.dotfiles/assets/launcher.png"),
             Path("~/.dotfiles/assets/playerart.png")
         ]:
             img = Image.open(file.expanduser()).convert("RGBA")
