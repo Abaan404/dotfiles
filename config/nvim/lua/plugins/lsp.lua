@@ -25,7 +25,7 @@ return {
 
             -- Diagnostic config
             vim.diagnostic.config({
-                virtual_text = true,
+                virtual_lines = true,
                 signs = {
                     active = signs,
                 },
@@ -173,6 +173,9 @@ return {
                 },
                 typstyle = {
                     prepend_args = { "--tab-width", "4" },
+                },
+                black = {
+                    prepend_args = { "--line-length", "10000" },
                 },
             },
         },
