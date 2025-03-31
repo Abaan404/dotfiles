@@ -10,7 +10,8 @@ import Weather from "../services/weather";
 
 import { BoxedWindow } from "../widgets/BoxedWindow";
 import { Calendar } from "../widgets/Calendar";
-import { to_timestamp } from "../utils/strings";
+import { to_timestamp, truncate } from "../utils/strings";
+import { Separator } from "../widgets/Separator";
 
 function WeatherInfo() {
     const weather = Weather.get_default();
@@ -155,32 +156,177 @@ function PowerInfo() {
 }
 
 function Network() {
-    const wifi = AstalNetwork.get_default().wifi;
-    const access_points = Variable.derive(
-        [bind(wifi, "active_access_point"), bind(wifi, "access_points")],
-        (active_access_point, access_points) => {
-            return access_points.map((access_point) => {
-                return (
-                    <eventbox
-                        className="entry"
-                        hexpand={true}>
-                        <box
-                            spacing={5}>
-                            <icon className="icon" icon={access_point.get_icon_name()} />
-                            <label className="value" label={access_point.get_ssid() || "Unknown"} />
-                        </box>
-                    </eventbox>
-                );
-            });
-        },
-    );
+    const network = AstalNetwork.get_default();
 
-    function internet_to_string(internet: AstalNetwork.Internet) {
-        switch (internet) {
-            case AstalNetwork.Internet.CONNECTED: return "connected";
-            case AstalNetwork.Internet.CONNECTING: return "connecting";
-            case AstalNetwork.Internet.DISCONNECTED: return "disconnected";
-        }
+    const scanning: Variable<boolean> = Variable(false);
+    let scanner: Variable<null> = Variable(null);
+
+    let access_points: Variable<JSX.Element[]> = Variable([]);
+    const selected_access_point: Variable<AstalNetwork.AccessPoint | null> = Variable(null);
+
+    let ssid: Variable<string | null> = Variable(null);
+    let icon = Variable("network-wireless-signal-none-symbolic");
+    let internet: Variable<string> = Variable("disconnected");
+
+    const flight_mode: Variable<boolean> = Variable(false);
+    execAsync(["nmcli", "-t", "radio", "all"]).then(res => flight_mode.set(res.includes("disabled")));
+    flight_mode.subscribe((flight_mode) => {
+        execAsync(["nmcli", "radio", "all", flight_mode ? "off" : "on"]);
+        scanning.set(!flight_mode);
+    });
+
+    if (network.wifi) {
+        scanner = Variable.derive(
+            [bind(network.wifi, "scanning"), scanning],
+            (wifi_scanning, ui_scanning) => {
+                if (!wifi_scanning && ui_scanning && network.wifi.enabled) {
+                    network.wifi.scan();
+                }
+
+                return null;
+            },
+        );
+
+        access_points = Variable.derive(
+            [bind(network.wifi, "access_points")],
+            (access_points) => {
+                return access_points
+                    .sort((a, b) => b.get_strength() - a.get_strength())
+                    .map((access_point) => {
+                        const entry = (
+                            <entry
+                                hexpand={true}
+                                placeholder_text="Enter Password..."
+                                focus_on_click={true}
+                                onActivate={async (self) => {
+                                    await execAsync(["nmcli", ""]);
+                                    execAsync(["nmcli", "device", "wifi", "connect", access_point.ssid, "password", self.get_text()])
+                                        .catch(() => {});
+                                }} />
+                        );
+
+                        return (
+                            <box
+                                orientation={Gtk.Orientation.VERTICAL}
+                                spacing={5}>
+                                <button
+                                    className="entry"
+                                    hexpand={true}
+                                    onClick={async (_, e) => {
+                                        switch (e.button) {
+                                            case Astal.MouseButton.PRIMARY:
+                                                // stop scanning
+                                                scanning.set(false);
+
+                                                const is_open = await execAsync(["nmcli", "-t", "-f", "SECURITY", "device", "wifi", "list", "bssid", access_point.bssid])
+                                                    .then(res => res === "");
+                                                const remembered = await execAsync(["nmcli", "-t", "-f", "NAME", "connection", "show"])
+                                                    .then(res => res.split("\n"));
+
+                                                if (is_open || remembered.includes(access_point.ssid)) {
+                                                    const success = await execAsync(["nmcli", "device", "wifi", "connect", access_point.ssid])
+                                                        .then(() => true)
+                                                        .catch(() => false);
+
+                                                    if (success) {
+                                                        return;
+                                                    }
+                                                }
+
+                                                if (selected_access_point.get()?.ssid === access_point.get_ssid()) {
+                                                    selected_access_point.set(null);
+                                                }
+                                                else {
+                                                    selected_access_point.set(access_point);
+                                                }
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                    }}>
+                                    <box>
+                                        <icon className="icon" icon={access_point?.get_icon_name()} />
+                                        <label className="value" label={truncate(access_point?.get_ssid() || "Unknown", 15)} />
+                                    </box>
+                                </button>
+                                <revealer
+                                    transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                                    revealChild={selected_access_point().as(selected_access_point => selected_access_point?.ssid === access_point?.get_ssid())}>
+                                    {entry}
+                                </revealer>
+                            </box>
+                        );
+                    });
+            },
+        );
+
+        ssid = Variable.derive(
+            [bind(network.wifi, "active_access_point")],
+            active_access_point => active_access_point?.get_ssid() || null,
+        );
+
+        icon = Variable.derive(
+            [bind(network.wifi, "icon_name")],
+            icon_name => icon_name,
+        );
+
+        internet = Variable.derive(
+            [bind(network.wifi, "internet"), ssid],
+            (internet, ssid) => {
+                // connectivity isnt updated properly sometimes
+                if (ssid === null) {
+                    return "failed";
+                }
+
+                switch (internet) {
+                    case AstalNetwork.Internet.DISCONNECTED:
+                        return "failed";
+
+                    case AstalNetwork.Internet.CONNECTED:
+                        return "success";
+
+                    case AstalNetwork.Internet.CONNECTING:
+                        return "waiting";
+
+                    default:
+                        return "failed";
+                }
+            },
+        );
+    }
+
+    if (network.wired) {
+        ssid = Variable("Wired");
+
+        icon = Variable.derive(
+            [bind(network.wired, "icon_name")],
+            icon_name => icon_name,
+        );
+
+        internet = Variable.derive(
+            [bind(network.wired, "internet"), ssid],
+            (internet, ssid) => {
+                // connectivity isnt updated properly sometimes
+                if (ssid === null) {
+                    return "failed";
+                }
+
+                switch (internet) {
+                    case AstalNetwork.Internet.DISCONNECTED:
+                        return "failed";
+
+                    case AstalNetwork.Internet.CONNECTED:
+                        return "success";
+
+                    case AstalNetwork.Internet.CONNECTING:
+                        return "waiting";
+
+                    default:
+                        return "failed";
+                }
+            },
+        );
     }
 
     return (
@@ -188,18 +334,64 @@ function Network() {
             name="network"
             className="network"
             orientation={Gtk.Orientation.VERTICAL}
-            spacing={10}>
+            spacing={10}
+            onDestroy={() => {
+                scanner.drop();
+                icon.drop();
+                ssid.drop();
+                access_points.drop();
+                internet.drop();
+            }}>
             <box
-                halign={Gtk.Align.CENTER}
                 hexpand={true}
-                spacing={10}>
-                <icon />
-                <label label={bind(wifi, "internet").as(internet => internet_to_string(internet))} />
+                spacing={10}
+                className="settings-box">
+                <button
+                    className={scanning().as(scanning => scanning ? "success" : "failed")}
+                    onClick={() => {
+                        if (flight_mode.get()) {
+                            return;
+                        }
+
+                        scanning.set(!scanning.get());
+                    }}>
+                    <icon icon="search-symbolic" />
+                </button>
+                <button
+                    className={internet()}>
+                    <box
+                        spacing={10}>
+                        <icon icon={icon()} />
+                        <label label={ssid().as(ssid => truncate(ssid || "Disconnected", 15))} />
+                    </box>
+                </button>
+
+                <button
+                    className={flight_mode().as(flight_mode => flight_mode ? "success" : "")}
+                    onClick={async (_, e) => {
+                        switch (e.button) {
+                            case Astal.MouseButton.PRIMARY:
+                                flight_mode.set(!flight_mode.get());
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }}>
+                    <box
+                        spacing={10}>
+                        <label label=" " />
+                        <label label="Flight Mode" />
+                    </box>
+                </button>
             </box>
+
+            <Separator />
 
             <scrollable
                 vexpand={true}>
                 <box
+                    spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
                     {access_points()}
                 </box>
@@ -397,6 +589,7 @@ function RowOne() {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <BoxedWindow
+            keymode={Astal.Keymode.ON_DEMAND}
             name="glance"
             gdkmonitor={gdkmonitor}
             anchor={Astal.WindowAnchor.RIGHT

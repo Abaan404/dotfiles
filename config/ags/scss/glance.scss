@@ -205,6 +205,44 @@
             border-radius: 10px;
             padding: 10px;
 
+            .settings-box {
+                .success {
+                    background-color: colors.$good;
+                }
+
+                .waiting {
+                    background-color: colors.$warning;
+                }
+
+                .failed {
+                    background-color: colors.$bad;
+                }
+
+                button {
+                    background-color: colors.$secondary;
+
+                    border-radius: 10px;
+                    padding: 10px 20px;
+
+                    @include animations.fade(
+                        "&:hover",
+                        colors.$secondary,
+                        colors.$accent
+                    );
+                    @include animations.fade(
+                        "&:active",
+                        colors.$accent,
+                        colors.$secondary
+                    );
+                }
+            }
+
+            separator {
+                background-color: colors.$secondary;
+                border-radius: 10px;
+                padding: 1px;
+            }
+
             .entry {
                 border-radius: 10px;
                 background-color: colors.$secondary;

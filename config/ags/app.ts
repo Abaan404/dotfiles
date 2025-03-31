@@ -46,7 +46,6 @@ App.start({
             if (audio) {
                 bind(audio.default_microphone, "mute").subscribe(mute => brightness.devices.forEach((device) => {
                     if (device.name === "platform::micmute") {
-                        console.log(device.name);
                         device.percentage = Number(mute);
                     }
                 }));

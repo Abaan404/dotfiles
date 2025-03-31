@@ -369,58 +369,85 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
     function NetworkInfo() {
         const network = Network.get_default();
+        let internet: Variable<string> = Variable("disconnected");
+        let ssid: Variable<string | null> = Variable(null);
+        let icon = Variable("network-wireless-signal-none-symbolic");
 
-        const class_name = Variable.derive(
-            [bind(network, "primary"), bind(network.wifi, "internet")],
-            (primary, wifi_internet) => {
-                let internet = Network.Internet.DISCONNECTED;
+        if (network.wired) {
+            internet = Variable.derive(
+                [bind(network.wired, "internet"), ssid],
+                (internet, ssid) => {
+                    if (!ssid) {
+                        return "disconnected";
+                    }
 
-                switch (primary) {
-                    case Network.Primary.WIFI:
-                        internet = wifi_internet;
-                        break;
+                    switch (internet) {
+                        case Network.Internet.DISCONNECTED:
+                            return "disconnected";
 
-                    case Network.Primary.WIRED:
-                        { /* internet = wired_internet; */ }
-                        break;
+                        case Network.Internet.CONNECTED:
+                            return "connected";
 
-                    default:
-                        break;
-                }
+                        case Network.Internet.CONNECTING:
+                            return "connecting";
 
-                return internet.toString();
-            },
-        );
+                        default:
+                            return "disconnected";
+                    }
+                },
+            );
 
-        const label = Variable.derive(
-            [bind(network, "primary"), bind(network.wifi, "internet"), bind(network.wifi, "strength")],
-            (primary, internet, strength) => {
-                switch (primary) {
-                    case Network.Primary.WIFI:
-                        switch (internet) {
-                            case Network.Internet.CONNECTING:
-                                return symbolic_strength(strength, ["󰤫 ", "󰤠 ", "󰤣 ", "󰤦 "], 100);
+            ssid = Variable("Wired");
 
-                            case Network.Internet.CONNECTED:
-                                return symbolic_strength(strength, ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 "], 100);
+            icon = Variable.derive(
+                [bind(network.wired, "icon_name")],
+                icon_name => icon_name,
+            );
+        }
 
-                            default:
-                                break;
-                        }
-                        break;
+        else if (network.wifi) {
+            internet = Variable.derive(
+                [bind(network.wifi, "internet"), ssid],
+                (internet, ssid) => {
+                    if (!ssid) {
+                        return "disconnected";
+                    }
 
-                    case Network.Primary.WIRED:
-                        return " ";
+                    switch (internet) {
+                        case Network.Internet.DISCONNECTED:
+                            return "disconnected";
 
-                    default:
-                        return "󰤭 ";
-                }
-            },
-        );
+                        case Network.Internet.CONNECTED:
+                            return "connected";
+
+                        case Network.Internet.CONNECTING:
+                            return "connecting";
+
+                        default:
+                            return "disconnected";
+                    }
+                },
+            );
+
+            ssid = Variable.derive(
+                [bind(network.wifi, "active_access_point")],
+                active_access_point => active_access_point ? active_access_point.get_ssid() : null,
+            );
+
+            icon = Variable.derive(
+                [bind(network.wifi, "icon_name")],
+                icon_name => icon_name,
+            );
+        }
 
         const reveal = Variable(false);
         return (
             <button
+                onDestroy={() => {
+                    internet.drop();
+                    ssid.drop();
+                    icon.drop();
+                }}
                 className="network"
                 onClick={(_, e) => {
                     switch (e.button) {
@@ -435,16 +462,15 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 onHover={() => reveal.set(true)}
                 onHoverLost={() => reveal.set(false)}>
                 <box>
-                    <label
-                        className={class_name()}
-                        label={label()} />
-
+                    <icon
+                        className={internet()}
+                        icon={icon()} />
                     <revealer
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
                         css="padding-left: 5px;"
                         reveal_child={reveal()}>
-                        <label label={bind(network.wifi, "ssid").as(ssid => ssid || "unknown")} />
+                        <label label={ssid().as(ssid => ssid || "unknown")} />
                     </revealer>
                 </box>
             </button>
