@@ -44,7 +44,7 @@
     # zen-browser (see: https://github.com/NixOS/nixpkgs/pull/363992#pullrequestreview-2523997020)
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # preconfig hardware
