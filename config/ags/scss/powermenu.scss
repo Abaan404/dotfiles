@@ -62,10 +62,6 @@ $button-highlight-height: 30px;
         }
 
         @include animations.flyin("&", "right");
-        @include animations.fade(
-            "button:hover",
-            colors.$primary,
-            colors.$secondary
-        );
+        @include animations.fade("button:hover", colors.$secondary);
     }
 }

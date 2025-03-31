@@ -30,8 +30,8 @@
             font-size: 1.25em;
         }
 
-        @include animations.fade("&:hover", colors.$color1, colors.$accent);
-        @include animations.fade("&:active", colors.$accent, colors.$color1);
+        @include animations.fade("&:hover", colors.$accent);
+        @include animations.fade("&:active", colors.$color1);
     }
 
     .power {
@@ -55,8 +55,8 @@
             font-weight: bolder;
         }
 
-        @include animations.fade("&:hover", colors.$color1, colors.$accent);
-        @include animations.fade("&:active", colors.$accent, colors.$color1);
+        @include animations.fade("&:hover", colors.$accent);
+        @include animations.fade("&:active", colors.$color1);
     }
 
     .quick-settings {
@@ -79,12 +79,7 @@
                         font-size: 1.5em;
                     }
 
-                    @include animations.fade(
-                        "&:hover",
-                        colors.$secondary,
-                        colors.$good,
-                        $property: "background-color"
-                    );
+                    @include animations.fade("&:hover", colors.$good);
                 }
             }
 
@@ -111,7 +106,6 @@
 
                     @include animations.fade(
                         "&:hover label",
-                        colors.$text,
                         colors.$bad,
                         $property: "color"
                     );
@@ -149,13 +143,11 @@
                 button {
                     @include animations.fade(
                         "&:hover label",
-                        colors.$text,
                         colors.$accent,
                         $property: "color"
                     );
                     @include animations.fade(
                         "&:active label",
-                        colors.$accent,
                         colors.$text,
                         $property: "color"
                     );
@@ -224,16 +216,8 @@
                     border-radius: 10px;
                     padding: 10px 20px;
 
-                    @include animations.fade(
-                        "&:hover",
-                        colors.$secondary,
-                        colors.$accent
-                    );
-                    @include animations.fade(
-                        "&:active",
-                        colors.$accent,
-                        colors.$secondary
-                    );
+                    @include animations.fade("&:hover", colors.$accent);
+                    @include animations.fade("&:active", colors.$secondary);
                 }
             }
 
@@ -259,16 +243,8 @@
                     }
                 }
 
-                @include animations.fade(
-                    "&:hover",
-                    colors.$secondary,
-                    colors.$accent
-                );
-                @include animations.fade(
-                    "&:active",
-                    colors.$accent,
-                    colors.$secondary
-                );
+                @include animations.fade("&:hover", colors.$accent);
+                @include animations.fade("&:active", colors.$secondary);
             }
 
             .input {
@@ -288,13 +264,11 @@
             & > button {
                 @include animations.fade(
                     "&:hover circularprogress",
-                    colors.$text,
                     colors.$accent,
                     $property: "color"
                 );
                 @include animations.fade(
                     "&:active circularprogress",
-                    colors.$accent,
                     colors.$text,
                     $property: "color"
                 );

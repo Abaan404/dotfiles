@@ -28,13 +28,11 @@
 
                 @include animations.fade(
                     "button:hover image",
-                    colors.$text,
                     white,
                     $property: "color"
                 );
                 @include animations.fade(
                     "button:active image",
-                    white,
                     colors.$text,
                     $property: "color"
                 );

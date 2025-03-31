@@ -16,13 +16,11 @@
             .list {
                 @include animations.fade(
                     "&:hover label",
-                    colors.$text,
                     colors.$accent,
                     $property: "color"
                 );
                 @include animations.fade(
                     "&:active label",
-                    colors.$accent,
                     colors.$text,
                     $property: "color"
                 );
@@ -58,16 +56,8 @@
                 padding: 0px 14px;
                 border-radius: 10px;
 
-                @include animations.fade(
-                    "&:hover",
-                    colors.$primary,
-                    colors.$accent
-                );
-                @include animations.fade(
-                    "&:active",
-                    colors.$accent,
-                    colors.$primary
-                );
+                @include animations.fade("&:hover", colors.$accent);
+                @include animations.fade("&:active", colors.$primary);
             }
 
             .default {
@@ -84,18 +74,8 @@
                 padding: 10px;
             }
 
-            @include animations.fade(
-                "&:hover",
-                colors.$primary,
-                colors.$accent,
-                $property: "background-color"
-            );
-            @include animations.fade(
-                "&:active",
-                colors.$accent,
-                colors.$primary,
-                $property: "background-color"
-            );
+            @include animations.fade("&:hover", colors.$accent);
+            @include animations.fade("&:active", colors.$primary);
         }
     }
 

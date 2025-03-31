@@ -17,16 +17,8 @@
             background-color: colors.$primary;
 
             @if not list.index("workspaces", $modules) {
-                @include animations.fade(
-                    "&:hover",
-                    colors.$primary,
-                    colors.$accent
-                );
-                @include animations.fade(
-                    "&:active",
-                    colors.$accent,
-                    colors.$primary
-                );
+                @include animations.fade("&:hover", colors.$accent);
+                @include animations.fade("&:active", colors.$primary);
             }
 
             .widget {
@@ -38,7 +30,6 @@
     .workspaces {
         @include animations.fade(
             ".inactive:hover label",
-            colors.$text,
             white,
             $property: "color"
         );
@@ -98,7 +89,7 @@ menu {
     menuitem {
         border-radius: 10px;
 
-        @include animations.fade("&:hover", colors.$primary, colors.$accent);
+        @include animations.fade("&:hover", colors.$accent);
 
         label {
             padding: 2px 8px;

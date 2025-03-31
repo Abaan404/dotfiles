@@ -33,24 +33,16 @@ $button-highlight-height: 30px;
         }
 
         .record {
-            @include animations.fade(
-                ".recording",
-                colors.$primary,
-                colors.$good
-            );
-            @include animations.fade(
-                ".paused",
-                colors.$primary,
-                colors.$warning
-            );
+            @include animations.fade(".recording", colors.$good);
+            @include animations.fade(".paused", colors.$warning);
         }
 
         .replay {
-            @include animations.fade(".disabled", colors.$primary, colors.$bad);
+            @include animations.fade(".disabled", colors.$bad);
         }
 
         .microphone {
-            @include animations.fade(".disabled", colors.$primary, colors.$bad);
+            @include animations.fade(".disabled", colors.$bad);
         }
 
         @each $selector in "replay", "record", "microphone" {
@@ -80,10 +72,6 @@ $button-highlight-height: 30px;
         }
 
         @include animations.flyin("&", "left");
-        @include animations.fade(
-            "button:hover",
-            colors.$primary,
-            colors.$secondary
-        );
+        @include animations.fade("button:hover", colors.$secondary);
     }
 }
