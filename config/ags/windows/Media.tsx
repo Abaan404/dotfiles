@@ -153,10 +153,18 @@ export default function (gdkmonitor: Gdk.Monitor) {
         (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === WirePlumber.MediaClass.AUDIO_MICROPHONE)),
     );
 
-    // bind(audio, "default_microphone").subscribe(console.log);
-
     return (
         <BoxedWindow
+        onDestroy={() => {
+            speaker_label.drop();
+            microphone_label.drop();
+
+            speaker_mute.drop();
+            microphone_mute.drop();
+
+            speaker_endpoints.drop();
+            microphone_endpoints.drop();
+        }}
             name="media"
             gdkmonitor={gdkmonitor}
             anchor={Astal.WindowAnchor.TOP

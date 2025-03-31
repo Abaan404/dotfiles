@@ -74,6 +74,9 @@ function Workspaces() {
 
     return (
         <button
+            onDestroy={() => {
+                workspaces.drop();
+            }}
             className="workspaces">
             <box spacing={20} className="widget">
                 {workspaces()}
@@ -223,6 +226,10 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
         return (
             <button
+                onDestroy={() => {
+                    volume.drop();
+                    visible.drop();
+                }}
                 onScroll={(_, e) => {
                     if (!endpoint) {
                         return;
@@ -311,6 +318,11 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
     return (
         <eventbox
+            onDestroy={() => {
+                speaker_glyph.drop();
+                microphone_glyph.drop();
+                class_names.drop();
+            }}
             className={class_names()}
             onClick={(_, e) => {
                 switch (e.button) {

@@ -24,6 +24,26 @@ export default function (gdkmonitor: Gdk.Monitor) {
         });
     });
 
+    const fraction = Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
+        if (!player) {
+            return 0.0;
+        }
+
+        return progress / player.get_length();
+    });
+    const player_label = Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
+        if (!player) {
+            return `${get_player_glyph("")}  No players`;
+        }
+
+        if (player.length < 0) {
+            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())}`;
+        }
+        else {
+            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())} (${to_timestamp(progress)} / ${to_timestamp(player.get_length())})`;
+        }
+    });
+
     return (
         <BoxedWindow
             name="mpris"
@@ -130,18 +150,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                     className="name"
                     valign={Gtk.Align.START}
                     halign={Gtk.Align.START}
-                    label={Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
-                        if (!player) {
-                            return `${get_player_glyph("")}  No players`;
-                        }
-
-                        if (player.length < 0) {
-                            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())}`;
-                        }
-                        else {
-                            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())} (${to_timestamp(progress)} / ${to_timestamp(player.get_length())})`;
-                        }
-                    })()} />
+                    label={player_label()} />
                 <box
                     orientation={Gtk.Orientation.VERTICAL}
                     valign={Gtk.Align.CENTER}
@@ -166,17 +175,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
 
                             return player.get_artist();
                         })} />
-                    <ProgressBar
-                        fraction={
-                            Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
-                                if (!player) {
-                                    return 0.0;
-                                }
-
-                                return progress / player.get_length();
-                            })()
-                        }>
-                    </ProgressBar>
+                    <ProgressBar fraction={fraction()} />
                 </box>
             </box>
         </BoxedWindow>

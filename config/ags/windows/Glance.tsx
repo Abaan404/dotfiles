@@ -424,6 +424,9 @@ function Bluetooth() {
 
     return (
         <box
+            onDestroy={() => {
+                devices.drop();
+            }}
             className="bluetooth"
             orientation={Gtk.Orientation.VERTICAL}
             spacing={10}>
