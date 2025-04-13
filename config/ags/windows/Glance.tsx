@@ -1,6 +1,6 @@
 import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
 import { GLib, Variable, bind, execAsync } from "astal";
-import { readFileAsync } from "astal/file";
+import { Gio, readFileAsync } from "astal/file";
 
 import AstalNetwork from "gi://AstalNetwork";
 import AstalPowerProfiles from "gi://AstalPowerProfiles";
@@ -158,6 +158,26 @@ function PowerInfo() {
 function Network() {
     const network = AstalNetwork.get_default();
 
+    const wired = network.get_wired();
+    const wifi = network.get_wifi();
+
+    if (!wifi && !wired) {
+        return (
+            <box
+                name="network"
+                className="network"
+                homogeneous={true}
+                hexpand={true}
+                vexpand={true}>
+                <label
+                    className="nodevice"
+                    valign={Gtk.Align.CENTER}
+                    halign={Gtk.Align.CENTER}
+                    label="No Network Device Found" />
+            </box>
+        );
+    }
+
     const scanning: Variable<boolean> = Variable(false);
     let scanner: Variable<null> = Variable(null);
 
@@ -175,12 +195,12 @@ function Network() {
         scanning.set(!flight_mode);
     });
 
-    if (network.wifi) {
+    if (wifi) {
         scanner = Variable.derive(
-            [bind(network.wifi, "scanning"), scanning],
+            [bind(wifi, "scanning"), scanning],
             (wifi_scanning, ui_scanning) => {
-                if (!wifi_scanning && ui_scanning && network.wifi.enabled) {
-                    network.wifi.scan();
+                if (!wifi_scanning && ui_scanning && wifi.get_enabled()) {
+                    wifi.scan();
                 }
 
                 return null;
@@ -188,7 +208,7 @@ function Network() {
         );
 
         access_points = Variable.derive(
-            [bind(network.wifi, "access_points")],
+            [bind(wifi, "access_points")],
             (access_points) => {
                 return access_points
                     .sort((a, b) => b.get_strength() - a.get_strength())
@@ -199,9 +219,11 @@ function Network() {
                                 placeholder_text="Enter Password..."
                                 focus_on_click={true}
                                 onActivate={async (self) => {
-                                    await execAsync(["nmcli", ""]);
-                                    execAsync(["nmcli", "device", "wifi", "connect", access_point.ssid, "password", self.get_text()])
-                                        .catch(() => {});
+                                    const ssid = access_point.get_ssid();
+                                    if (ssid) {
+                                        execAsync(["nmcli", "device", "wifi", "connect", ssid, "password", self.get_text()])
+                                            .catch(() => {});
+                                    }
                                 }} />
                         );
 
@@ -218,13 +240,14 @@ function Network() {
                                                 // stop scanning
                                                 scanning.set(false);
 
-                                                const is_open = await execAsync(["nmcli", "-t", "-f", "SECURITY", "device", "wifi", "list", "bssid", access_point.bssid])
+                                                const is_open = await execAsync(["nmcli", "-t", "-f", "SECURITY", "device", "wifi", "list", "bssid", access_point.get_bssid()])
                                                     .then(res => res === "");
                                                 const remembered = await execAsync(["nmcli", "-t", "-f", "NAME", "connection", "show"])
                                                     .then(res => res.split("\n"));
 
-                                                if (is_open || remembered.includes(access_point.ssid)) {
-                                                    const success = await execAsync(["nmcli", "device", "wifi", "connect", access_point.ssid])
+                                                const ssid = access_point.get_ssid();
+                                                if (ssid && (is_open || remembered.includes(ssid))) {
+                                                    const success = await execAsync(["nmcli", "device", "wifi", "connect", ssid])
                                                         .then(() => true)
                                                         .catch(() => false);
 
@@ -233,7 +256,7 @@ function Network() {
                                                     }
                                                 }
 
-                                                if (selected_access_point.get()?.ssid === access_point.get_ssid()) {
+                                                if (selected_access_point.get()?.get_ssid() === access_point.get_ssid()) {
                                                     selected_access_point.set(null);
                                                 }
                                                 else {
@@ -252,7 +275,7 @@ function Network() {
                                 </button>
                                 <revealer
                                     transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                                    revealChild={selected_access_point().as(selected_access_point => selected_access_point?.ssid === access_point?.get_ssid())}>
+                                    revealChild={selected_access_point().as(selected_access_point => selected_access_point?.get_ssid() === access_point?.get_ssid())}>
                                     {entry}
                                 </revealer>
                             </box>
@@ -262,17 +285,17 @@ function Network() {
         );
 
         ssid = Variable.derive(
-            [bind(network.wifi, "active_access_point")],
+            [bind(wifi, "active_access_point")],
             active_access_point => active_access_point?.get_ssid() || null,
         );
 
         icon = Variable.derive(
-            [bind(network.wifi, "icon_name")],
+            [bind(wifi, "icon_name")],
             icon_name => icon_name,
         );
 
         internet = Variable.derive(
-            [bind(network.wifi, "internet"), ssid],
+            [bind(wifi, "internet"), ssid],
             (internet, ssid) => {
                 // connectivity isnt updated properly sometimes
                 if (ssid === null) {
@@ -296,16 +319,16 @@ function Network() {
         );
     }
 
-    if (network.wired) {
+    if (wired) {
         ssid = Variable("Wired");
 
         icon = Variable.derive(
-            [bind(network.wired, "icon_name")],
+            [bind(wired, "icon_name")],
             icon_name => icon_name,
         );
 
         internet = Variable.derive(
-            [bind(network.wired, "internet"), ssid],
+            [bind(wired, "internet"), ssid],
             (internet, ssid) => {
                 // connectivity isnt updated properly sometimes
                 if (ssid === null) {
@@ -347,7 +370,7 @@ function Network() {
                 spacing={10}
                 className="settings-box">
                 <button
-                    className={scanning().as(scanning => scanning ? "success" : "failed")}
+                    className={scanning().as(scanning => scanning ? "success" : "")}
                     onClick={() => {
                         if (flight_mode.get()) {
                             return;
@@ -356,14 +379,6 @@ function Network() {
                         scanning.set(!scanning.get());
                     }}>
                     <icon icon="search-symbolic" />
-                </button>
-                <button
-                    className={internet()}>
-                    <box
-                        spacing={10}>
-                        <icon icon={icon()} />
-                        <label label={ssid().as(ssid => truncate(ssid || "Disconnected", 15))} />
-                    </box>
                 </button>
 
                 <button
@@ -381,7 +396,17 @@ function Network() {
                     <box
                         spacing={10}>
                         <label label=" " />
-                        <label label="Flight Mode" />
+                    </box>
+                </button>
+
+                <button
+                    className={internet()}
+                    hexpand={true}>
+                    <box
+                        halign={Gtk.Align.CENTER}
+                        spacing={10}>
+                        <icon icon={icon()} />
+                        <label label={ssid().as(ssid => truncate(ssid || "Disconnected", 15))} />
                     </box>
                 </button>
             </box>
@@ -402,50 +427,134 @@ function Network() {
 
 function Bluetooth() {
     const bluetooth = AstalBluetooth.get_default();
+    const adapter = bluetooth.get_adapter();
 
-    const devices = Variable.derive(
-        [bind(bluetooth, "devices")],
-        (devices) => {
-            return devices.map((device) => {
-                return (
-                    <eventbox
-                        className="entry"
-                        hexpand={true}>
-                        <box
-                            spacing={5}>
-                            <icon className="icon" icon="bluetooth-symbolic" />
-                            <label className="value" label={device.get_alias()} />
-                        </box>
-                    </eventbox>
-                );
-            });
-        },
-    );
+    if (!adapter) {
+        return (
+            <box
+                name="bluetooth"
+                className="bluetooth"
+                homogeneous={true}
+                hexpand={true}
+                vexpand={true}>
+                <label
+                    className="nodevice"
+                    valign={Gtk.Align.CENTER}
+                    halign={Gtk.Align.CENTER}
+                    label="No Bluetooth Adapter Found" />
+            </box>
+        );
+    }
+
+    adapter.set_discoverable_timeout(600);
+
+    const devices = Variable(bluetooth.get_devices());
+    bind(bluetooth, "is_powered").subscribe(() => devices.set([]));
+    bluetooth.connect("device-added", () => devices.set(bluetooth.get_devices()));
+    bluetooth.connect("device-removed", () => devices.set(bluetooth.get_devices()));
 
     return (
         <box
             onDestroy={() => {
                 devices.drop();
             }}
+            name="bluetooth"
             className="bluetooth"
             orientation={Gtk.Orientation.VERTICAL}
             spacing={10}>
             <box
-                halign={Gtk.Align.CENTER}
                 hexpand={true}
-                spacing={10}>
-                <icon icon="bluetooth-symbolic" />
-                <label label={bind(bluetooth, "devices").as((devices) => {
-                    return devices.length > 0
-                        ? `${bluetooth.get_devices().filter(device => device.get_connected()).length} device(s) are connected.`
-                        : "No Devices Connected";
-                })} />
+                spacing={10}
+                className="settings-box">
+                <button
+                    className={bind(adapter, "discovering").as(discovering => discovering ? "success" : "")}
+                    onClick={(_, e) => {
+                        switch (e.button) {
+                            case Astal.MouseButton.PRIMARY:
+                                if (adapter.get_discovering()) {
+                                    adapter.stop_discovery();
+                                }
+                                else {
+                                    adapter.start_discovery();
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }}>
+                    <icon icon="search-symbolic" />
+                </button>
+
+                <button
+                    className={bind(adapter, "discoverable").as(discoverable => discoverable ? "success" : "")}
+                    onClick={async (_, e) => {
+                        switch (e.button) {
+                            case Astal.MouseButton.PRIMARY:
+                                adapter.set_discoverable(!adapter.get_discoverable());
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }}>
+                    <icon icon="blueman-pair-symbolic" />
+                </button>
+
+                <button
+                    className={bind(bluetooth, "is_powered").as(is_powered => is_powered ? "" : "failed")}
+                    hexpand={true}
+                    onClick={(_, e) => {
+                        switch (e.button) {
+                            case Astal.MouseButton.PRIMARY:
+                                bluetooth.toggle();
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }}>
+                    <box
+                        halign={Gtk.Align.CENTER}
+                        spacing={10}>
+                        <icon icon="bluetooth-symbolic" />
+                        <label label={bind(bluetooth, "is_connected").as(connected => connected ? "Connected" : "Disconnected")} />
+                    </box>
+                </button>
             </box>
+
+            <Separator />
+
             <scrollable
                 vexpand={true}>
                 <box
+                    spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    {devices()}
+                    {devices().as(devices => devices
+                        .filter(device => device.get_alias().replaceAll("-", ":") !== device.get_address())
+                        .map(device => (
+                            <button
+                                className={bind(device, "connected").as(connected => connected ? "entry active" : "entry")}
+                                hexpand={true}
+                                onClick={async () => {
+                                    // TODO: handle pairing
+                                    if (device.get_connected()) {
+                                        Gio._promisify(AstalBluetooth.Device.prototype, "disconnect_device", "disconnect_device_finish");
+                                        await device.disconnect_device();
+                                    }
+                                    else {
+                                        Gio._promisify(AstalBluetooth.Device.prototype, "connect_device", "connect_device_finish");
+                                        await device.connect_device();
+                                    }
+                                }}>
+                                <box
+                                    spacing={5}>
+                                    <icon className="icon" icon="bluetooth-symbolic" />
+                                    <label className="value" label={device.get_alias()} />
+                                </box>
+                            </button>
+                        )),
+                    )}
                 </box>
             </scrollable>
         </box>
@@ -499,33 +608,36 @@ function QuickSettings() {
                 <button
                     onClick={(_, e) => e.button === Astal.MouseButton.PRIMARY ? page.set("network") : null}>
                     {bind(network, "primary").as((primary) => {
-                        switch (primary) {
-                            case AstalNetwork.Primary.WIRED:
-                                return (
-                                    <circularprogress
-                                        value={1.0}
-                                        rounded={true}>
-                                        <icon icon={bind(network.wired, "icon_name").as(icon_name => icon_name)} />
-                                    </circularprogress>
-                                );
+                        const wired = network.get_wired();
+                        const wifi = network.get_wifi();
+                        if (primary === AstalNetwork.Primary.WIRED && wired) {
+                            return (
+                                <circularprogress
+                                    value={1.0}
+                                    rounded={true}>
+                                    <icon icon={bind(wired, "icon_name").as(icon_name => icon_name)} />
+                                </circularprogress>
+                            );
+                        }
 
-                            case AstalNetwork.Primary.WIFI:
-                                return (
-                                    <circularprogress
-                                        value={bind(network.wifi, "strength").as(strength => strength)}
-                                        rounded={bind(network.wifi, "strength").as(strength => strength !== 0.0)}>
-                                        <icon icon={bind(network.wifi, "icon_name").as(icon_name => icon_name)} />
-                                    </circularprogress>
-                                );
+                        else if (primary === AstalNetwork.Primary.WIFI && wifi) {
+                            return (
+                                <circularprogress
+                                    value={bind(wifi, "strength").as(strength => strength)}
+                                    rounded={bind(wifi, "strength").as(strength => strength !== 0.0)}>
+                                    <icon icon={bind(wifi, "icon_name").as(icon_name => icon_name)} />
+                                </circularprogress>
+                            );
+                        }
 
-                            case AstalNetwork.Primary.UNKNOWN:
-                                return (
-                                    <circularprogress
-                                        value={0.0}
-                                        rounded={false}>
-                                        <icon icon="network-wireless-signal-none-symbolic" />
-                                    </circularprogress>
-                                );
+                        else {
+                            return (
+                                <circularprogress
+                                    value={0.0}
+                                    rounded={false}>
+                                    <icon icon="network-wireless-signal-none-symbolic" />
+                                </circularprogress>
+                            );
                         }
                     })}
                 </button>
@@ -533,14 +645,19 @@ function QuickSettings() {
                 <button
                     onClick={(_, e) => e.button === Astal.MouseButton.PRIMARY ? page.set("bluetooth") : null}>
                     <circularprogress
-                        value={bind(bluetooth, "devices").as((devices) => {
-                            const connected_devices = devices.filter(device => device.connected);
-                            if (connected_devices.length === 0) {
+                        value={bind(bluetooth, "is_connected").as((is_connected) => {
+                            if (!is_connected) {
                                 return 0.0;
                             }
 
-                            // FIXME: this should return the first bluetooth device's battery
-                            return 1.0;
+                            const connected_devices = bluetooth.get_devices().filter(device => device.get_connected());
+                            const device = connected_devices[0];
+                            if (device) {
+                            // FIXME: this isnt a bind
+                                return device.get_battery_percentage();
+                            }
+
+                            return 0.0;
                         })}
                         rounded={bind(bluetooth, "is_connected").as(is_connected => is_connected)}>
                         <icon icon="bluetooth-symbolic" />
