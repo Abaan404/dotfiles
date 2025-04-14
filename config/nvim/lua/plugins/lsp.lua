@@ -97,13 +97,6 @@ return {
                         telemetry = true,
                     },
                 },
-                nil_ls = {
-                    ["nil"] = {
-                        formatting = {
-                            command = { "nixfmt" },
-                        },
-                    },
-                },
             }
 
             -- NOTE: servers are downloaded externally, mason is no longer used in these dots
@@ -129,7 +122,7 @@ return {
                 "docker_compose_language_service",
                 "texlab",
                 "tinymist",
-                "nil_ls",
+                "nixd",
                 "vala_ls",
                 "tailwindcss",
             }
@@ -157,7 +150,7 @@ return {
                 typescriptreact = { "eslint_d" },
 
                 -- prettier moment
-                css = { "pretter" },
+                css = { "prettier" },
                 scss = { "prettier" },
                 json = { "prettier" },
                 yaml = { "prettier" },
@@ -165,6 +158,7 @@ return {
                 markdown = { "prettier" },
 
                 typst = { "typstyle" },
+                nix = { "nixfmt" },
             },
 
             formatters = {

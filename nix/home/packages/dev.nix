@@ -69,7 +69,7 @@
     pkgs.asm-lsp
     pkgs.pyright
     pkgs.texlab
-    pkgs.nil
+    pkgs.nixd
 
     # formatters
     pkgs.nodePackages.prettier
