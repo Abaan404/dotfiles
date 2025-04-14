@@ -45,7 +45,9 @@
     pkgs.lutris
 
     # image/video editing
+    pkgs.davinci-resolve
     pkgs.kolourpaint
+    pkgs.kdenlive
     pkgs.inkscape
     pkgs.swappy
     pkgs.kooha
