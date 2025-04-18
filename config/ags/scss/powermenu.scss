@@ -5,7 +5,6 @@ $button-open-height: 40px;
 $button-highlight-height: 30px;
 
 .powermenu {
-    background-color: transparent;
     margin-right: 40px;
 
     .layout-box {
@@ -18,21 +17,20 @@ $button-highlight-height: 30px;
             min-width: 50px;
             min-height: 60px;
 
-            icon {
+            image {
                 color: colors.$accent;
-                font-size: 40px;
             }
         }
 
-        .power button icon {
+        .power button image {
             color: colors.$bad;
         }
 
         .transition-text {
             font-weight: bolder;
             font-size: 16px;
-            padding-right: 20px;
             color: transparent;
+            min-width: 100px;
         }
 
         @each $selector in "power", "reboot", "suspend", "hibernate" {

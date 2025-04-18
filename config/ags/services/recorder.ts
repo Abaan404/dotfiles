@@ -3,7 +3,7 @@ import { Gio } from "astal/file";
 import { subprocess } from "astal/process";
 
 import AstalIO from "gi://AstalIO";
-import { App } from "astal/gtk3";
+import { App } from "astal/gtk4";
 
 @register({ GTypeName: "Recorder" })
 export default class Recorder extends GObject.Object {

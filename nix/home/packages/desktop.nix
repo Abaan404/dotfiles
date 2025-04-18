@@ -107,8 +107,8 @@
     };
 
     theme = {
-      package = pkgs.qogir-theme;
-      name = "Qogir-Dark";
+      package = pkgs.orchis-theme;
+      name = "Orchis-Dark";
     };
   };
 

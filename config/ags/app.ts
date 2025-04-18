@@ -1,15 +1,15 @@
-import { App } from "astal/gtk3";
+import { App } from "astal/gtk4";
 import { bind } from "astal";
 
 import style from "./style.scss";
-import window_handler from "./helpers/window";
+import window_handler from "./utils/window";
 
 import Bar from "./windows/Bar";
 import PowerMenu from "./windows/PowerMenu";
 import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
 import Glance from "./windows/Glance";
-import Replay from "./windows/Replay";
+import ReplayMenu from "./windows/ReplayMenu";
 
 import AstalBattery from "gi://AstalBattery";
 import Recorder from "./services/recorder";
@@ -25,7 +25,7 @@ App.start({
         window_handler.register_window("mpris", Mpris);
         window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
-        window_handler.register_window("replay", Replay);
+        window_handler.register_window("replaymenu", ReplayMenu);
 
         // display bar by default
         App.get_monitors().map(Bar);

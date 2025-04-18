@@ -2,9 +2,6 @@
 @use "colors";
 
 .mpris {
-    min-width: 400px;
-    min-height: 200px;
-
     .layout-box {
         margin: 20px;
         background-color: colors.$primary;
@@ -14,17 +11,12 @@
             border-radius: 10px;
             background-color: colors.$secondary;
 
-            .image {
+            picture {
                 border-radius: 10px;
-                margin-right: 10px;
-                min-height: 180px;
-                min-width: 180px;
             }
 
             .controls {
-                padding: 10px {
-                    right: 20px;
-                }
+                padding: 10px 20px;
 
                 @include animations.fade(
                     "button:hover image",
@@ -58,13 +50,31 @@
                 font-weight: bold;
             }
 
-            progressbar {
-                margin-top: 10px;
-                border-radius: 20px;
+            .active-player-control {
+                @include animations.fade(
+                    "&:hover label",
+                    colors.$accent,
+                    $property: "color"
+                );
+                @include animations.fade(
+                    "&:active label",
+                    colors.$text,
+                    $property: "color"
+                );
+            }
 
-                trough {
+            scale {
+                background-color: colors.$secondary;
+                margin: 10px 0px;
+                border-radius: 10px;
+
+                slider {
+                    min-height: 6px;
+                }
+
+                highlight {
                     background-color: colors.$text;
-                    border-radius: 20px;
+                    border-radius: 10px;
                 }
             }
         }

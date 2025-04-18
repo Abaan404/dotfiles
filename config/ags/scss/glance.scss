@@ -35,16 +35,14 @@
     }
 
     .power {
+        border-radius: 20px;
+        background-color: colors.$color1;
+
         & > box {
             padding: 10px 30px;
         }
 
-        border-radius: 20px;
-        background-color: colors.$color1;
-
         .icon {
-            font-size: 3em;
-
             padding: 20px {
                 right: 0px;
             }
@@ -60,72 +58,6 @@
     }
 
     .quick-settings {
-        .schedule {
-            padding: 10px;
-
-            .header {
-                .event-incoming {
-                    background-color: colors.$secondary;
-                    border-radius: 20px;
-                    padding: 2px 10px;
-                }
-
-                .event-add {
-                    background-color: colors.$secondary;
-                    padding: 0px 10px;
-                    border-radius: 20px;
-
-                    label {
-                        font-size: 1.5em;
-                    }
-
-                    @include animations.fade("&:hover", colors.$good);
-                }
-            }
-
-            .entry {
-                background-color: colors.$secondary;
-                padding: 10px;
-                border-radius: 10px;
-
-                .event-name {
-                    padding: 0px 5px;
-                    font-size: 1.25em;
-                }
-
-                .footer {
-                    margin-top: 2px;
-
-                    label {
-                        font-size: 0.8em;
-                    }
-                }
-
-                .event-remove {
-                    padding-left: 5px;
-
-                    @include animations.fade(
-                        "&:hover label",
-                        colors.$bad,
-                        $property: "color"
-                    );
-                }
-
-                .event-time {
-                    background-color: colors.$color1;
-                    border-radius: 20px;
-                    padding: 0px 10px;
-                }
-            }
-
-            .seperator {
-                margin: 2px;
-                padding: 2.5px;
-                border-radius: 10px;
-                background-color: colors.$color4;
-            }
-        }
-
         .calendar {
             background-color: colors.$color1;
             padding: 10px 0px;
@@ -137,43 +69,33 @@
                 padding: 5px;
             }
 
-            .controls {
-                padding-right: 0px;
-
-                button {
-                    @include animations.fade(
-                        "&:hover label",
-                        colors.$accent,
-                        $property: "color"
-                    );
-                    @include animations.fade(
-                        "&:active label",
-                        colors.$text,
-                        $property: "color"
-                    );
-
-                    label {
-                        padding: 0px;
-                    }
-                }
-            }
-
             calendar {
                 padding: 10px;
                 color: colors.$text;
                 font-weight: bold;
 
-                &:hover {
-                    color: white;
-                }
+                grid {
+                    label {
+                        margin: 4px;
+                        padding: 5px;
+                        border-radius: 10px;
 
-                &:selected {
-                    color: white;
-                    font-weight: bolder;
-                }
+                        &:selected {
+                            background-color: colors.$secondary;
+                        }
 
-                &:indeterminate {
-                    color: #888888;
+                        @include animations.fade("&:hover", colors.$accent);
+                        @include animations.fade("&:active", colors.$secondary);
+                    }
+
+                    .today {
+                        color: white;
+                        font-weight: bolder;
+                    }
+
+                    .other-month {
+                        color: #888888;
+                    }
                 }
             }
         }
@@ -217,7 +139,6 @@
 
                 button {
                     background-color: colors.$secondary;
-
                     border-radius: 10px;
                     padding: 10px 20px;
 
@@ -241,15 +162,12 @@
                 }
 
                 .value {
-                    font-size: 1.5em;
+                    font-size: 1.25em;
+                    font-weight: bolder;
                 }
 
                 .icon {
-                    font-size: 2em;
-
-                    padding: 15px {
-                        left: 20px;
-                    }
+                    padding: 15px;
                 }
 
                 @include animations.fade("&:hover", colors.$accent);
@@ -270,25 +188,31 @@
             border-radius: 20px;
             background-color: colors.$color1;
 
-            & > button {
+            button {
                 @include animations.fade(
-                    "&:hover circularprogress",
-                    colors.$accent,
-                    $property: "color"
+                    "&:hover scale highlight",
+                    colors.$accent
                 );
                 @include animations.fade(
-                    "&:active circularprogress",
-                    colors.$text,
-                    $property: "color"
+                    "&:active scale highlight",
+                    colors.$secondary
                 );
             }
 
-            circularprogress {
-                min-width: 70px;
-                min-height: 70px;
+            scale {
                 background-color: colors.$color4;
-                color: colors.$text;
-                font-size: 10px;
+                border-radius: 10px;
+
+                slider {
+                    min-width: 70px;
+                    min-height: 70px;
+                    border-radius: 10px;
+                }
+
+                highlight {
+                    background-color: colors.$secondary;
+                    border-radius: 10px;
+                }
             }
         }
     }

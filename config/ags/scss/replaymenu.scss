@@ -4,14 +4,10 @@
 $button-open-height: 40px;
 $button-highlight-height: 30px;
 
-.replay {
-    background-color: transparent;
-    margin: 20px;
+.replaymenu {
     margin-left: 40px;
 
     .layout-box {
-        min-width: 300px;
-
         button {
             padding: $button-open-height $button-open-height;
             border-radius: 10px;
@@ -19,20 +15,23 @@ $button-highlight-height: 30px;
             min-width: 50px;
             min-height: 60px;
 
-            icon {
+            image {
                 color: colors.$accent;
-                font-size: 40px;
             }
         }
 
         .transition-text {
             font-weight: bolder;
             font-size: 16px;
-            padding-left: 20px;
             color: transparent;
+            min-width: 100px;
         }
 
         .record {
+            .pause {
+                margin-left: 20px;
+            }
+
             @include animations.fade(".recording", colors.$good);
             @include animations.fade(".paused", colors.$warning);
         }

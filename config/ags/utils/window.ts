@@ -1,7 +1,7 @@
-import { App, Gdk, Widget } from "astal/gtk3";
+import { App, Astal, Gdk } from "astal/gtk4";
 
 export class WindowHandler {
-    private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Widget.Window>();
+    private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Astal.Window>();
 
     private get_window_factory(name: string) {
         const window_factory = this.registry.get(name);
@@ -34,7 +34,7 @@ export class WindowHandler {
         }
     }
 
-    register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Widget.Window) {
+    register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Astal.Window) {
         this.registry.set(name, window_factory);
     }
 }

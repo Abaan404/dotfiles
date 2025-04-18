@@ -1,183 +1,226 @@
-import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
-import { GLib, Variable } from "astal";
+import { App, Astal, Gdk, Gtk } from "astal/gtk4";
+import { bind, Gio, GLib } from "astal";
 
-import Mpris from "gi://AstalMpris";
+import AstalMpris from "gi://AstalMpris";
+import ActivePlayer from "../services/activeplayer";
 
-import { BoxedWindow } from "../widgets/BoxedWindow";
-import { ProgressBar } from "../widgets/ProgressBar";
-import { PlayerSelected } from "../helpers/variables";
-import { get_player_glyph, get_player_name } from "../utils/glyphs";
-import { to_timestamp } from "../utils/strings";
+import { Picture } from "../utils/widgets";
+
+import { MouseButton } from "../utils/inputs";
+import { get_player_glyph, get_player_name } from "../utils/strings";
+import { to_timestamp, truncate } from "../utils/strings";
 
 export default function (gdkmonitor: Gdk.Monitor) {
-    const PlayerSelectedProgress = Variable(0.0);
-
-    PlayerSelectedProgress.set(PlayerSelected.get()?.get_position() || 0.0);
-
-    PlayerSelected.get()?.connect("notify", (player) => {
-        PlayerSelectedProgress.set(player.get_position());
-    });
-
-    PlayerSelected.subscribe((player) => {
-        player?.connect("notify", (player) => {
-            PlayerSelectedProgress.set(player.get_position());
-        });
-    });
-
-    const fraction = Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
-        if (!player) {
-            return 0.0;
-        }
-
-        return progress / player.get_length();
-    });
-    const player_label = Variable.derive([PlayerSelected(), PlayerSelectedProgress()], (player, progress) => {
-        if (!player) {
-            return `${get_player_glyph("")}  No players`;
-        }
-
-        if (player.length < 0) {
-            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())}`;
-        }
-        else {
-            return `${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())} (${to_timestamp(progress)} / ${to_timestamp(player.get_length())})`;
-        }
-    });
+    const active_player = ActivePlayer.get_default();
 
     return (
-        <BoxedWindow
+        <window
+            setup={self => self.set_default_size(-1, -1)}
             name="mpris"
+            cssClasses={["mpris"]}
             gdkmonitor={gdkmonitor}
+            visible={true}
             anchor={Astal.WindowAnchor.TOP}
-            application={App}
-            layout_box_props={{
-                spacing: 10,
-            }}>
-
+            application={App}>
             <box
-                className="left">
+                cssClasses={["layout-box"]}
+                halign={Gtk.Align.CENTER}
+                spacing={10}>
                 <box
-                    className="image"
-                    css={PlayerSelected().as((player) => {
-                        const cover_path = player
-                            ? player.get_cover_art()
-                            : `${GLib.get_user_config_dir()}/ags/assets/playerart.png`;
+                    cssClasses={["left"]}>
+                    {bind(active_player, "player").as((player) => {
+                        if (!player) {
+                            return <Picture file={Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png")} />;
+                        }
 
-                        return `background-image: url('${cover_path}'); background-size: 180px 180px;`;
-                    })}>
+                        return (
+                            <Picture file={bind(player, "cover_art").as((cover_art) => {
+                                const file = Gio.File.new_for_path(cover_art);
+                                if (!file.query_exists(null)) {
+                                    return Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png");
+                                }
+
+                                return file;
+                            })} />
+                        );
+                    })}
+                    <box
+                        cssClasses={["controls"]}
+                        spacing={10}
+                        orientation={Gtk.Orientation.VERTICAL}>
+                        <button
+                            cssClasses={["previous"]}
+                            vexpand={true}
+                            onButtonPressed={(_, e) => {
+                                const player = active_player.player;
+                                if (!player) {
+                                    return;
+                                }
+
+                                switch (e.get_button()) {
+                                    case MouseButton.PRIMARY:
+                                        if (player.get_can_go_previous()) {
+                                            player.previous();
+                                        }
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }}>
+                            <image iconName="media-skip-backward-symbolic" />
+                        </button>
+                        <button
+                            cssClasses={["pause"]}
+                            vexpand={true}
+                            onButtonPressed={(_, e) => {
+                                const player = active_player.player;
+                                if (!player) {
+                                    return;
+                                }
+
+                                switch (e.get_button()) {
+                                    case MouseButton.PRIMARY:
+                                        if (player.get_can_play() && player.get_can_pause()) {
+                                            player.play_pause();
+                                        }
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }}>
+                            {bind(active_player, "player").as((player) => {
+                                if (!player) {
+                                    return (
+                                        <image iconName="media-playback-pause-symbolic" />
+                                    );
+                                }
+
+                                return (
+                                    <image iconName={bind(player, "playback_status").as(playback_status =>
+                                        playback_status === AstalMpris.PlaybackStatus.PLAYING
+                                            ? "media-playback-pause-symbolic"
+                                            : "media-playback-start-symbolic",
+                                    )} />
+                                );
+                            })}
+                        </button>
+                        <button
+                            cssClasses={["next"]}
+                            vexpand={true}
+                            onButtonPressed={(_, e) => {
+                                const player = active_player.player;
+                                if (!player) {
+                                    return;
+                                }
+
+                                switch (e.get_button()) {
+                                    case MouseButton.PRIMARY:
+                                        if (player.get_can_go_next()) {
+                                            player.next();
+                                        }
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }}>
+                            <image iconName="media-skip-forward-symbolic" />
+                        </button>
+                    </box>
                 </box>
                 <box
-                    className="controls"
+                    cssClasses={["right"]}
                     spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    <button
-                        className="previous"
-                        vexpand={true}
-                        onClick={(_, e) => {
-                            const player = PlayerSelected.get();
-                            if (!player) {
-                                return;
-                            }
+                    {bind(active_player, "player").as((player) => {
+                        if (!player) {
+                            return (
+                                <box
+                                    spacing={10}>
+                                    <label label={`${get_player_glyph("")}  No players`} />
+                                </box>
+                            );
+                        }
 
-                            switch (e.button) {
-                                case Astal.MouseButton.PRIMARY:
-                                    if (player.get_can_go_previous()) {
-                                        player.previous();
+                        return (
+                            <button
+                                cssClasses={["active-player-control"]}
+                                onButtonPressed={(_, e) => {
+                                    switch (e.get_button()) {
+                                        case MouseButton.PRIMARY:
+                                            active_player.next_player();
+                                            break;
+
+                                        case MouseButton.SECONDARY:
+                                            active_player.prev_player();
+                                            break;
+
+                                        default:
+                                            break;
                                     }
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }}>
-                        <icon icon="media-skip-backward-symbolic" />
-                    </button>
-                    <button
-                        className="pause"
-                        vexpand={true}
-                        onClick={(_, e) => {
-                            const player = PlayerSelected.get();
+                                }}>
+                                <box
+                                    spacing={10}>
+                                    <label label={`${get_player_glyph(player.get_bus_name())}  ${get_player_name(player.get_bus_name())}`} />
+                                    <label label={bind(player, "position").as(position => player.get_length() > 0 ? `(${to_timestamp(position)} / ${to_timestamp(player.get_length())})` : `(${to_timestamp(position)})`)} />
+                                </box>
+                            </button>
+                        );
+                    })}
+                    <box
+                        orientation={Gtk.Orientation.VERTICAL}
+                        valign={Gtk.Align.CENTER}
+                        vexpand={true}>
+                        {bind(active_player, "player").as((player) => {
                             if (!player) {
-                                return;
+                                return [
+                                    <label
+                                        cssClasses={["title"]}
+                                        halign={Gtk.Align.START}
+                                        label="No Title" />,
+                                    <label
+                                        cssClasses={["artist"]}
+                                        halign={Gtk.Align.START}
+                                        label="No Artist" />,
+                                ];
                             }
 
-                            switch (e.button) {
-                                case Astal.MouseButton.PRIMARY:
-                                    if (player.get_can_play() && player.get_can_pause()) {
-                                        player.play_pause();
-                                    }
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }}>
-                        <icon icon={PlayerSelected().as(player =>
-                            player?.playback_status == Mpris.PlaybackStatus.PLAYING
-                                ? "media-playback-pause-symbolic"
-                                : "media-playback-start-symbolic",
-                        )} />
-                    </button>
-                    <button
-                        className="next"
-                        vexpand={true}
-                        onClick={(_, e) => {
-                            const player = PlayerSelected.get();
+                            return [
+                                <label
+                                    cssClasses={["title"]}
+                                    halign={Gtk.Align.START}
+                                    label={bind(player, "title").as(title => title === "" ? "No Title" : truncate(title, 50))} />,
+                                <label
+                                    cssClasses={["artist"]}
+                                    halign={Gtk.Align.START}
+                                    label={bind(player, "artist").as(artist => artist === "" ? "No Artist" : truncate(artist, 50))} />,
+                            ];
+                        })}
+                        {bind(active_player, "player").as((player) => {
                             if (!player) {
-                                return;
+                                return <slider min={0} max={1} value={0} />;
                             }
 
-                            switch (e.button) {
-                                case Astal.MouseButton.PRIMARY:
-                                    if (player.get_can_go_next()) {
-                                        player.next();
-                                    }
-                                    break;
+                            return (
+                                <slider
+                                    min={0}
+                                    max={1}
+                                    value={bind(player, "position").as(position => position / player.get_length())}
+                                    onChangeValue={(self) => {
+                                        const player = active_player.player;
+                                        if (!player || !player.get_can_seek()) {
+                                            return;
+                                        }
 
-                                default:
-                                    break;
-                            }
-                        }}>
-                        <icon icon="media-skip-forward-symbolic" />
-                    </button>
+                                        player.set_position(self.get_value() * player.get_length());
+                                    }} />
+                            );
+                        })}
+                    </box>
                 </box>
             </box>
-            <box
-                className="right"
-                spacing={10}
-                orientation={Gtk.Orientation.VERTICAL}>
-                <label
-                    className="name"
-                    valign={Gtk.Align.START}
-                    halign={Gtk.Align.START}
-                    label={player_label()} />
-                <box
-                    orientation={Gtk.Orientation.VERTICAL}
-                    valign={Gtk.Align.CENTER}
-                    vexpand={true}>
-                    <label
-                        className="title"
-                        halign={Gtk.Align.START}
-                        label={PlayerSelected().as((player) => {
-                            if (!player || player.get_title() == "") {
-                                return "No Title";
-                            }
-
-                            return player.get_title();
-                        })} />
-                    <label
-                        className="artist"
-                        halign={Gtk.Align.START}
-                        label={PlayerSelected().as((player) => {
-                            if (!player || player.get_artist() == "") {
-                                return "No Artist";
-                            }
-
-                            return player.get_artist();
-                        })} />
-                    <ProgressBar fraction={fraction()} />
-                </box>
-            </box>
-        </BoxedWindow>
-    ) as Widget.Window;
+        </window>
+    ) as Astal.Window;
 }

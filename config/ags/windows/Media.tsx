@@ -1,31 +1,31 @@
-import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
+import { App, Astal, Gtk, Gdk } from "astal/gtk4";
 import { bind, Variable } from "astal";
 
 import WirePlumber from "gi://AstalWp";
 
-import { BoxedWindow } from "../widgets/BoxedWindow";
+import { MouseButton } from "../utils/inputs";
 import { truncate } from "../utils/strings";
-import { symbolic_strength } from "../utils/glyphs";
+import { symbolic_strength } from "../utils/strings";
 
 function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { device_name: Variable<string>; mute: Variable<string>; default_endpoint: WirePlumber.Endpoint; endpoints: Variable<WirePlumber.Endpoint[]> }) {
     const reveal_devices = Variable(false);
 
     return (
         <box
-            className="volume-box"
+            cssClasses={["volume-box"]}
             orientation={Gtk.Orientation.VERTICAL}>
             <box
                 spacing={10}>
                 <label
-                    className="default name"
+                    cssClasses={["default", "name"]}
                     hexpand={true}
                     halign={Gtk.Align.START}
                     label={device_name().as(description => truncate(description, 46))} />
                 <button
-                    className="mute"
-                    onClick={(_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    cssClasses={["mute"]}
+                    onButtonPressed={(_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 default_endpoint.set_mute(!default_endpoint.get_mute());
                                 break;
 
@@ -36,10 +36,10 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                     <label label={mute()} />
                 </button>
                 <button
-                    className="list"
-                    onClick={(_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    cssClasses={["list"]}
+                    onButtonPressed={(_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 reveal_devices.set(!reveal_devices.get());
                                 break;
 
@@ -53,10 +53,10 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
             <revealer
                 transitionDuration={500}
                 transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                css="padding-top: 10px"
                 // visible={endpoints.length >= 2} // must have atleast one excluding the default endpoint
                 revealChild={reveal_devices()}>
                 <box
+                    cssClasses={["available-endpoints"]}
                     orientation={Gtk.Orientation.VERTICAL}
                     spacing={10}
                     halign={Gtk.Align.START}>
@@ -66,10 +66,10 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                             .map((endpoint) => {
                                 return (
                                     <button
-                                        className="name"
-                                        onClick={(_, e) => {
-                                            switch (e.button) {
-                                                case Astal.MouseButton.PRIMARY:
+                                        cssClasses={["name"]}
+                                        onButtonPressed={(_, e) => {
+                                            switch (e.get_button()) {
+                                                case MouseButton.PRIMARY:
                                                     endpoint.set_is_default(true);
                                                     break;
 
@@ -92,7 +92,7 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                 min={0}
                 max={1}
                 value={bind(default_endpoint, "volume")}
-                onDragged={self => default_endpoint.set_volume(self.get_value())} />
+                onChangeValue={self => default_endpoint.set_volume(self.get_value())} />
         </box>
     );
 }
@@ -101,19 +101,23 @@ export default function (gdkmonitor: Gdk.Monitor) {
     const audio = WirePlumber.get_default();
     if (!audio) {
         return (
-            <BoxedWindow
+            <window
+                setup={self => self.set_default_size(-1, -1)}
                 name="media"
+                cssClasses={["media"]}
                 gdkmonitor={gdkmonitor}
+                visible={true}
                 anchor={Astal.WindowAnchor.TOP
-                | Astal.WindowAnchor.RIGHT}
-                application={App}
-                layout_box_props={{
-                    spacing: 10,
-                    orientation: Gtk.Orientation.VERTICAL,
-                }}>
-                <label label="Could not connect to WirePlumber" />
-            </BoxedWindow>
-        ) as Widget.Window;
+                    | Astal.WindowAnchor.RIGHT}
+                application={App}>
+                <box
+                    cssClasses={["layout-box"]}
+                    spacing={10}
+                    orientation={Gtk.Orientation.VERTICAL}>
+                    <label label="Could not connect to WirePlumber" />
+                </box>
+            </window>
+        ) as Astal.Window;
     }
 
     const speaker_label = Variable.derive(
@@ -154,38 +158,41 @@ export default function (gdkmonitor: Gdk.Monitor) {
     );
 
     return (
-        <BoxedWindow
-        onDestroy={() => {
-            speaker_label.drop();
-            microphone_label.drop();
+        <window
+            onDestroy={() => {
+                speaker_label.drop();
+                microphone_label.drop();
 
-            speaker_mute.drop();
-            microphone_mute.drop();
+                speaker_mute.drop();
+                microphone_mute.drop();
 
-            speaker_endpoints.drop();
-            microphone_endpoints.drop();
-        }}
+                speaker_endpoints.drop();
+                microphone_endpoints.drop();
+            }}
+            setup={self => self.set_default_size(-1, -1)}
             name="media"
+            cssClasses={["media"]}
             gdkmonitor={gdkmonitor}
-            anchor={Astal.WindowAnchor.TOP
-            | Astal.WindowAnchor.RIGHT}
-            application={App}
-            layout_box_props={{
-                spacing: 10,
-                orientation: Gtk.Orientation.VERTICAL,
-            }}>
-            <MediaSlider
-                device_name={speaker_label}
-                mute={speaker_mute}
-                // since the endpoint's properties are getting updated rather than the object, this works just fine
-                default_endpoint={audio.default_speaker}
-                endpoints={speaker_endpoints} />
-            <MediaSlider
-                device_name={microphone_label}
-                mute={microphone_mute}
-                // since the endpoint's properties are getting updated rather than the object, this works just fine
-                default_endpoint={audio.default_microphone}
-                endpoints={microphone_endpoints} />
-        </BoxedWindow>
-    ) as Widget.Window;
+            visible={true}
+            anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
+            application={App}>
+            <box
+                cssClasses={["layout-box"]}
+                spacing={10}
+                orientation={Gtk.Orientation.VERTICAL}>
+                <MediaSlider
+                    device_name={speaker_label}
+                    mute={speaker_mute}
+                    // since the endpoint's properties are getting updated rather than the object, this works just fine
+                    default_endpoint={audio.default_speaker}
+                    endpoints={speaker_endpoints} />
+                <MediaSlider
+                    device_name={microphone_label}
+                    mute={microphone_mute}
+                    // since the endpoint's properties are getting updated rather than the object, this works just fine
+                    default_endpoint={audio.default_microphone}
+                    endpoints={microphone_endpoints} />
+            </box>
+        </window>
+    ) as Astal.Window;
 }

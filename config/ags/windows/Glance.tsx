@@ -1,4 +1,4 @@
-import { App, Astal, Gtk, Gdk, Widget } from "astal/gtk3";
+import { App, Astal, Gtk, Gdk } from "astal/gtk4";
 import { GLib, Variable, bind, execAsync } from "astal";
 import { Gio, readFileAsync } from "astal/file";
 
@@ -8,10 +8,10 @@ import AstalBluetooth from "gi://AstalBluetooth";
 import AstalBattery from "gi://AstalBattery";
 import Weather from "../services/weather";
 
-import { BoxedWindow } from "../widgets/BoxedWindow";
-import { Calendar } from "../widgets/Calendar";
-import { to_timestamp, truncate } from "../utils/strings";
-import { Separator } from "../widgets/Separator";
+import { ScrolledWindow, Calendar, Picture, Separator } from "../utils/widgets";
+
+import { MouseButton } from "../utils/inputs";
+import { get_active_profile_name, get_internet_name, to_timestamp, truncate } from "../utils/strings";
 
 function WeatherInfo() {
     const weather = Weather.get_default();
@@ -19,14 +19,14 @@ function WeatherInfo() {
     const reveal = Variable(false);
 
     return (
-        <eventbox
-            className="weather"
+        <button
+            cssClasses={["weather"]}
             hexpand={true}
-            onHover={() => reveal.set(true)}
-            onHoverLost={() => reveal.set(false)}
-            onClick={(_, e) => {
-                switch (e.button) {
-                    case Astal.MouseButton.PRIMARY:
+            onHoverEnter={() => reveal.set(true)}
+            onHoverLeave={() => reveal.set(false)}
+            onButtonPressed={(_, e) => {
+                switch (e.get_button()) {
+                    case MouseButton.PRIMARY:
                         execAsync(["xdg-open", `https://openweathermap.org/city/${weather.city_id}`]);
                         break;
 
@@ -39,9 +39,10 @@ function WeatherInfo() {
                 <box
                     spacing={10}
                     halign={Gtk.Align.START}>
-                    <box
-                        className="icon"
-                        css={bind(weather, "image_path").as(image_path => `background: url('file://${image_path}'); background-size: 72px;`)}>
+                    <box>
+                        <Picture
+                            cssClasses={["icon"]}
+                            file={bind(weather, "image_path").as(image_path => Gio.File.new_for_path(image_path))} />
                     </box>
                     <box
                         homogeneous={true}
@@ -49,12 +50,12 @@ function WeatherInfo() {
                         <label
                             halign={Gtk.Align.START}
                             valign={Gtk.Align.END}
-                            className="description"
+                            cssClasses={["description"]}
                             label={bind(weather, "description")} />
                         <label
                             halign={Gtk.Align.START}
                             valign={Gtk.Align.START}
-                            className="temperature"
+                            cssClasses={["temperature"]}
                             label={bind(weather, "temperature").as(temperature => `${(temperature - 273.15).toFixed(1)}°C`)} />
                     </box>
                 </box>
@@ -62,7 +63,7 @@ function WeatherInfo() {
                     revealChild={reveal()}
                     transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
                     <box
-                        className="footer"
+                        cssClasses={["footer"]}
                         homogeneous={true}>
                         <label
                             halign={Gtk.Align.START}
@@ -73,26 +74,23 @@ function WeatherInfo() {
                     </box>
                 </revealer>
             </box>
-        </eventbox>
+        </button>
     );
 }
 
 function PowerInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
 
-    const uptime = Variable(0).poll(
-        1000,
-        () => readFileAsync("/proc/uptime")
-            .then(res => parseInt(res))
-            .catch(_ => 0),
-    );
+    const uptime = Variable(0).poll(1000, () => readFileAsync("/proc/uptime")
+        .then(res => parseInt(res))
+        .catch(_ => 0));
 
     return (
-        <eventbox
-            className="power"
-            onClick={(_, e) => {
-                switch (e.button) {
-                    case Astal.MouseButton.PRIMARY:
+        <button
+            cssClasses={["power"]}
+            onButtonPressed={(_, e) => {
+                switch (e.get_button()) {
+                    case MouseButton.PRIMARY:
                         switch (powerprofiles.get_active_profile()) {
                             case "power-saver":
                                 powerprofiles.set_active_profile("balanced");
@@ -122,36 +120,19 @@ function PowerInfo() {
                     orientation={Gtk.Orientation.VERTICAL}
                     homogeneous={true}>
                     <label
-                        className="mode"
+                        cssClasses={["mode"]}
                         valign={Gtk.Align.END}
                         halign={Gtk.Align.END}
-                        label={bind(powerprofiles, "active_profile").as((active_profile) => {
-                            switch (active_profile) {
-                                case "power-saver":
-                                    return "Power Saving";
-
-                                case "balanced":
-                                    return "Balanced";
-
-                                case "performance":
-                                    return "Performance";
-
-                                default:
-                                    return "Performance";
-                            }
-                        })} />
-
+                        label={bind(powerprofiles, "active_profile").as(active_profile => get_active_profile_name(active_profile))} />
                     <label
-                        className="uptime"
+                        cssClasses={["uptime"]}
                         valign={Gtk.Align.CENTER}
                         halign={Gtk.Align.END}
                         label={uptime().as(uptime => `uptime: ${to_timestamp(uptime)}`)} />
                 </box>
-                <icon
-                    className="icon"
-                    icon={bind(powerprofiles, "icon_name")} />
+                <image pixelSize={46} cssClasses={["icon"]} iconName={bind(powerprofiles, "icon_name")} />
             </box>
-        </eventbox>
+        </button>
     );
 }
 
@@ -165,12 +146,12 @@ function Network() {
         return (
             <box
                 name="network"
-                className="network"
+                cssClasses={["network"]}
                 homogeneous={true}
                 hexpand={true}
                 vexpand={true}>
                 <label
-                    className="nodevice"
+                    cssClasses={["nodevice"]}
                     valign={Gtk.Align.CENTER}
                     halign={Gtk.Align.CENTER}
                     label="No Network Device Found" />
@@ -186,7 +167,7 @@ function Network() {
 
     let ssid: Variable<string | null> = Variable(null);
     let icon = Variable("network-wireless-signal-none-symbolic");
-    let internet: Variable<string> = Variable("disconnected");
+    let internet: Variable<string[]> = Variable(["disconnected"]);
 
     const flight_mode: Variable<boolean> = Variable(false);
     execAsync(["nmcli", "-t", "radio", "all"]).then(res => flight_mode.set(res.includes("disabled")));
@@ -232,11 +213,11 @@ function Network() {
                                 orientation={Gtk.Orientation.VERTICAL}
                                 spacing={5}>
                                 <button
-                                    className="entry"
+                                    cssClasses={["entry"]}
                                     hexpand={true}
-                                    onClick={async (_, e) => {
-                                        switch (e.button) {
-                                            case Astal.MouseButton.PRIMARY:
+                                    onButtonPressed={async (_, e) => {
+                                        switch (e.get_button()) {
+                                            case MouseButton.PRIMARY:
                                                 // stop scanning
                                                 scanning.set(false);
 
@@ -269,8 +250,8 @@ function Network() {
                                         }
                                     }}>
                                     <box>
-                                        <icon className="icon" icon={access_point?.get_icon_name()} />
-                                        <label className="value" label={truncate(access_point?.get_ssid() || "Unknown", 15)} />
+                                        <image cssClasses={["icon"]} iconName={access_point?.get_icon_name()} />
+                                        <label cssClasses={["value"]} label={truncate(access_point?.get_ssid() || "Unknown", 15)} />
                                     </box>
                                 </button>
                                 <revealer
@@ -299,22 +280,10 @@ function Network() {
             (internet, ssid) => {
                 // connectivity isnt updated properly sometimes
                 if (ssid === null) {
-                    return "failed";
+                    return ["failed"];
                 }
 
-                switch (internet) {
-                    case AstalNetwork.Internet.DISCONNECTED:
-                        return "failed";
-
-                    case AstalNetwork.Internet.CONNECTED:
-                        return "success";
-
-                    case AstalNetwork.Internet.CONNECTING:
-                        return "waiting";
-
-                    default:
-                        return "failed";
-                }
+                return [get_internet_name(internet)];
             },
         );
     }
@@ -332,22 +301,10 @@ function Network() {
             (internet, ssid) => {
                 // connectivity isnt updated properly sometimes
                 if (ssid === null) {
-                    return "failed";
+                    return ["failed"];
                 }
 
-                switch (internet) {
-                    case AstalNetwork.Internet.DISCONNECTED:
-                        return "failed";
-
-                    case AstalNetwork.Internet.CONNECTED:
-                        return "success";
-
-                    case AstalNetwork.Internet.CONNECTING:
-                        return "waiting";
-
-                    default:
-                        return "failed";
-                }
+                return [get_internet_name(internet)];
             },
         );
     }
@@ -355,7 +312,7 @@ function Network() {
     return (
         <box
             name="network"
-            className="network"
+            cssClasses={["network"]}
             orientation={Gtk.Orientation.VERTICAL}
             spacing={10}
             onDestroy={() => {
@@ -368,24 +325,23 @@ function Network() {
             <box
                 hexpand={true}
                 spacing={10}
-                className="settings-box">
+                cssClasses={["settings-box"]}>
                 <button
-                    className={scanning().as(scanning => scanning ? "success" : "")}
-                    onClick={() => {
+                    cssClasses={scanning().as(scanning => scanning ? ["success"] : [""])}
+                    onButtonPressed={() => {
                         if (flight_mode.get()) {
                             return;
                         }
 
                         scanning.set(!scanning.get());
                     }}>
-                    <icon icon="search-symbolic" />
+                    <image iconName="search-symbolic" />
                 </button>
-
                 <button
-                    className={flight_mode().as(flight_mode => flight_mode ? "success" : "")}
-                    onClick={async (_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    cssClasses={flight_mode().as(flight_mode => flight_mode ? ["success"] : [""])}
+                    onButtonPressed={async (_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 flight_mode.set(!flight_mode.get());
                                 break;
 
@@ -398,14 +354,13 @@ function Network() {
                         <label label=" " />
                     </box>
                 </button>
-
                 <button
-                    className={internet()}
+                    cssClasses={internet()}
                     hexpand={true}>
                     <box
                         halign={Gtk.Align.CENTER}
                         spacing={10}>
-                        <icon icon={icon()} />
+                        <image iconName={icon()} />
                         <label label={ssid().as(ssid => truncate(ssid || "Disconnected", 15))} />
                     </box>
                 </button>
@@ -413,14 +368,14 @@ function Network() {
 
             <Separator />
 
-            <scrollable
+            <ScrolledWindow
                 vexpand={true}>
                 <box
                     spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
                     {access_points()}
                 </box>
-            </scrollable>
+            </ScrolledWindow>
         </box>
     );
 }
@@ -433,12 +388,12 @@ function Bluetooth() {
         return (
             <box
                 name="bluetooth"
-                className="bluetooth"
+                cssClasses={["bluetooth"]}
                 homogeneous={true}
                 hexpand={true}
                 vexpand={true}>
                 <label
-                    className="nodevice"
+                    cssClasses={["nodevice"]}
                     valign={Gtk.Align.CENTER}
                     halign={Gtk.Align.CENTER}
                     label="No Bluetooth Adapter Found" />
@@ -459,18 +414,18 @@ function Bluetooth() {
                 devices.drop();
             }}
             name="bluetooth"
-            className="bluetooth"
+            cssClasses={["bluetooth"]}
             orientation={Gtk.Orientation.VERTICAL}
             spacing={10}>
             <box
                 hexpand={true}
                 spacing={10}
-                className="settings-box">
+                cssClasses={["settings-box"]}>
                 <button
-                    className={bind(adapter, "discovering").as(discovering => discovering ? "success" : "")}
-                    onClick={(_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    cssClasses={bind(adapter, "discovering").as(discovering => discovering ? ["success"] : [""])}
+                    onButtonPressed={(_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 if (adapter.get_discovering()) {
                                     adapter.stop_discovery();
                                 }
@@ -483,14 +438,13 @@ function Bluetooth() {
                                 break;
                         }
                     }}>
-                    <icon icon="search-symbolic" />
+                    <image iconName="search-symbolic" />
                 </button>
-
                 <button
-                    className={bind(adapter, "discoverable").as(discoverable => discoverable ? "success" : "")}
-                    onClick={async (_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    cssClasses={bind(adapter, "discoverable").as(discoverable => discoverable ? ["success"] : [""])}
+                    onButtonPressed={async (_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 adapter.set_discoverable(!adapter.get_discoverable());
                                 break;
 
@@ -498,15 +452,14 @@ function Bluetooth() {
                                 break;
                         }
                     }}>
-                    <icon icon="blueman-pair-symbolic" />
+                    <image iconName="blueman-pair-symbolic" />
                 </button>
-
                 <button
-                    className={bind(bluetooth, "is_powered").as(is_powered => is_powered ? "" : "failed")}
+                    cssClasses={bind(bluetooth, "is_powered").as(is_powered => is_powered ? [""] : ["failed"])}
                     hexpand={true}
-                    onClick={(_, e) => {
-                        switch (e.button) {
-                            case Astal.MouseButton.PRIMARY:
+                    onButtonPressed={(_, e) => {
+                        switch (e.get_button()) {
+                            case MouseButton.PRIMARY:
                                 bluetooth.toggle();
                                 break;
 
@@ -517,7 +470,7 @@ function Bluetooth() {
                     <box
                         halign={Gtk.Align.CENTER}
                         spacing={10}>
-                        <icon icon="bluetooth-symbolic" />
+                        <image iconName="bluetooth-symbolic" />
                         <label label={bind(bluetooth, "is_connected").as(connected => connected ? "Connected" : "Disconnected")} />
                     </box>
                 </button>
@@ -525,7 +478,7 @@ function Bluetooth() {
 
             <Separator />
 
-            <scrollable
+            <ScrolledWindow
                 vexpand={true}>
                 <box
                     spacing={10}
@@ -534,9 +487,9 @@ function Bluetooth() {
                         .filter(device => device.get_alias().replaceAll("-", ":") !== device.get_address())
                         .map(device => (
                             <button
-                                className={bind(device, "connected").as(connected => connected ? "entry active" : "entry")}
+                                cssClasses={bind(device, "connected").as(connected => connected ? ["entry", "active"] : ["entry"])}
                                 hexpand={true}
-                                onClick={async () => {
+                                onButtonPressed={async () => {
                                     // TODO: handle pairing
                                     if (device.get_connected()) {
                                         Gio._promisify(AstalBluetooth.Device.prototype, "disconnect_device", "disconnect_device_finish");
@@ -549,14 +502,14 @@ function Bluetooth() {
                                 }}>
                                 <box
                                     spacing={5}>
-                                    <icon className="icon" icon="bluetooth-symbolic" />
-                                    <label className="value" label={device.get_alias()} />
+                                    <image cssClasses={["icon"]} iconName="bluetooth-symbolic" />
+                                    <label cssClasses={["value"]} label={device.get_alias()} />
                                 </box>
                             </button>
                         )),
                     )}
                 </box>
-            </scrollable>
+            </ScrolledWindow>
         </box>
     );
 }
@@ -568,12 +521,14 @@ function TimeAndDate() {
     return (
         <box
             name="calendar"
-            className="calendar"
+            cssClasses={["calendar"]}
             orientation={Gtk.Orientation.VERTICAL}>
             <label
-                className="clock"
+                cssClasses={["clock"]}
                 label={time("%H : %M : %S")()} />
-            <Calendar />
+            <Calendar
+                vexpand={true}
+                valign={Gtk.Align.END} />
         </box>
     );
 }
@@ -590,7 +545,7 @@ function QuickSettings() {
 
     return (
         <box
-            className="quick-settings"
+            cssClasses={["quick-settings"]}
             spacing={20}>
             <stack
                 visibleChildName={page()}
@@ -600,85 +555,71 @@ function QuickSettings() {
                 <TimeAndDate />
             </stack>
             <box
-                className="controls"
+                cssClasses={["controls"]}
                 spacing={20}
                 valign={Gtk.Align.FILL}
                 orientation={Gtk.Orientation.VERTICAL}
                 homogeneous={true}>
                 <button
-                    onClick={(_, e) => e.button === Astal.MouseButton.PRIMARY ? page.set("network") : null}>
-                    {bind(network, "primary").as((primary) => {
-                        const wired = network.get_wired();
-                        const wifi = network.get_wifi();
-                        if (primary === AstalNetwork.Primary.WIRED && wired) {
-                            return (
-                                <circularprogress
-                                    value={1.0}
-                                    rounded={true}>
-                                    <icon icon={bind(wired, "icon_name").as(icon_name => icon_name)} />
-                                </circularprogress>
-                            );
-                        }
+                    onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("network") : null}>
+                    <overlay>
+                        {bind(network, "primary").as((primary) => {
+                            const wired = network.get_wired();
+                            const wifi = network.get_wifi();
 
-                        else if (primary === AstalNetwork.Primary.WIFI && wifi) {
-                            return (
-                                <circularprogress
-                                    value={bind(wifi, "strength").as(strength => strength)}
-                                    rounded={bind(wifi, "strength").as(strength => strength !== 0.0)}>
-                                    <icon icon={bind(wifi, "icon_name").as(icon_name => icon_name)} />
-                                </circularprogress>
-                            );
-                        }
-
-                        else {
-                            return (
-                                <circularprogress
-                                    value={0.0}
-                                    rounded={false}>
-                                    <icon icon="network-wireless-signal-none-symbolic" />
-                                </circularprogress>
-                            );
-                        }
-                    })}
-                </button>
-
-                <button
-                    onClick={(_, e) => e.button === Astal.MouseButton.PRIMARY ? page.set("bluetooth") : null}>
-                    <circularprogress
-                        value={bind(bluetooth, "is_connected").as((is_connected) => {
-                            if (!is_connected) {
-                                return 0.0;
+                            if (primary === AstalNetwork.Primary.WIRED && wired) {
+                                return <image type="overlay" iconName={bind(wired, "icon_name").as(icon_name => icon_name)} />;
                             }
 
-                            const connected_devices = bluetooth.get_devices().filter(device => device.get_connected());
-                            const device = connected_devices[0];
-                            if (device) {
-                            // FIXME: this isnt a bind
-                                return device.get_battery_percentage();
+                            else if (primary === AstalNetwork.Primary.WIFI && wifi) {
+                                return <image type="overlay" iconName={bind(wifi, "icon_name").as(icon_name => icon_name)} />;
                             }
 
-                            return 0.0;
+                            else {
+                                return <image type="overlay" iconName="network-wireless-signal-none-symbolic" />;
+                            }
                         })}
-                        rounded={bind(bluetooth, "is_connected").as(is_connected => is_connected)}>
-                        <icon icon="bluetooth-symbolic" />
-                    </circularprogress>
+                        <slider
+                            inverted={true}
+                            min={0}
+                            max={1}
+                            value={bind(network, "connectivity").as(connectivity => connectivity === AstalNetwork.Connectivity.FULL ? 1 : 0)} />
+                    </overlay>
                 </button>
-
+                <button onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("bluetooth") : null}>
+                    <overlay>
+                        <image type="overlay" iconName="bluetooth-symbolic" />
+                        <slider
+                            inverted={true}
+                            min={0}
+                            max={1}
+                            value={bind(bluetooth, "is_connected").as(is_connected => is_connected ? 1 : 0)} />
+                    </overlay>
+                </button>
                 <button>
-                    <circularprogress
-                        value={bind(battery, "percentage").as(percentage => percentage)}
-                        rounded={bind(battery, "percentage").as(percentage => percentage !== 0.0)}>
-                        <icon icon={bind(battery, "icon_name")} />
-                    </circularprogress>
+                    <overlay>
+                        <image type="overlay" iconName={bind(battery, "icon_name")} />
+                        <slider
+                            orientation={Gtk.Orientation.VERTICAL}
+                            inverted={true}
+                            min={0}
+                            max={1}
+                            value={bind(battery, "percentage")} />
+                    </overlay>
                 </button>
-
-                <button
-                    onClick={(_, e) => e.button === Astal.MouseButton.PRIMARY ? page.set("calendar") : null}>
-                    <circularprogress
-                        value={day_percent()}
-                        rounded={true}>
-                        <icon icon="timer-symbolic" />
-                    </circularprogress>
+                <button onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("calendar") : null}>
+                    <box>
+                        <overlay>
+                            <image type="overlay" iconName="timer-symbolic" />
+                            <slider
+                                orientation={Gtk.Orientation.VERTICAL}
+                                inverted={true}
+                                min={0}
+                                max={1}
+                                value={day_percent()}>
+                            </slider>
+                        </overlay>
+                    </box>
                 </button>
             </box>
         </box>
@@ -688,6 +629,7 @@ function QuickSettings() {
 function QuickInfo() {
     return (
         <box
+            widthRequest={300}
             spacing={20}
             orientation={Gtk.Orientation.VERTICAL}>
             <WeatherInfo />
@@ -699,6 +641,7 @@ function QuickInfo() {
 function RowOne() {
     return (
         <box
+            heightRequest={300}
             spacing={20}>
             <QuickInfo />
             <QuickSettings />
@@ -708,18 +651,22 @@ function RowOne() {
 
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
-        <BoxedWindow
+        <window
+            setup={self => self.set_default_size(-1, -1)}
             keymode={Astal.Keymode.ON_DEMAND}
             name="glance"
+            cssClasses={["glance"]}
             gdkmonitor={gdkmonitor}
+            visible={true}
             anchor={Astal.WindowAnchor.RIGHT
-            | Astal.WindowAnchor.TOP}
-            application={App}
-            layout_box_props={{
-                spacing: 10,
-                orientation: Gtk.Orientation.VERTICAL,
-            }}>
-            <RowOne />
-        </BoxedWindow>
-    ) as Widget.Window;
+                | Astal.WindowAnchor.TOP}
+            application={App}>
+            <box
+                cssClasses={["layout-box"]}
+                spacing={10}
+                orientation={Gtk.Orientation.VERTICAL}>
+                <RowOne />
+            </box>
+        </window>
+    ) as Astal.Window;
 }

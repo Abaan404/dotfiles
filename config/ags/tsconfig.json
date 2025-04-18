@@ -9,7 +9,7 @@
         // "checkJs": true,
         // "allowJs": true,
         "jsx": "react-jsx",
-        "jsxImportSource": "/home/abaan404/.local/share/ags/gtk3",
+        "jsxImportSource": "/home/abaan404/.local/share/ags/gtk4",
         "paths": {
             "astal": [
                 "/home/abaan404/.local/share/ags"

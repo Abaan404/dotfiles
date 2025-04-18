@@ -206,7 +206,7 @@ export default class Weather extends GObject.Object {
 
             // https://openweathermap.org/weather-conditions
             // get associated weather image
-            await this.fetch(`https://openweathermap.org/img/wn/${weather_data.weather[0].icon}@4x.png`)
+            await this.fetch(`https://openweathermap.org/img/wn/${weather_data.weather[0].icon}@2x.png`)
                 .then(async (req) => {
                     if (req.status !== 200) {
                         this.stop();

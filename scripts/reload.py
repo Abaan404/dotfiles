@@ -76,7 +76,7 @@ class TemplateWriter:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
-        subprocess.Popen("ags quit; ags run", shell=True, env=os.environ.copy())
+        subprocess.Popen("ags quit; ags run --gtk4", shell=True, env=os.environ.copy())
 
     def hypr(self):
         if subprocess.run(["pidof", "obs"], check=False, stdout=subprocess.PIPE).stdout: # hyprland crashes if configs get updated while obs is running

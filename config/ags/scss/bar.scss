@@ -3,57 +3,71 @@
 @use "colors";
 
 .bar {
-    margin: 10px {
-        // 3px for fixing hover weirdness (maybe hyprland has a way to remove padding from one edge only?)
-        bottom: 3px;
-    }
-    min-height: 30px;
-
     $all-modules: "launcher", "workspaces", "sysinfo", "systray", "player",
         "info", "audio", "power";
     @each $modules in $all-modules {
         .#{$modules} {
             border-radius: 10px;
             background-color: colors.$primary;
+            padding: 0px 14px;
 
             @if not list.index("workspaces", $modules) {
                 @include animations.fade("&:hover", colors.$accent);
                 @include animations.fade("&:active", colors.$primary);
             }
+        }
+    }
 
-            .widget {
-                padding: 0px 14px;
+    .launcher {
+        revealer {
+            label {
+                padding-left: 10px;
+            }
+        }
+    }
+
+    .systray {
+        popover {
+            background-color: colors.$primary;
+            padding: 12px;
+            border-radius: 12px;
+
+            modelbutton {
+                border-radius: 10px;
+
+                label {
+                    padding: 2px 8px;
+                }
+
+                @include animations.fade("&:hover", colors.$accent);
             }
         }
     }
 
     .workspaces {
+        padding: 0px;
+
+        .active label {
+            color: white;
+        }
+
         @include animations.fade(
             ".inactive:hover label",
             white,
             $property: "color"
         );
-
-        & > box > button > label {
-            min-width: 24px;
-        }
-
-        .active label {
-            color: white;
-        }
     }
 
     .systray {
-        .widget {
-            padding: 2px {
-                left: 8px;
-                right: 8px;
-            }
+        padding: 2px {
+            left: 8px;
+            right: 8px;
         }
+
         button {
             padding: 0px {
-                left: 3px;
-                right: 3px;
+                left: 5px;
+                right: 5px;
             }
         }
     }
@@ -62,6 +76,7 @@
     .bluetooth {
         background-color: colors.$bluetooth;
     }
+
     .muted {
         background-color: colors.$bad;
     }
@@ -77,6 +92,20 @@
         .unknown {
             color: colors.$bad;
         }
+
+        revealer {
+            label {
+                padding-left: 5px;
+            }
+        }
+    }
+
+    .power {
+        revealer {
+            label {
+                padding-left: 5px;
+            }
+        }
     }
 }
 
@@ -89,11 +118,11 @@ menu {
     menuitem {
         border-radius: 10px;
 
-        @include animations.fade("&:hover", colors.$accent);
-
         label {
             padding: 2px 8px;
         }
+
+        @include animations.fade("&:hover", colors.$accent);
     }
 }
 
