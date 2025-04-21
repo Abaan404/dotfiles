@@ -652,7 +652,7 @@ function RowOne() {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
-            setup={self => self.set_default_size(-1, -1)}
+            setup={self => self.set_default_size(1, 1)}
             keymode={Astal.Keymode.ON_DEMAND}
             name="glance"
             cssClasses={["glance"]}

@@ -523,6 +523,7 @@ function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
+            setup={self => self.set_default_size(1, 1)}
             cssClasses={["bar"]}
             gdkmonitor={gdkmonitor}
             visible={true}

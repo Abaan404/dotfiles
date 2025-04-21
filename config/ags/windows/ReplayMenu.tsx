@@ -124,7 +124,7 @@ function MicButton() {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
-            setup={self => self.set_default_size(-1, -1)}
+            setup={self => self.set_default_size(1, 1)}
             name="replaymenu"
             gdkmonitor={gdkmonitor}
             visible={true}

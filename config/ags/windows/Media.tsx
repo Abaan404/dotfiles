@@ -169,7 +169,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 speaker_endpoints.drop();
                 microphone_endpoints.drop();
             }}
-            setup={self => self.set_default_size(-1, -1)}
+            setup={self => self.set_default_size(1, 1)}
             name="media"
             cssClasses={["media"]}
             gdkmonitor={gdkmonitor}

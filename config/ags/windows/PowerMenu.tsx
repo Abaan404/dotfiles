@@ -6,7 +6,7 @@ import { MenuList } from "../components/MenuList";
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
-            setup={self => self.set_default_size(-1, -1)}
+            setup={self => self.set_default_size(1, 1)}
             name="powermenu"
             gdkmonitor={gdkmonitor}
             visible={true}
