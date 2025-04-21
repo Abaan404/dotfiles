@@ -6,8 +6,10 @@ import AstalNetwork from "gi://AstalNetwork";
 import AstalPowerProfiles from "gi://AstalPowerProfiles";
 import AstalBluetooth from "gi://AstalBluetooth";
 import AstalBattery from "gi://AstalBattery";
+import AstalNotifd from "gi://AstalNotifd";
 import Weather from "../services/weather";
 
+import Notification from "../components/Notification";
 import { ScrolledWindow, Calendar, Picture, Separator } from "../utils/widgets";
 
 import { MouseButton } from "../utils/inputs";
@@ -638,13 +640,58 @@ function QuickInfo() {
     );
 }
 
-function RowOne() {
+function NotificationList() {
+    const notifd = AstalNotifd.get_default();
+
+    const notifications = Variable<AstalNotifd.Notification[]>(notifd.get_notifications());
+    notifd.connect("notified", () => notifications.set(notifd.get_notifications()));
+    notifd.connect("resolved", () => notifications.set(notifd.get_notifications()));
+
     return (
         <box
+            cssClasses={["notification-list"]}
+            orientation={Gtk.Orientation.VERTICAL}
             heightRequest={300}
-            spacing={20}>
-            <QuickInfo />
-            <QuickSettings />
+            spacing={10}>
+            {notifications().as((notifications) => {
+                if (notifications.length === 0) {
+                    return (
+                        <box
+                            cssClasses={["caught-up"]}
+                            halign={Gtk.Align.CENTER}
+                            valign={Gtk.Align.CENTER}
+                            orientation={Gtk.Orientation.VERTICAL}
+                            vexpand={true}
+                            spacing={20}>
+                            <image pixelSize={72} iconName="notifications-symbolic" />
+                            <label label="All Caught Up!" />
+                        </box>
+                    );
+                }
+
+                return (
+                    <ScrolledWindow
+                        heightRequest={400}
+                        vexpand={true}>
+                        <box
+                            spacing={20}
+                            orientation={Gtk.Orientation.VERTICAL}>
+                            <box
+                                orientation={Gtk.Orientation.VERTICAL}
+                                spacing={10}>
+                                <label
+                                    cssClasses={["list-header"]}
+                                    halign={Gtk.Align.CENTER}
+                                    label="Notifications" />
+                                <Separator />
+                            </box>
+                            {notifications
+                                .sort((n1, n2) => n2.get_urgency() - n1.get_urgency())
+                                .map(notification => <Notification notification={notification} />)}
+                        </box>
+                    </ScrolledWindow>
+                );
+            })}
         </box>
     );
 }
@@ -658,14 +705,24 @@ export default function (gdkmonitor: Gdk.Monitor) {
             cssClasses={["glance"]}
             gdkmonitor={gdkmonitor}
             visible={true}
-            anchor={Astal.WindowAnchor.RIGHT
-                | Astal.WindowAnchor.TOP}
+            anchor={Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.TOP}
             application={App}>
             <box
                 cssClasses={["layout-box"]}
                 spacing={10}
                 orientation={Gtk.Orientation.VERTICAL}>
-                <RowOne />
+                <box
+                    halign={Gtk.Align.END}
+                    heightRequest={300}
+                    spacing={20}>
+                    <QuickInfo />
+                    <box
+                        orientation={Gtk.Orientation.VERTICAL}
+                        spacing={20}>
+                        <QuickSettings />
+                        <NotificationList />
+                    </box>
+                </box>
             </box>
         </window>
     ) as Astal.Window;

@@ -1,0 +1,105 @@
+@use "animations";
+@use "colors";
+
+.notifications {
+    .layout-box {
+        margin: 20px;
+        border-radius: 10px;
+    }
+}
+
+.notification {
+    background-color: colors.$primary;
+    padding: 10px;
+    border-radius: 10px;
+
+    .header {
+        .time,
+        .app-name {
+            min-height: 2em;
+            background-color: colors.$secondary;
+            padding: 0px 14px;
+            border-radius: 10px;
+        }
+
+        .critical {
+            background-color: colors.$bad;
+        }
+
+        .hide {
+            min-height: 2em;
+            background-color: colors.$accent;
+            padding: 0px 8px;
+            border-radius: 10px;
+
+            @include animations.fade("&:hover", colors.$color6);
+            @include animations.fade("&:active", colors.$accent);
+        }
+
+        .dismiss {
+            min-height: 2em;
+            background-color: colors.$accent;
+            padding: 0px 8px;
+            border-radius: 10px;
+
+            @include animations.fade("&:hover", colors.$bad);
+            @include animations.fade("&:active", colors.$accent);
+        }
+    }
+
+    .data {
+        background-color: colors.$secondary;
+        border-radius: 10px;
+
+        .image {
+            min-height: 64px;
+            min-width: 64px;
+        }
+
+        picture {
+            min-height: 64px;
+            border-radius: 10px;
+        }
+
+        .info {
+            padding: 15px 10px;
+
+            .summary {
+                font-weight: bolder;
+                font-size: 1.25em;
+            }
+
+            .body {
+                font-size: 0.9em;
+            }
+        }
+    }
+
+    .actions {
+        button {
+            min-height: 2em;
+            background-color: colors.$accent;
+            padding: 0px 14px;
+            border-radius: 10px;
+
+            @include animations.fade("&:hover", colors.$good);
+            @include animations.fade("&:active", colors.$accent);
+        }
+    }
+
+    progressbar {
+        trough {
+            background-color: colors.$color2;
+            min-height: 10px;
+            border-radius: 10px;
+
+            progress {
+                background-color: colors.$accent;
+                min-height: 10px;
+                border-radius: 10px;
+            }
+        }
+    }
+
+    @include animations.flyin("&", "top");
+}

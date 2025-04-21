@@ -217,5 +217,24 @@
         }
     }
 
+    .notification-list {
+        border-radius: 20px;
+        background-color: colors.$color1;
+        padding: 20px;
+
+        .list-header {
+            font-size: 1.5em;
+            font-weight: bolder;
+        }
+
+        .caught-up {
+            padding: 20px;
+
+            label {
+                font-size: 1.25em;
+            }
+        }
+    }
+
     @include animations.flyin("&", "top");
 }

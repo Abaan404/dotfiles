@@ -23,7 +23,6 @@
     inputs.swww.packages.${pkgs.system}.swww
 
     # notifications
-    pkgs.dunst
     pkgs.libnotify
 
     # onscreen keyboard

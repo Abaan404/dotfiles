@@ -24,7 +24,7 @@ grim -g "$size" "$FILENAME"
 # copy to clipboard
 wl-copy < "$FILENAME"
 
-action=$(dunstify --action="swappy,swappy" "Screenshot $1 Captured" -i "$FILENAME")
-if [[ $action == "swappy" ]]; then
+action=$(notify-send "Screenshot $1 Captured" --app-name="Screenshot" --action=edit=edit --hint=string:image-path:"$FILENAME")
+if [[ $action == "edit" ]]; then
     swappy -f "$FILENAME"
 fi

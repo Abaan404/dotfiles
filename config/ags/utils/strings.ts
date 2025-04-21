@@ -1,4 +1,5 @@
 import AstalNetwork from "gi://AstalNetwork";
+import AstalNotifd from "gi://AstalNotifd";
 
 export function to_timestamp(value: number) {
     const hour = Math.round(value / 3600).toString().padStart(2, "0");
@@ -66,6 +67,22 @@ export function get_internet_name(internet: AstalNetwork.Internet) {
 
         default:
             return "failed";
+    }
+}
+
+export function get_urgency_name(urgency: AstalNotifd.Urgency) {
+    switch (urgency) {
+        case AstalNotifd.Urgency.LOW:
+            return "low";
+
+        case AstalNotifd.Urgency.NORMAL:
+            return "normal";
+
+        case AstalNotifd.Urgency.CRITICAL:
+            return "critical";
+
+        default:
+            return "low";
     }
 }
 

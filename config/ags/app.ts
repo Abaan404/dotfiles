@@ -10,6 +10,7 @@ import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
 import Glance from "./windows/Glance";
 import ReplayMenu from "./windows/ReplayMenu";
+import Notifications from "./windows/Notifications";
 
 import AstalBattery from "gi://AstalBattery";
 import Recorder from "./services/recorder";
@@ -26,9 +27,11 @@ App.start({
         window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
         window_handler.register_window("replaymenu", ReplayMenu);
+        window_handler.register_window("notifications", Notifications);
 
-        // display bar by default
+        // display bar and notifications by default
         App.get_monitors().map(Bar);
+        App.get_monitors().map(Notifications);
 
         // disable instant replay on battery
         {

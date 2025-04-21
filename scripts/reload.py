@@ -83,9 +83,6 @@ class TemplateWriter:
             return
         subprocess.Popen(["hyprctl", "reload"])
 
-    def dunst(self):
-        subprocess.Popen("killall dunst; dunst", shell=True)
-
     def kvantum(self):
         # qt
         subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"])

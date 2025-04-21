@@ -11,3 +11,6 @@ export const Separator = astalify<Gtk.Separator, Gtk.Separator.ConstructorProps>
 
 export type ScrolledWindowProps = ConstructProps<Gtk.ScrolledWindow, Gtk.ScrolledWindow.ConstructorProps>;
 export const ScrolledWindow = astalify<Gtk.ScrolledWindow, Gtk.ScrolledWindow.ConstructorProps>(Gtk.ScrolledWindow, {});
+
+export type ProgressBarProps = ConstructProps<Gtk.ProgressBar, Gtk.ProgressBar.ConstructorProps>;
+export const ProgressBar = astalify<Gtk.ProgressBar, Gtk.ProgressBar.ConstructorProps>(Gtk.ProgressBar, {});
