@@ -79,19 +79,35 @@ export default function ({
                     cssClasses={["info"]}
                     hexpand={true}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    <label
-                        cssClasses={["summary"]}
-                        xalign={0}
-                        wrap={true}
-                        label={bind(notification, "summary")} />
-                    <label
-                        cssClasses={["body"]}
-                        useMarkup={true}
-                        justify={Gtk.Justification.LEFT}
-                        xalign={0}
-                        wrap={true}
-                        valign={Gtk.Align.CENTER}
-                        label={bind(notification, "body")} />
+                    {bind(notification, "summary").as((summary) => {
+                        if (summary.length === 0) {
+                            return <></>;
+                        }
+
+                        return (
+                            <label
+                                cssClasses={["summary"]}
+                                xalign={0}
+                                wrap={true}
+                                label={summary} />
+                        );
+                    })}
+                    {bind(notification, "body").as((body) => {
+                        if (body.length === 0) {
+                            return <></>;
+                        }
+
+                        return (
+                            <label
+                                cssClasses={["body"]}
+                                useMarkup={true}
+                                justify={Gtk.Justification.LEFT}
+                                xalign={0}
+                                wrap={true}
+                                valign={Gtk.Align.CENTER}
+                                label={body} />
+                        );
+                    })}
                 </box>
             </box>
             {notification.get_actions().length > 0 && (

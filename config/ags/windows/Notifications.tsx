@@ -5,7 +5,7 @@ import AstalNotifd from "gi://AstalNotifd";
 
 import Notification from "../components/Notification";
 
-const MAX_NOTIFICATION_TIMEOUT = 3000;
+const MAX_NOTIFICATION_TIMEOUT = 5000;
 
 interface NotificationData {
     id: number;

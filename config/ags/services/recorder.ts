@@ -1,9 +1,10 @@
 import GObject, { register, property, GLib } from "astal/gobject";
 import { Gio } from "astal/file";
-import { subprocess } from "astal/process";
+import { execAsync, subprocess } from "astal/process";
 
 import AstalIO from "gi://AstalIO";
 import { App } from "astal/gtk4";
+import { timeout } from "astal";
 
 @register({ GTypeName: "Recorder" })
 export default class Recorder extends GObject.Object {
@@ -29,6 +30,9 @@ export default class Recorder extends GObject.Object {
     private _proc_replay: AstalIO.Process | null = null;
     private _proc_record: AstalIO.Process | null = null;
 
+    private _record_path = "";
+    private _replay_path = "";
+
     @property(String) declare window_replay: string;
     @property(String) declare window_record: string;
 
@@ -36,6 +40,9 @@ export default class Recorder extends GObject.Object {
     @property(Boolean) get is_replaying() { return this._proc_replay !== null; }
     @property(Boolean) get is_recording() { return this._proc_record !== null; }
     @property(Boolean) get is_paused() { return this._is_paused; }
+
+    @property(String) get record_path() { return this._record_path; }
+    @property(String) get replay_path() { return this._replay_path; }
 
     set is_mic_enabled(value) {
         if (this._is_mic_enabled === value) {
@@ -84,6 +91,10 @@ export default class Recorder extends GObject.Object {
 
         // Send signal SIGUSR1 to gpu-screen-recorder (killall -SIGUSR1 gpu-screen-recorder) to save a replay (when in replay mode).
         this._proc_replay?.signal(10);
+        timeout(1000, () => execAsync(["ls", "-t1", this._path.get_path()!]).then((res) => {
+            this._replay_path = this._path.get_path()! + `/${res.split("\n")[0]}`;
+            this.notify("replay_path");
+        }));
     }
 
     async record(begin_recording = true) {
@@ -95,6 +106,8 @@ export default class Recorder extends GObject.Object {
         if (!begin_recording) {
             // Send signal SIGINT to gpu-screen-recorder (Ctrl+C, or killall -SIGINT gpu-screen-recorder) to stop and save the recording. When in replay mode this stops recording without saving.
             this._proc_record?.signal(2);
+            this.notify("record_path");
+
             // this._proc_record?.kill(); // dont kill the process so it can save itself
             this._proc_record = null;
             this.notify("is_recording");
@@ -103,6 +116,8 @@ export default class Recorder extends GObject.Object {
             this.notify("is_paused");
             return;
         }
+
+        this._record_path = this._path.get_path()! + GLib.DateTime.new_now_local().format(`/Recording_%Y-%e-%d_%H-%M-%S.${this._container}`);
 
         const command = [
             "gpu-screen-recorder",
@@ -113,7 +128,7 @@ export default class Recorder extends GObject.Object {
             "-f", this._framerate,
             "-k", this._video_codec,
             "-ac", this._audio_codec,
-            "-o", this._path.get_path()! + GLib.DateTime.new_now_local().format(`/Recording_%Y-%e-%d_%H-%M-%S.${this._container}`),
+            "-o", this._record_path,
         ];
 
         if (this._is_mic_enabled) {
