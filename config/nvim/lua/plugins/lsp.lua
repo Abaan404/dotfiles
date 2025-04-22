@@ -125,6 +125,7 @@ return {
                 "nixd",
                 "vala_ls",
                 "tailwindcss",
+                "hyprls",
             }
 
             -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)

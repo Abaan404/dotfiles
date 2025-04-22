@@ -68,6 +68,7 @@
     pkgs.tinymist
     pkgs.asm-lsp
     pkgs.pyright
+    pkgs.hyprls
     pkgs.texlab
     pkgs.nixd
 
