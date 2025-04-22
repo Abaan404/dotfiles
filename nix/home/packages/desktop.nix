@@ -1,4 +1,9 @@
-{ pkgs, pkgs-unstable, inputs, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  inputs,
+  ...
+}:
 
 {
   home.packages = [
@@ -30,7 +35,6 @@
     pkgs.hunspell
     pkgs.hunspellDicts.uk_UA
     pkgs.tectonic
-    pkgs.zathura
     pkgs.swayimg
     pkgs.okular
 
@@ -129,5 +133,12 @@
       pkgs.obs-studio-plugins.obs-backgroundremoval
       pkgs.obs-studio-plugins.obs-pipewire-audio-capture
     ];
+  };
+
+  programs.zathura = {
+    enable = true;
+    options = {
+      selection-clipboard = "clipboard";
+    };
   };
 }

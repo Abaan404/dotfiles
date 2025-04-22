@@ -9,7 +9,6 @@
     pkgs.xdg-utils
     pkgs.playerctl
     pkgs.quickemu
-    pkgs.neofetch
     pkgs.killall
     pkgs.glxinfo
     pkgs.ripgrep
@@ -27,6 +26,10 @@
     pkgs.fd
     pkgs.bc
   ];
+
+  programs.fastfetch = {
+    enable = true;
+  };
 
   services.playerctld = {
     enable = true;
