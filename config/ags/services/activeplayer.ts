@@ -72,6 +72,7 @@ export default class ActivePlayer extends GObject.Object {
                 }
 
                 this._players.unshift(player);
+                this.notify("player");
             });
 
         this.mpris.connect_after("player-added", (_, player) => {
@@ -80,12 +81,14 @@ export default class ActivePlayer extends GObject.Object {
             }
 
             this._players.unshift(player);
+            this.notify("player");
         });
 
         this.mpris.connect_after("player-closed", (_, player) => {
             const idx = this._players.findIndex(p => p.get_bus_name() === player.get_bus_name());
             if (idx !== -1) {
                 this._players.splice(idx, 1);
+                this.notify("player");
             }
         });
     }

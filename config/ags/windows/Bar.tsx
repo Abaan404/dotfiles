@@ -181,7 +181,7 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         break;
                 }
             }}
-            visible={bind(active_player, "player").as(player => player !== undefined)}
+            visible={bind(active_player, "player").as(player => player !== null)}
             spacing={20}>
             <label label={bind(active_player, "player").as((player) => {
                 if (!player) {
@@ -197,9 +197,9 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
                 return (
                     <box spacing={8}>
-                        <label label={bind(player, "title").as(title => title !== "" ? truncate(title, 30) : "No Title")} />
+                        <label label={bind(player, "title").as(title => title && title !== "" ? truncate(title, 30) : "No Title")} />
                         <label label="-" />
-                        <label label={bind(player, "artist").as(artist => artist !== "" ? truncate(artist, 30) : "")} />
+                        <label label={bind(player, "artist").as(artist => artist && artist !== "" ? truncate(artist, 30) : "")} />
                     </box>
                 );
             })}
