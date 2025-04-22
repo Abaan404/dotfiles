@@ -1,15 +1,20 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk4";
 import { bind, Variable } from "astal";
 
-import WirePlumber from "gi://AstalWp";
+import AstalWp from "gi://AstalWp";
 
 import { truncate, symbolic_strength } from "../utils/helpers";
 
-function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { device_name: Variable<string>; mute: Variable<string>; default_endpoint: WirePlumber.Endpoint; endpoints: Variable<WirePlumber.Endpoint[]> }) {
+function EndpointSlider({ name, mute, current_endpoint, endpoints }: { name: Variable<string>; mute: Variable<string>; current_endpoint: AstalWp.Endpoint; endpoints?: Variable<AstalWp.Endpoint[]> }) {
     const reveal_devices = Variable(false);
 
     return (
         <box
+            onDestroy={() => {
+                name.drop();
+                mute.drop();
+                endpoints?.drop();
+            }}
             cssClasses={["volume-box"]}
             orientation={Gtk.Orientation.VERTICAL}>
             <box
@@ -18,13 +23,13 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                     cssClasses={["default", "name"]}
                     hexpand={true}
                     halign={Gtk.Align.START}
-                    label={device_name().as(description => truncate(description, 46))} />
+                    label={name().as(description => truncate(description, 46))} />
                 <button
                     cssClasses={["mute"]}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
                             case Gdk.BUTTON_PRIMARY:
-                                default_endpoint.set_mute(!default_endpoint.get_mute());
+                                current_endpoint.set_mute(!current_endpoint.get_mute());
                                 break;
 
                             default:
@@ -33,34 +38,36 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                     }}>
                     <label label={mute()} />
                 </button>
-                <button
-                    cssClasses={["list"]}
-                    onButtonPressed={(_, e) => {
-                        switch (e.get_button()) {
-                            case Gdk.BUTTON_PRIMARY:
-                                reveal_devices.set(!reveal_devices.get());
-                                break;
+                {endpoints && (
+                    <button
+                        cssClasses={["list"]}
+                        onButtonPressed={(_, e) => {
+                            switch (e.get_button()) {
+                                case Gdk.BUTTON_PRIMARY:
+                                    reveal_devices.set(!reveal_devices.get());
+                                    break;
 
-                            default:
-                                break;
-                        }
-                    }}>
-                    <label label=" " />
-                </button>
+                                default:
+                                    break;
+                            }
+                        }}>
+                        <label label=" " />
+                    </button>
+                )}
             </box>
-            <revealer
-                transitionDuration={500}
-                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                // visible={endpoints.length >= 2} // must have atleast one excluding the default endpoint
-                revealChild={reveal_devices()}>
-                <box
-                    cssClasses={["available-endpoints"]}
-                    orientation={Gtk.Orientation.VERTICAL}
-                    spacing={10}
-                    halign={Gtk.Align.START}>
-                    {endpoints()
-                        .as(endpoint2 => endpoint2
-                            .filter(endpoint => endpoint.get_id() !== default_endpoint.get_id())
+            {endpoints && endpoints().as(endpoints => (
+                <revealer
+                    transitionDuration={500}
+                    transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                    visible={endpoints.length > 1} // must have more than one endpoints
+                    revealChild={reveal_devices()}>
+                    <box
+                        cssClasses={["available-endpoints"]}
+                        orientation={Gtk.Orientation.VERTICAL}
+                        spacing={10}
+                        halign={Gtk.Align.START}>
+                        {endpoints
+                            .filter(endpoint => endpoint.get_id() !== current_endpoint.get_id())
                             .map((endpoint) => {
                                 return (
                                     <button
@@ -81,22 +88,23 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                                             label={bind(endpoint, "description").as(description => `${truncate(description, 46)}`)} />
                                     </button>
                                 );
-                            }),
-                        )}
-                </box>
-            </revealer>
+                            })}
+                    </box>
+                </revealer>
+            ))}
             <slider
                 drawValue={false}
                 min={0}
                 max={1}
-                value={bind(default_endpoint, "volume")}
-                onChangeValue={self => default_endpoint.set_volume(self.get_value())} />
+                value={bind(current_endpoint, "volume")}
+                onChangeValue={self => current_endpoint.set_volume(self.get_value())} />
         </box>
     );
 }
 
 export default function (gdkmonitor: Gdk.Monitor) {
-    const audio = WirePlumber.get_default();
+    const audio = AstalWp.get_default();
+
     if (!audio) {
         return (
             <window
@@ -118,55 +126,103 @@ export default function (gdkmonitor: Gdk.Monitor) {
         ) as Astal.Window;
     }
 
-    const speaker_label = Variable.derive(
-        [bind(audio.default_speaker, "icon"), bind(audio.default_speaker, "description"), bind(audio.default_speaker, "volume")],
-        (icon, description, volume) => {
-            if (icon.includes("headset")) {
-                return `  ${description}`;
-            }
-            else {
-                return `${symbolic_strength(volume, ["󰖀 ", "󰕾 "], 1)} ${description}`;
-            }
-        },
-    );
+    const speaker = audio.get_default_speaker();
+    const microphone = audio.get_default_microphone();
+    const endpoints = Variable<AstalWp.Endpoint[]>(audio.get_endpoints() || []);
 
-    const microphone_label = Variable.derive(
-        [bind(audio.default_microphone, "description")],
-        description => `  ${description}`,
-    );
+    audio.connect("endpoint-added", () => endpoints.set(audio.get_endpoints() || []));
+    audio.connect("endpoint-removed", () => endpoints.set(audio.get_endpoints() || []));
 
-    const microphone_mute = Variable.derive(
-        [bind(audio.default_microphone, "mute")],
-        mute => mute ? " " : " ",
-    );
+    let speaker_widget = <></>;
+    let microphone_widget = <></>;
 
-    const speaker_mute = Variable.derive(
-        [bind(audio.default_speaker, "mute")],
-        mute => mute ? "󰝟 " : "󰕾 ",
-    );
+    if (speaker) {
+        const label = Variable.derive(
+            [bind(speaker, "icon"), bind(speaker, "description"), bind(speaker, "volume")],
+            (icon, description, volume) => {
+                if (icon.includes("headset")) {
+                    return `  ${description}`;
+                }
+                else {
+                    return `${symbolic_strength(volume, ["󰖀 ", "󰕾 "], 1)} ${description}`;
+                }
+            },
+        );
 
-    const speaker_endpoints = Variable.derive(
-        [bind(audio, "endpoints"), bind(audio.default_speaker, "id")],
-        (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === WirePlumber.MediaClass.AUDIO_SPEAKER)),
-    );
+        const mute = Variable.derive(
+            [bind(speaker, "mute")],
+            mute => mute ? "󰝟 " : "󰕾 ",
+        );
 
-    const microphone_endpoints = Variable.derive(
-        [bind(audio, "endpoints"), bind(audio.default_microphone, "id")],
-        (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === WirePlumber.MediaClass.AUDIO_MICROPHONE)),
-    );
+        const speakers = Variable.derive(
+            [endpoints(), bind(speaker, "id")],
+            (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_SPEAKER)),
+        );
+
+        speaker_widget = (
+            <EndpointSlider
+                name={label}
+                mute={mute}
+                current_endpoint={speaker}
+                endpoints={speakers} />
+        );
+    }
+
+    if (microphone) {
+        const label = Variable.derive(
+            [bind(microphone, "description")],
+            description => `  ${description}`,
+        );
+
+        const mute = Variable.derive(
+            [bind(microphone, "mute")],
+            mute => mute ? " " : " ",
+        );
+
+        const microphones = Variable.derive(
+            [endpoints(), bind(microphone, "id")],
+            (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_MICROPHONE)),
+        );
+
+        microphone_widget = (
+            <EndpointSlider
+                name={label}
+                mute={mute}
+                current_endpoint={microphone}
+                endpoints={microphones} />
+        );
+    }
+
+    function get_stream_widgets(endpoints: AstalWp.Endpoint[]) {
+        return endpoints
+            .filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_STREAM)
+            .map((stream) => {
+                const label = Variable.derive(
+                    [bind(stream, "description"), bind(stream, "name")],
+                    (description, name) => `󰕾  ${description}: ${name}`,
+                );
+
+                const mute = Variable.derive(
+                    [bind(stream, "mute")],
+                    mute => mute ? "󰝟 " : "󰕾 ",
+                );
+
+                return (
+                    <EndpointSlider
+                        name={label}
+                        mute={mute}
+                        current_endpoint={stream} />
+                );
+            });
+    }
+
+    const stream_widgets = Variable<Gtk.Widget[]>(get_stream_widgets(endpoints.get()));
+    const reveal = Variable(false);
+
+    endpoints.subscribe(endpoints => stream_widgets.set(get_stream_widgets(endpoints)));
 
     return (
         <window
-            onDestroy={() => {
-                speaker_label.drop();
-                microphone_label.drop();
-
-                speaker_mute.drop();
-                microphone_mute.drop();
-
-                speaker_endpoints.drop();
-                microphone_endpoints.drop();
-            }}
             setup={self => self.set_default_size(1, 1)}
             name="media"
             cssClasses={["media"]}
@@ -178,18 +234,37 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 cssClasses={["layout-box"]}
                 spacing={10}
                 orientation={Gtk.Orientation.VERTICAL}>
-                <MediaSlider
-                    device_name={speaker_label}
-                    mute={speaker_mute}
-                    // since the endpoint's properties are getting updated rather than the object, this works just fine
-                    default_endpoint={audio.default_speaker}
-                    endpoints={speaker_endpoints} />
-                <MediaSlider
-                    device_name={microphone_label}
-                    mute={microphone_mute}
-                    // since the endpoint's properties are getting updated rather than the object, this works just fine
-                    default_endpoint={audio.default_microphone}
-                    endpoints={microphone_endpoints} />
+                {speaker && speaker_widget}
+                {microphone && microphone_widget}
+                <box
+                    orientation={Gtk.Orientation.VERTICAL}
+                    cssClasses={["mixer"]}>
+                    <button
+                        cssClasses={["show"]}
+                        onButtonPressed={(_, e) => {
+                            switch (e.get_button()) {
+                                case Gdk.BUTTON_PRIMARY:
+                                    reveal.set(!reveal.get());
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }}>
+                        <label label="Applications" />
+                    </button>
+                    <revealer
+                        transitionDuration={500}
+                        transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                        revealChild={reveal()}>
+                        <box
+                            cssClasses={["streams"]}
+                            spacing={10}
+                            orientation={Gtk.Orientation.VERTICAL}>
+                            {stream_widgets()}
+                        </box>
+                    </revealer>
+                </box>
             </box>
         </window>
     ) as Astal.Window;

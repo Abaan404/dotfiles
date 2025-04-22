@@ -60,16 +60,19 @@
 
             .default {
                 background-color: colors.$secondary;
+
+                @include animations.fade("&:hover", colors.$accent);
+                @include animations.fade("&:active", colors.$secondary);
             }
 
             .available-endpoints {
-              padding-top: 10px;
+                padding-top: 10px;
             }
         }
     }
 
     .mixer {
-        .buttons button {
+        .show {
             background-color: colors.$primary;
             border-radius: 20px;
 
@@ -79,6 +82,10 @@
 
             @include animations.fade("&:hover", colors.$accent);
             @include animations.fade("&:active", colors.$primary);
+        }
+
+        .streams {
+            padding-top: 10px;
         }
     }
 
