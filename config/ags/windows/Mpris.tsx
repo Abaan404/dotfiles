@@ -6,9 +6,7 @@ import ActivePlayer from "../services/activeplayer";
 
 import { Picture } from "../utils/widgets";
 
-import { MouseButton } from "../utils/inputs";
-import { get_player_glyph, get_player_name } from "../utils/strings";
-import { to_timestamp, truncate } from "../utils/strings";
+import { get_player_glyph, get_player_name, to_timestamp, truncate } from "../utils/helpers";
 
 export default function (gdkmonitor: Gdk.Monitor) {
     const active_player = ActivePlayer.get_default();
@@ -58,7 +56,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                                 }
 
                                 switch (e.get_button()) {
-                                    case MouseButton.PRIMARY:
+                                    case Gdk.BUTTON_PRIMARY:
                                         if (player.get_can_go_previous()) {
                                             player.previous();
                                         }
@@ -80,7 +78,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                                 }
 
                                 switch (e.get_button()) {
-                                    case MouseButton.PRIMARY:
+                                    case Gdk.BUTTON_PRIMARY:
                                         if (player.get_can_play() && player.get_can_pause()) {
                                             player.play_pause();
                                         }
@@ -116,7 +114,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                                 }
 
                                 switch (e.get_button()) {
-                                    case MouseButton.PRIMARY:
+                                    case Gdk.BUTTON_PRIMARY:
                                         if (player.get_can_go_next()) {
                                             player.next();
                                         }
@@ -149,11 +147,11 @@ export default function (gdkmonitor: Gdk.Monitor) {
                                 cssClasses={["active-player-control"]}
                                 onButtonPressed={(_, e) => {
                                     switch (e.get_button()) {
-                                        case MouseButton.PRIMARY:
+                                        case Gdk.BUTTON_PRIMARY:
                                             active_player.next_player();
                                             break;
 
-                                        case MouseButton.SECONDARY:
+                                        case Gdk.BUTTON_SECONDARY:
                                             active_player.prev_player();
                                             break;
 

@@ -10,11 +10,7 @@ import AstalBattery from "gi://AstalBattery";
 import Brightness from "../services/brightness";
 import ActivePlayer from "../services/activeplayer";
 
-import { MouseButton } from "../utils/inputs";
-import { get_internet_name, get_player_glyph, symbolic_strength } from "../utils/strings";
-import { truncate } from "../utils/strings";
-import { clamp } from "../utils/math";
-
+import { truncate, clamp, get_internet_name, get_player_glyph, symbolic_strength } from "../utils/helpers";
 import window_handler from "../utils/window";
 import app from "astal/gtk4/app";
 
@@ -26,7 +22,7 @@ function Launcher() {
             cssClasses={["launcher"]}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         execAsync(["bash", "-c", "pkill rofi || rofi -show drun"]).catch(() => {});
                         break;
 
@@ -97,11 +93,11 @@ function SysInfo() {
             cssClasses={["sysinfo"]}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         showSystray.set(!showSystray.get());
                         break;
 
-                    case MouseButton.SECONDARY:
+                    case Gdk.BUTTON_SECONDARY:
                         app.inspector();
                         break;
 
@@ -161,17 +157,17 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 }
 
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         window_handler.toggle_window("mpris", gdkmonitor);
                         break;
 
-                    case MouseButton.SECONDARY:
+                    case Gdk.BUTTON_SECONDARY:
                         if (player.get_can_go_next()) {
                             player.next();
                         }
                         break;
 
-                    case MouseButton.MIDDLE:
+                    case Gdk.BUTTON_MIDDLE:
                         if (player.get_can_play()) {
                             player.play_pause();
                         }
@@ -233,7 +229,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 onScroll={(_1, _2, dy) => endpoint?.set_volume(clamp(endpoint.get_volume() - dy / 15, 0, 1))}
                 onButtonPressed={(_, e) => {
                     switch (e.get_button()) {
-                        case MouseButton.MIDDLE:
+                        case Gdk.BUTTON_MIDDLE:
                             endpoint?.set_mute(!endpoint.get_mute());
                             break;
 
@@ -318,7 +314,7 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             spacing={10}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         window_handler.toggle_window("media", gdkmonitor);
                         break;
 
@@ -460,7 +456,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
                         reveal_child={reveal()}>
-                        <label label={bind(battery, "percentage").as(percentage => `${(percentage * 100).toString()}%`)} />
+                        <label label={bind(battery, "percentage").as(percentage => `${(Math.floor(percentage * 100)).toString()}%`)} />
                     </revealer>
                 </box>
             </button>
@@ -473,7 +469,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             spacing={10}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         window_handler.toggle_window("glance", gdkmonitor);
                         break;
 
@@ -498,7 +494,7 @@ function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             onHoverLeave={() => reveal.set(false)}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         window_handler.toggle_window("powermenu", gdkmonitor);
                         break;
 

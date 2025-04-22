@@ -12,8 +12,7 @@ import Weather from "../services/weather";
 import Notification from "../components/Notification";
 import { ScrolledWindow, Calendar, Picture, Separator } from "../utils/widgets";
 
-import { MouseButton } from "../utils/inputs";
-import { get_active_profile_name, get_internet_name, to_timestamp, truncate } from "../utils/strings";
+import { get_active_profile_name, get_internet_name, to_timestamp, truncate } from "../utils/helpers";
 
 function WeatherInfo() {
     const weather = Weather.get_default();
@@ -28,7 +27,7 @@ function WeatherInfo() {
             onHoverLeave={() => reveal.set(false)}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         execAsync(["xdg-open", `https://openweathermap.org/city/${weather.city_id}`]);
                         break;
 
@@ -92,7 +91,7 @@ function PowerInfo() {
             cssClasses={["power"]}
             onButtonPressed={(_, e) => {
                 switch (e.get_button()) {
-                    case MouseButton.PRIMARY:
+                    case Gdk.BUTTON_PRIMARY:
                         switch (powerprofiles.get_active_profile()) {
                             case "power-saver":
                                 powerprofiles.set_active_profile("balanced");
@@ -164,7 +163,7 @@ function Network() {
     const scanning: Variable<boolean> = Variable(false);
     let scanner: Variable<null> = Variable(null);
 
-    let access_points: Variable<JSX.Element[]> = Variable([]);
+    let access_points: Variable<Gtk.Widget[]> = Variable([]);
     const selected_access_point: Variable<AstalNetwork.AccessPoint | null> = Variable(null);
 
     let ssid: Variable<string | null> = Variable(null);
@@ -219,7 +218,7 @@ function Network() {
                                     hexpand={true}
                                     onButtonPressed={async (_, e) => {
                                         switch (e.get_button()) {
-                                            case MouseButton.PRIMARY:
+                                            case Gdk.BUTTON_PRIMARY:
                                                 // stop scanning
                                                 scanning.set(false);
 
@@ -343,7 +342,7 @@ function Network() {
                     cssClasses={flight_mode().as(flight_mode => flight_mode ? ["success"] : [""])}
                     onButtonPressed={async (_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 flight_mode.set(!flight_mode.get());
                                 break;
 
@@ -427,7 +426,7 @@ function Bluetooth() {
                     cssClasses={bind(adapter, "discovering").as(discovering => discovering ? ["success"] : [""])}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 if (adapter.get_discovering()) {
                                     adapter.stop_discovery();
                                 }
@@ -446,7 +445,7 @@ function Bluetooth() {
                     cssClasses={bind(adapter, "discoverable").as(discoverable => discoverable ? ["success"] : [""])}
                     onButtonPressed={async (_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 adapter.set_discoverable(!adapter.get_discoverable());
                                 break;
 
@@ -461,7 +460,7 @@ function Bluetooth() {
                     hexpand={true}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 bluetooth.toggle();
                                 break;
 
@@ -563,7 +562,7 @@ function QuickSettings() {
                 orientation={Gtk.Orientation.VERTICAL}
                 homogeneous={true}>
                 <button
-                    onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("network") : null}>
+                    onButtonPressed={(_, e) => e.get_button() === Gdk.BUTTON_PRIMARY ? page.set("network") : null}>
                     <overlay>
                         {bind(network, "primary").as((primary) => {
                             const wired = network.get_wired();
@@ -588,7 +587,7 @@ function QuickSettings() {
                             value={bind(network, "connectivity").as(connectivity => connectivity === AstalNetwork.Connectivity.FULL ? 1 : 0)} />
                     </overlay>
                 </button>
-                <button onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("bluetooth") : null}>
+                <button onButtonPressed={(_, e) => e.get_button() === Gdk.BUTTON_PRIMARY ? page.set("bluetooth") : null}>
                     <overlay>
                         <image type="overlay" iconName="bluetooth-symbolic" />
                         <slider
@@ -609,7 +608,7 @@ function QuickSettings() {
                             value={bind(battery, "percentage")} />
                     </overlay>
                 </button>
-                <button onButtonPressed={(_, e) => e.get_button() === MouseButton.PRIMARY ? page.set("calendar") : null}>
+                <button onButtonPressed={(_, e) => e.get_button() === Gdk.BUTTON_PRIMARY ? page.set("calendar") : null}>
                     <box>
                         <overlay>
                             <image type="overlay" iconName="timer-symbolic" />

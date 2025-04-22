@@ -3,9 +3,7 @@ import { bind, Variable } from "astal";
 
 import WirePlumber from "gi://AstalWp";
 
-import { MouseButton } from "../utils/inputs";
-import { truncate } from "../utils/strings";
-import { symbolic_strength } from "../utils/strings";
+import { truncate, symbolic_strength } from "../utils/helpers";
 
 function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { device_name: Variable<string>; mute: Variable<string>; default_endpoint: WirePlumber.Endpoint; endpoints: Variable<WirePlumber.Endpoint[]> }) {
     const reveal_devices = Variable(false);
@@ -25,7 +23,7 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                     cssClasses={["mute"]}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 default_endpoint.set_mute(!default_endpoint.get_mute());
                                 break;
 
@@ -39,7 +37,7 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                     cssClasses={["list"]}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 reveal_devices.set(!reveal_devices.get());
                                 break;
 
@@ -69,7 +67,7 @@ function MediaSlider({ device_name, mute, default_endpoint, endpoints }: { devic
                                         cssClasses={["name"]}
                                         onButtonPressed={(_, e) => {
                                             switch (e.get_button()) {
-                                                case MouseButton.PRIMARY:
+                                                case Gdk.BUTTON_PRIMARY:
                                                     endpoint.set_is_default(true);
                                                     break;
 

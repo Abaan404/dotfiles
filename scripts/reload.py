@@ -79,8 +79,6 @@ class TemplateWriter:
         subprocess.Popen("ags quit; ags run --gtk4", shell=True, env=os.environ.copy())
 
     def hypr(self):
-        if subprocess.run(["pidof", "obs"], check=False, stdout=subprocess.PIPE).stdout: # hyprland crashes if configs get updated while obs is running
-            return
         subprocess.Popen(["hyprctl", "reload"])
 
     def kvantum(self):

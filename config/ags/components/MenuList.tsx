@@ -9,7 +9,7 @@ export function MenuList({
     label: string;
     cssClasses: string[];
     align: "left" | "right";
-    child?: JSX.Element;
+    child?: Gtk.Widget;
 }) {
     const halign = align === "left" ? Gtk.Align.START : Gtk.Align.END;
 

@@ -1,11 +1,10 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk, Gdk } from "astal/gtk4";
 import { bind, Binding, Gio, GLib } from "astal";
 
 import Notifd from "gi://AstalNotifd";
 
-import { Picture, ProgressBar, Separator } from "../utils/widgets";
-import { MouseButton } from "../utils/inputs";
-import { get_urgency_name } from "../utils/strings";
+import { Picture, ProgressBar } from "../utils/widgets";
+import { get_urgency_name } from "../utils/helpers";
 
 export default function ({
     notification,
@@ -35,7 +34,7 @@ export default function ({
                         <button
                             onButtonPressed={(_, e) => {
                                 switch (e.get_button()) {
-                                    case MouseButton.PRIMARY:
+                                    case Gdk.BUTTON_PRIMARY:
                                         onHide();
                                         break;
 
@@ -49,7 +48,7 @@ export default function ({
                     <button
                         onButtonPressed={(_, e) => {
                             switch (e.get_button()) {
-                                case MouseButton.PRIMARY:
+                                case Gdk.BUTTON_PRIMARY:
                                     notification.dismiss();
                                     break;
 
@@ -104,7 +103,7 @@ export default function ({
                         <button
                             onButtonPressed={(_, e) => {
                                 switch (e.get_button()) {
-                                    case MouseButton.PRIMARY:
+                                    case Gdk.BUTTON_PRIMARY:
                                         notification.invoke(action.id);
                                         break;
 

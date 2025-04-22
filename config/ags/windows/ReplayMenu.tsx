@@ -5,8 +5,6 @@ import Recorder from "../services/recorder";
 
 import { MenuList } from "../components/MenuList";
 
-import { MouseButton } from "../utils/inputs";
-
 function ReplayButton() {
     const recorder = Recorder.get_default();
 
@@ -20,7 +18,7 @@ function ReplayButton() {
                 hexpand={true}
                 onButtonPressed={(_, e) => {
                     switch (e.get_button()) {
-                        case MouseButton.PRIMARY:
+                        case Gdk.BUTTON_PRIMARY:
                             recorder.replay();
                             break;
 
@@ -51,7 +49,7 @@ function RecordButton() {
                     hexpand={true}
                     onButtonPressed={(_, e) => {
                         switch (e.get_button()) {
-                            case MouseButton.PRIMARY:
+                            case Gdk.BUTTON_PRIMARY:
                                 recorder.record(!recorder.is_recording);
                                 break;
 
@@ -72,7 +70,7 @@ function RecordButton() {
                         cssClasses={bind(recorder, "is_paused").as(is_paused => is_paused ? ["paused", "pause"] : ["pause"])}
                         onButtonPressed={(_, e) => {
                             switch (e.get_button()) {
-                                case MouseButton.PRIMARY:
+                                case Gdk.BUTTON_PRIMARY:
                                     recorder.is_paused = !recorder.is_paused;
                                     break;
 
@@ -104,7 +102,7 @@ function MicButton() {
                 hexpand={true}
                 onButtonPressed={(_, e) => {
                     switch (e.get_button()) {
-                        case MouseButton.PRIMARY:
+                        case Gdk.BUTTON_PRIMARY:
                             recorder.is_mic_enabled = !recorder.is_mic_enabled;
                             break;
 

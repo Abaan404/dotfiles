@@ -7,12 +7,12 @@ index eb71bdb..a6750de 100644
              }
  
 +            if (event.get_event_type() === Gdk.EventType.TOUCH_BEGIN) {
-+                (event as any).get_button = () => 1;
++                (event as any).get_button = () => Gdk.BUTTON_PRIMARY;
 +                onButtonPressed?.(widget, event as Gdk.ButtonEvent)
 +            }
 +
 +            if (event.get_event_type() === Gdk.EventType.TOUCH_END) {
-+                (event as any).get_button = () => 1;
++                (event as any).get_button = () => Gdk.BUTTON_PRIMARY;
 +                onButtonReleased?.(widget, event as Gdk.ButtonEvent)
 +            }
 +

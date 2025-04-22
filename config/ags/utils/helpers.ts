@@ -90,3 +90,7 @@ export function symbolic_strength(value: number, array: string[], max: number) {
     const interp = Math.floor((value / max) * array.length);
     return array[Math.min(interp, array.length - 1)];
 }
+
+export function clamp(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max);
+}

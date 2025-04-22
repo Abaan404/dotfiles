@@ -1,7 +1,7 @@
 import GObject, { register, property } from "astal/gobject";
 import { monitorFile, readFileAsync } from "astal/file";
 import { exec, execAsync } from "astal/process";
-import { clamp } from "../utils/math";
+import { clamp } from "../utils/helpers";
 
 @register({ GTypeName: "Brightness" })
 export default class Brightness extends GObject.Object {
