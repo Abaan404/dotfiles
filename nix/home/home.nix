@@ -1,7 +1,6 @@
 {
   flake-overlays,
   username,
-  inputs,
   ...
 }:
 
@@ -14,8 +13,6 @@
     ./packages/dev.nix
 
     ./files/matlab.nix
-
-    inputs.ags.homeManagerModules.default
   ];
 
   nixpkgs.overlays = [

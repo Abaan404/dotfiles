@@ -5,6 +5,7 @@
     # nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     # astal/ags
     astal = {
@@ -53,15 +54,10 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       nixpkgs-unstable,
-      nixos-hardware,
-      ags,
-      astal,
-      matlab,
       home-manager,
-      swww,
+      matlab,
       ...
     }@inputs:
     let
@@ -108,7 +104,7 @@
           };
 
           modules = [
-            nixos-hardware.nixosModules.lenovo-ideapad-15arh05
+            inputs.nixos-hardware.nixosModules.lenovo-ideapad-15arh05
             ./nix/core/common
             ./nix/core/lenovo
           ];
@@ -128,6 +124,9 @@
           };
 
           modules = [
+            inputs.ags.homeManagerModules.default
+            inputs.nix-flatpak.homeManagerModules.nix-flatpak
+
             ./nix/home/home.nix
             {
               programs.git = {

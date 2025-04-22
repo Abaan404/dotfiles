@@ -54,7 +54,6 @@
     pkgs.kdenlive
     pkgs.inkscape
     pkgs.swappy
-    pkgs.kooha
     pkgs.krita
     pkgs.gimp
 
@@ -139,6 +138,23 @@
     enable = true;
     options = {
       selection-clipboard = "clipboard";
+    };
+  };
+
+  services.flatpak = {
+    enable = true;
+    uninstallUnmanaged = false;
+    packages = [
+      "org.vinegarhq.Sober"
+      "org.gnome.gitlab.YaLTeR.VideoTrimmer"
+    ];
+
+    overrides = {
+      "org.gnome.gitlab.YaLTeR.VideoTrimmer".Context = {
+        filesystems = [
+          "~/Videos/Replays"
+        ];
+      };
     };
   };
 }
