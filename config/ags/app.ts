@@ -121,9 +121,13 @@ App.start({
                     "Recording Saved",
                     `Saved to Path ${record_path}`,
                     "--action=view=View",
+                    "--action=edit=Edit",
                 ]).then((res) => {
                     if (res === "view") {
                         subprocess(["vlc", record_path]);
+                    }
+                    else if (res === "edit") {
+                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", record_path]);
                     }
                 });
             });
@@ -135,8 +139,6 @@ App.start({
                     `Saved to Path ${replay_path}`,
                     "--action=view=View",
                     "--action=edit=Edit",
-                    "-t",
-                    "5000",
                 ]).then((res) => {
                     if (res === "view") {
                         subprocess(["vlc", replay_path]);

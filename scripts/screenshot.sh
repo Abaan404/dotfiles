@@ -24,7 +24,7 @@ grim -g "$size" "$FILENAME"
 # copy to clipboard
 wl-copy < "$FILENAME"
 
-action=$(notify-send "Screenshot $1 Captured" --app-name="Screenshot" --action=edit=edit --hint=string:image-path:"$FILENAME")
+action=$(notify-send "Screenshot Captured" --app-name="Screenshot" --action=edit=edit --hint=string:image-path:"$FILENAME")
 if [[ $action == "edit" ]]; then
     swappy -f "$FILENAME"
 fi
