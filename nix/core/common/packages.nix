@@ -50,6 +50,10 @@
   };
 
   programs.ydotool = {
-      enable = true;
+    enable = true;
+  };
+
+  programs.wireshark = {
+    enable = true;
   };
 }
