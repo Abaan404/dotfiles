@@ -142,14 +142,7 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     return (
         <box
             cssClasses={["player"]}
-            onScroll={(_1, _2, dy) => {
-                if (dy > 0) {
-                    active_player.next_player();
-                }
-                else if (dy < 0) {
-                    active_player.prev_player();
-                }
-            }}
+            onScroll={(_1, _2, dy) => active_player.player?.set_volume(clamp(active_player.player.get_volume() - dy / 15, 0, 1))}
             onButtonPressed={(_, e) => {
                 const player = active_player.player;
                 if (!player) {
