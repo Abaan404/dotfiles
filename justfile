@@ -1,3 +1,5 @@
+set dotenv-load
+
 install system:
     # create system-specific config
     mkdir -p ./nix/core/{{system}}
@@ -11,26 +13,33 @@ install system:
     git add ./nix/core/{{system}}/*
     git add ./flake.nix
 
+    # save the current system
+    echo "SYSTEM={{system}}" >> ./.env
+
     # switch to new dots
-    just switch-nixos {{system}}
-    just switch-hm
+    just switch
 
     # copy default wallpapers
     install -m 644 -v -D $(readlink -f $(which Hyprland) | cut -c-59)/share/hypr/wall* -t ~/Pictures/wallpapers/
-    
+
     # load configs
     python3 ./scripts/reload.py
 
     echo "Installation Completed. Run 'Hyprland' as a command to begin"
 
-switch-nixos system:
-    sudo nixos-rebuild switch --flake .#{{system}}
+switch-nixos:
+    @if [[ -z "${SYSTEM-}" ]]; then \
+        echo "No system configuration found, either rerun \`just install\` or add your \$SYSTEM into your .env that matches your nixosConfigurations system"; \
+        exit 1; \
+    fi
+
+    sudo nixos-rebuild switch --flake .#"$SYSTEM"
 
 switch-hm:
     home-manager switch --flake ~/.dotfiles
 
-switch system:
-    just switch-nixos {{system}}
+switch:
+    just switch-nixos
     just switch-hm
 
 rollback:
@@ -38,7 +47,7 @@ rollback:
 
 update system:
     nix flake update
-    just switch {{system}}
+    just switch
 
 gc:
     # why cant both be one command?
