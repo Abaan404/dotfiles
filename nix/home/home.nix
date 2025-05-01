@@ -35,6 +35,15 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+
+    extraConfig = {
+      init.defaultBranch = "main";
+      url = {
+        "git@github.com:" = {
+          insteadOf = "gh:";
+        };
+      };
+    };
   };
 
   programs.home-manager.enable = true;
