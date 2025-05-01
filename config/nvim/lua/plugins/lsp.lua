@@ -25,9 +25,14 @@ return {
 
             -- Diagnostic config
             vim.diagnostic.config({
-                virtual_lines = true,
+                virtual_text = true,
                 signs = {
-                    active = signs,
+                    text = {
+                        [vim.diagnostic.severity.ERROR] = "",
+                        [vim.diagnostic.severity.WARN] = "",
+                        [vim.diagnostic.severity.HINT] = "",
+                        [vim.diagnostic.severity.INFO] = " ",
+                    },
                 },
                 update_in_insert = true,
                 underline = true,
