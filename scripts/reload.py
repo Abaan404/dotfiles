@@ -16,16 +16,16 @@ dotenv.load_dotenv()
 CONFIG = {
     "config_template_path": Path("~/.dotfiles/config").expanduser(),
     "config_path": Path("~/.config").expanduser(),
-
     "wallpaper_folder": Path("~/Pictures/wallpapers").expanduser(),
-    "wallpaper_type": "iterative", # unsplash, random, or iterative (Unsplash can be really slow)
+    "wallpaper_type": "iterative",  # unsplash, random, or iterative (Unsplash can be really slow)
     "unsplash_query": "mountain",
-
-    "backend": "colorthief" # ensure the package for the backend is installed
+    "backend": "colorthief",  # ensure the package for the backend is installed
 }
 
+
 class CustomTemplate(Template):
-	delimiter = '!!'
+    delimiter = "!!"
+
 
 class TemplateWriter:
     def __init__(self, mappings: dict) -> None:
@@ -53,65 +53,70 @@ class TemplateWriter:
                     continue
 
             with open(config_path.joinpath(conf.name), "w") as f:
-                print(f"Writing to path {config_path.joinpath(conf.name)}")
                 f.write(stream)
 
     def reload(self):
         self.write(CONFIG["config_template_path"], CONFIG["config_path"])
 
-        # run post-reload scripts
-        for template in CONFIG["config_template_path"].iterdir():
-            getattr(self, template.name.lower(), lambda: None)()
-
-    def ags(self):
         color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
         path = CONFIG["config_path"].joinpath("ags/assets/")
         path.mkdir(exist_ok=True)
 
-        # change all non-transparent colors in the image to "color"
-        for file in [
-            Path("~/.dotfiles/assets/playerart.png")
-        ]:
-            img = Image.open(file.expanduser()).convert("RGBA")
-            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()]) # pyright: ignore ignoreGeneralTypeIssues
-            img.save(path.joinpath(file.name))
+        # rofi
+        img = Image.open(self.mappings["wallpaper"])
+        box = (*((ax - 512) // 2 for ax in img.size), *((ax + 512) // 2 for ax in img.size))
+        img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png"))  # pyright: ignore
 
-        subprocess.Popen("ags quit; ags run --gtk4", shell=True, env=os.environ.copy())
-
-    def hypr(self):
+        # hyprland
         subprocess.Popen(["hyprctl", "reload"])
 
-    def kvantum(self):
-        # qt
+        # qt theme
         subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"])
 
-        # gtk FIXME: figure out a better way to handle color themes with nix
-        # oomox = Path("~/.cache/wal/colors-oomox").expanduser()
-        # configs = "\n".join([
-        #     f"FG={self.mappings['text']}",
-        #     f"SEL_FG={self.mappings['text']}",
-        #     "SPACING=2",
-        #     "ROUNDNESS=5",
-        #     "BTN_OUTLINE_WIDTH=1",
-        #     "BTN_OUTLINE_OFFSET=-3"
-        # ])
-        #
-        # with open(oomox, "a") as f:
-        #     f.write(configs)
-        #
-        # subprocess.Popen(["/opt/oomox/plugins/theme_oomox/change_color.sh", oomox])
+        # ags/astal
+        for file in [
+            Path("~/.dotfiles/assets/playerart.png").expanduser(),
+        ]:
+            img = Image.open(file).convert("RGBA")
+            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()])  # pyright: ignore ignoreGeneralTypeIssues
+            img.save(path.joinpath(file.name))
 
-    def rofi(self):
-        # a 512x512 image centered on the wallpaper
-        img = Image.open(self.mappings["wallpaper"])
-        box = (
-            *((ax - 512) // 2 for ax in img.size),
-            *((ax + 512) // 2 for ax in img.size))
-        img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png")) # pyright: ignore
+        subprocess.run(["ags", "quit"])
+        subprocess.Popen(["ags", "run", "--gtk4"], env=os.environ.copy())
+
+        # wvkbd
+        subprocess.run(["killall", "wvkbd-abaan404"])
+        subprocess.Popen(
+            [
+                "wvkbd-abaan404",
+                "-L",
+                "350",
+                "-bg",
+                f"{self.mappings["colors_color1"]}11",
+                "-fg",
+                f"{self.mappings["accent"]}55",
+                "-fg-sp",
+                f"{self.mappings["primary"]}66",
+                "-press",
+                f"{self.mappings["accent"]}",
+                "-press-sp",
+                f"{self.mappings["accent"]}",
+                "-text",
+                f"{self.mappings["text"]}",
+                "-text-sp",
+                f"{self.mappings["text"]}",
+                "-swipe",
+                f"{self.mappings["accent"]}",
+                "-swipe-sp",
+                f"{self.mappings["accent"]}",
+                "-O",
+                "--hidden",
+            ]
+        )
 
 
 def unsplash(query):
-    headers={ "Authorization": f"Client-ID {os.getenv('UNSPLASH_ACCESS_KEY')}" }
+    headers = {"Authorization": f"Client-ID {os.getenv('UNSPLASH_ACCESS_KEY')}"}
     with requests.get(f"https://api.unsplash.com/photos/random?orientation=landscape&query={query}", headers=headers) as r:
         match r.status_code:
             case 200:
@@ -136,8 +141,9 @@ def unsplash(query):
 
     return str(unsplash_path)
 
+
 # https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
-def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
+def flatten_dict(dictionary: dict, parent_key: str = "", separator: str = "_"):
     items = []
     for key, value in dictionary.items():
         new_key = parent_key + separator + key if parent_key else key
@@ -146,6 +152,7 @@ def flatten_dict(dictionary: dict, parent_key: str = '', separator: str = '_'):
         else:
             items.append((new_key, value))
     return dict(items)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -176,21 +183,21 @@ if __name__ == "__main__":
     colors = flatten_dict(colors)
     colors.update({k: v[1:] for k, v in colors.items() if v.startswith("#")})
 
-    TemplateWriter({
-        # dirs
-        "HOME": str(Path("~").expanduser()),
-        "wallpaper": wallpaper,
-
-        # colors
-        **colors,
-        "primary": colors["colors_color3"],
-        "secondary": colors["colors_color2"],
-        "accent": colors["colors_color5"],
-        "bad": "cc4f4f",
-        "good": "26a65b",
-        "warning": "d3980f",
-        "text": "d2d2d2",
-
-        # misc
-        "bluetooth": "0a3b8c",
-    }).reload()
+    TemplateWriter(
+        {
+            # dirs
+            "HOME": str(Path("~").expanduser()),
+            "wallpaper": wallpaper,
+            # colors
+            **colors,
+            "primary": colors["colors_color3"],
+            "secondary": colors["colors_color2"],
+            "accent": colors["colors_color5"],
+            "bad": "cc4f4f",
+            "good": "26a65b",
+            "warning": "d3980f",
+            "text": "d2d2d2",
+            # misc
+            "bluetooth": "0a3b8c",
+        }
+    ).reload()

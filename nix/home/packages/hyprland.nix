@@ -23,7 +23,14 @@
     pkgs.libnotify
 
     # onscreen keyboard
-    pkgs.wvkbd
+    (pkgs.wvkbd.overrideAttrs (old: {
+      src = pkgs.fetchFromGitHub {
+        owner = "abaan404";
+        repo = "wvkbd";
+        rev = "06ea8ee72a61ed216bcd8fa85cbe9a31d80ee0af";
+        hash = "sha256-9sHc7/zmlmXwn7m1uJrc9/BM+fSfmz/oFj0oEE5lTOg=";
+      };
+    }))
 
     # misc
     pkgs.wev
