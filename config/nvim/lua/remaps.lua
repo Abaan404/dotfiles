@@ -114,6 +114,8 @@ set("n", "<leader>cmr", "<cmd>CMakeRun<CR>")
 set("n", "<leader>cmc", "<cmd>CMakeClean<CR>")
 set("n", "<leader>cmtr", "<cmd>CMakeSelectLaunchTarget<CR>")
 set("n", "<leader>cmtt", "<cmd>CMakeRunTest<CR>")
+set("n", "<leader>cme", "<cmd>CMakeOpenExecutor<CR>")
+set("n", "<leader>cmr", "<cmd>CMakeOpenRunner<CR>")
 set("n", "<C-c>", "<cmd>ClangdSwitchSourceHeader<CR>")
 
 -- GitSigns
