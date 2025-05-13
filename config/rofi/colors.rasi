@@ -9,7 +9,7 @@
     spacing: 2;
 
     text-color: #!!text;
-    message-background: #!!{primary}aa;
+    message-background: #!!{primary}dd;
     active-background: #!!primary;
     active-foreground: @foreground;
     normal-background: @background;

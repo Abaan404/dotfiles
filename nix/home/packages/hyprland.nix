@@ -16,9 +16,6 @@
     # polkit
     pkgs.hyprpolkitagent
 
-    # launcher
-    pkgs.rofi-wayland
-
     # wallpaper
     inputs.swww.packages.${pkgs.system}.swww
 
@@ -32,6 +29,31 @@
     pkgs.wev
     inputs.envycontrol.packages.${pkgs.system}.envycontrol
   ];
+
+  programs.rofi = {
+    enable = true;
+    package = pkgs.rofi-wayland;
+    font = "JetBrainsMono NF Extra-Bold 12";
+    theme = "~/.config/rofi/theme.rasi";
+    extraConfig = {
+      modes = "drun,window,calc";
+
+      show-icons = true;
+
+      drun-display-format = "{name}";
+      hover-select = true;
+      matching = "regex";
+
+      drun-use-desktop-cache = true;
+      drun-reload-desktop-cache = true;
+
+      kb-primary-paste = "Control+V,Shift+Insert";
+      kb-secondary-paste = "Control+v,Insert";
+    };
+    plugins = [
+      (pkgs.rofi-calc.override { rofi-unwrapped = pkgs.rofi-wayland-unwrapped; })
+    ];
+  };
 
   programs.ags = {
     enable = true;
