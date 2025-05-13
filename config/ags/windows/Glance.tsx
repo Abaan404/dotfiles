@@ -590,11 +590,14 @@ function QuickSettings() {
                 <button onButtonPressed={(_, e) => e.get_button() === Gdk.BUTTON_PRIMARY ? page.set("bluetooth") : null}>
                     <overlay>
                         <image type="overlay" iconName="bluetooth-symbolic" />
-                        <slider
-                            inverted={true}
-                            min={0}
-                            max={1}
-                            value={bind(bluetooth, "is_connected").as(is_connected => is_connected ? 1 : 0)} />
+                        {bind(bluetooth, "is_connected").as(is_connected => (
+                            <slider
+                                orientation={Gtk.Orientation.VERTICAL}
+                                inverted={true}
+                                min={0}
+                                max={1}
+                                value={bind(bluetooth.devices[0], "batteryPercentage").as(batteryPercentage => is_connected ? batteryPercentage : 0)} />
+                        ))}
                     </overlay>
                 </button>
                 <button>
