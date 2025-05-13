@@ -103,10 +103,12 @@
       source=~/.config/hypr/rules.conf
       source=~/.config/hypr/animations.conf
       source=~/.config/hypr/hyprgrass.conf
+      source=~/.config/hypr/hyprexpo.conf
     '';
 
     plugins = [
       pkgs.hyprlandPlugins.hyprgrass
+      pkgs.hyprlandPlugins.hyprexpo
     ];
   };
 }
