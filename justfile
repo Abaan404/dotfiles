@@ -45,7 +45,7 @@ switch:
 rollback:
     sudo nixos-rebuild switch --rollback
 
-update system:
+update:
     nix flake update
     just switch
 
