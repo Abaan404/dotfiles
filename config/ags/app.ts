@@ -24,7 +24,7 @@ App.start({
     css: style,
     icons: `!!HOME/.dotfiles/assets`,
     main() {
-        // window_handler.register_window("powermenu", PowerMenu);
+        window_handler.register_window("powermenu", PowerMenu);
         // window_handler.register_window("mpris", Mpris);
         // window_handler.register_window("media", Media);
         // window_handler.register_window("glance", Glance);
