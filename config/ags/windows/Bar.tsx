@@ -1,7 +1,9 @@
 import App from "ags/gtk4/app";
+import GLib from "gi://GLib";
 import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { createComputed, createExternal, createState, For, With, createBinding, Accessor, onCleanup } from "ags";
 import { execAsync } from "ags/process";
+import { interval } from "ags/time";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalTray from "gi://AstalTray";
@@ -14,7 +16,6 @@ import ActivePlayer from "../services/activeplayer";
 
 import { truncate, clamp, get_internet_name, get_player_glyph, symbolic_strength } from "../utils/helpers";
 import window_handler from "../utils/window";
-import GLib from "gi://GLib";
 
 function Launcher() {
     const [reveal, setReveal] = createState(false);
@@ -42,6 +43,7 @@ function Launcher() {
 
 function Workspaces() {
     const hyprland = AstalHyprland.get_default();
+    const focused = createBinding(hyprland, "focused_workspace");
 
     const workspaces = createComputed([createBinding(hyprland, "workspaces"), createBinding(hyprland, "focused_workspace")], (workspaces, focused) => {
         const visible = [
@@ -57,21 +59,21 @@ function Workspaces() {
             .filter(ws => ws.get_id() > visible[visible.length - 1].id)
             .forEach(ws => visible.push({ id: ws.id, glyph: "" }));
 
-        return visible.map(ws => (
-            <button
-                widthRequest={44}
-                class={focused.id == ws.id ? "active" : "inactive"}
-                onClicked={() => hyprland.dispatch("workspace", ws.id.toString())}>
-                {ws.glyph}
-            </button>
-        ));
+        return visible;
     });
 
     return (
         <box
             class="workspaces">
             <For each={workspaces}>
-                {value => value}
+                {workspace => (
+                    <button
+                        widthRequest={44}
+                        class={focused(focused => focused.id == workspace.id ? "active" : "inactive")}
+                        onClicked={() => hyprland.dispatch("workspace", workspace.id.toString())}>
+                        {workspace.glyph}
+                    </button>
+                )}
             </For>
         </box>
     );
@@ -81,13 +83,13 @@ const [showSystray, setShowSystray] = createState(false);
 
 function SysInfo() {
     const ram = createExternal("0.0G", (set) => {
-        const interval = setInterval(() => execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]).then(res => set(res)), 5000);
-        return () => clearInterval(interval);
+        const i = interval(5000, () => execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]).then(res => set(res)));
+        return () => i.cancel();
     });
 
     const cpu = createExternal("0.0G", (set) => {
-        const interval = setInterval(() => execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]).then(res => set(res)), 5000);
-        return () => clearInterval(interval);
+        const i = interval(5000, () => execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]).then(res => set(res)));
+        return () => i.cancel();
     });
 
     return (
