@@ -1,41 +1,35 @@
-import { Astal, Gdk } from "ags/gtk4";
-import App from "ags/gtk4/app";
+import { createRoot } from "ags";
+import { Gtk, Gdk } from "ags/gtk4";
 
 export class WindowHandler {
-    private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Astal.Window>();
+    private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Gtk.Window>();
+    private windows = new Map<string, () => void>();
 
-    private get_window_factory(name: string) {
+    toggle_window(name: string, gdkmonitor: Gdk.Monitor) {
+        if (this.windows.has(name)) {
+            const dispose = this.windows.get(name)!;
+            dispose();
+            this.windows.delete(name);
+            return;
+        }
+
         const window_factory = this.registry.get(name);
         if (!window_factory) {
             throw Error(`Could not find window "${name}"`);
         }
 
-        return window_factory;
-    }
-
-    private has_window(name: string) {
-        return App.get_windows().some(window => window.name == name);
-    }
-
-    toggle_window(name: string, gdkmonitor: Gdk.Monitor) {
-        if (this.has_window(name)) {
-            const window = App.get_window(name)!;
-            App.remove_window(window);
-            window.destroy();
-
-            return;
-        }
-
-        const window_factory = this.get_window_factory(name);
-        if (window_factory) {
+        createRoot((dispose) => {
             const window = window_factory(gdkmonitor);
-            App.add_window(window);
+            const remove = () => {
+                window.destroy();
+                dispose();
+            };
 
-            return;
-        }
+            this.windows.set(name, remove);
+        });
     }
 
-    register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Astal.Window) {
+    register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Gtk.Window) {
         this.registry.set(name, window_factory);
     }
 }
