@@ -29,11 +29,11 @@ App.start({
         // window_handler.register_window("media", Media);
         // window_handler.register_window("glance", Glance);
         // window_handler.register_window("replaymenu", ReplayMenu);
-        // window_handler.register_window("notifications", Notifications);
+        window_handler.register_window("notifications", Notifications);
 
         // display bar and notifications by default
         App.get_monitors().map(Bar);
-        // App.get_monitors().map(Notifications);
+        App.get_monitors().map(Notifications);
 
         // disable instant replay on battery
         {

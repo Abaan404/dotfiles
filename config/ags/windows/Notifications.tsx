@@ -1,9 +1,12 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4";
-import { AstalIO, interval, timeout, Variable } from "astal";
+import App from "ags/gtk4/app";
+import { Accessor, createState, For } from "ags";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
+import { interval, timeout } from "ags/time";
 
 import AstalNotifd from "gi://AstalNotifd";
+import AstalIO from "gi://AstalIO";
 
-import Notification from "../components/Notification";
+import { Notification } from "../components/Notification";
 
 const MAX_NOTIFICATION_TIMEOUT = 5000;
 
@@ -11,13 +14,13 @@ interface NotificationData {
     id: number;
     hide: number;
     hideTimeout: AstalIO.Time | null;
-    progress: Variable<number>;
+    progress: Accessor<number>;
     progressInterval: AstalIO.Time;
 }
 
 export default function (gdkmonitor: Gdk.Monitor) {
     const notifd = AstalNotifd.get_default();
-    const notifications = Variable<NotificationData[]>([]);
+    const [notifications, setNotifications] = createState<NotificationData[]>([]);
 
     function hide_notification(id: number) {
         const notifs = notifications.get();
@@ -31,7 +34,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
         notifs[idx].progressInterval.cancel();
 
         notifs.splice(idx, 1);
-        notifications.set([...notifs]);
+        setNotifications([...notifs]);
     }
 
     notifd.connect("notified", (_, id) => {
@@ -45,22 +48,22 @@ export default function (gdkmonitor: Gdk.Monitor) {
         }
 
         const notification = notifd.get_notification(id);
-        const hideTimeout = notification.get_expire_timeout() > MAX_NOTIFICATION_TIMEOUT || notification.get_expire_timeout() <= 0
+        const [hideTimeout, setHideTimeout] = createState(notification.get_expire_timeout() > MAX_NOTIFICATION_TIMEOUT || notification.get_expire_timeout() <= 0
             ? MAX_NOTIFICATION_TIMEOUT
-            : notification.get_expire_timeout();
+            : notification.get_expire_timeout());
 
         const data: NotificationData = {
-            id,
-            hide: hideTimeout,
+            id: id,
+            hide: hideTimeout.get(),
             hideTimeout: notification.get_expire_timeout() > MAX_NOTIFICATION_TIMEOUT || notification.get_expire_timeout() <= 0
-                ? timeout(hideTimeout, () => hide_notification(id))
+                ? timeout(hideTimeout.get(), () => hide_notification(id))
                 : null,
-            progress: Variable(hideTimeout),
-            progressInterval: interval(10, () => data.progress.set(data.progress.get() - 10)),
+            progress: hideTimeout,
+            progressInterval: interval(10, () => setHideTimeout(data.progress.get() - 10)),
         };
 
         notifs.push(data);
-        notifications.set([...notifs]);
+        setNotifications([...notifs]);
     });
 
     notifd.connect("resolved", (_, id) => hide_notification(id));
@@ -69,27 +72,25 @@ export default function (gdkmonitor: Gdk.Monitor) {
         <window
             name="notifications"
             gdkmonitor={gdkmonitor}
-            visible={notifications().as(notifications => notifications.length > 0)}
+            visible={notifications(notifications => notifications.length > 0)}
             anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
             application={App}>
-            <box cssClasses={["notifications"]}>
+            <box class="notifications">
                 <box
-                    cssClasses={["layout-box"]}
+                    class="layout-box"
                     spacing={20}
                     halign={Gtk.Align.END}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    {notifications().as(notifications => notifications.map((notification) => {
-                        const notif = notifd.get_notification(notification.id);
-
-                        return (
+                    <For each={notifications}>
+                        {notification => (
                             <overlay>
                                 <Notification
-                                    notification={notif}
+                                    notification={notifd.get_notification(notification.id)}
                                     onHide={() => hide_notification(notification.id)}
-                                    progress={notification.progress().as(progress => progress / notification.hide)} />
+                                    progress={notification.progress(progress => progress / notification.hide)} />
                             </overlay>
-                        );
-                    }))}
+                        )}
+                    </For>
                 </box>
             </box>
         </window>
