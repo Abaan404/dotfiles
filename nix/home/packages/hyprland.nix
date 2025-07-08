@@ -68,16 +68,6 @@
   programs.ags = {
     enable = true;
 
-    astal.gjsPackage = (
-      inputs.astal.packages.${pkgs.system}.gjs.overrideAttrs (old: {
-        src = pkgs.applyPatches {
-          src = old.src;
-          patches = [ ./patches/astal_touchscreen.patch ];
-          patchFlags = [ "-p3" ];
-        };
-      })
-    );
-
     extraPackages = [
       pkgs.libsoup_3
       pkgs.glib-networking

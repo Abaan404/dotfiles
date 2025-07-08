@@ -3,7 +3,3 @@
 
 # cache
 data/
-
-# ags/ts stuff
-@girs/
-node_modules/

@@ -1,5 +1,6 @@
-import { App } from "astal/gtk4";
-import { bind, execAsync, subprocess } from "astal";
+import App from "ags/gtk4/app";
+import { createBinding } from "ags";
+import { execAsync, subprocess } from "ags/process";
 
 import style from "./style.scss";
 import window_handler from "./utils/window";
@@ -23,23 +24,23 @@ App.start({
     css: style,
     icons: `!!HOME/.dotfiles/assets`,
     main() {
-        window_handler.register_window("powermenu", PowerMenu);
-        window_handler.register_window("mpris", Mpris);
-        window_handler.register_window("media", Media);
-        window_handler.register_window("glance", Glance);
-        window_handler.register_window("replaymenu", ReplayMenu);
-        window_handler.register_window("notifications", Notifications);
+        // window_handler.register_window("powermenu", PowerMenu);
+        // window_handler.register_window("mpris", Mpris);
+        // window_handler.register_window("media", Media);
+        // window_handler.register_window("glance", Glance);
+        // window_handler.register_window("replaymenu", ReplayMenu);
+        // window_handler.register_window("notifications", Notifications);
 
         // display bar and notifications by default
         App.get_monitors().map(Bar);
-        App.get_monitors().map(Notifications);
+        // App.get_monitors().map(Notifications);
 
         // disable instant replay on battery
         {
             const battery = AstalBattery.get_default();
             const recorder = Recorder.get_default();
 
-            bind(battery, "charging").subscribe(charging => recorder.is_replaying = charging);
+            createBinding(battery, "charging").subscribe(() => recorder.is_replaying = battery.get_charging());
         }
 
         // control mic mute led
@@ -48,9 +49,9 @@ App.start({
             const brightness = Brightness.get_default();
 
             if (audio) {
-                bind(audio.default_microphone, "mute").subscribe(mute => brightness.devices.forEach((device) => {
+                createBinding(audio.default_microphone, "mute").subscribe(() => brightness.devices.forEach((device) => {
                     if (device.name === "platform::micmute") {
-                        device.percentage = Number(mute);
+                        device.percentage = Number(audio.default_microphone.get_mute());
                     }
                 }));
             }
@@ -61,12 +62,12 @@ App.start({
             const battery = AstalBattery.get_default();
             const powerprofiles = AstalPowerProfiles.get_default();
 
-            bind(battery, "percentage").subscribe((percentage) => {
+            createBinding(battery, "percentage").subscribe(() => {
                 if (battery.charging) {
                     return;
                 }
 
-                const percent = Math.round(percentage * 100);
+                const percent = Math.round(battery.get_percentage() * 100);
 
                 if ([10, 15, 20].includes(percent)) {
                     if (powerprofiles.get_active_profile() === "power-saver") {
@@ -105,8 +106,8 @@ App.start({
         {
             const recorder = Recorder.get_default();
 
-            bind(recorder, "is_recording").subscribe((is_recording) => {
-                if (!is_recording) {
+            createBinding(recorder, "is_recording").subscribe(() => {
+                if (!recorder.is_recording) {
                     return;
                 }
                 execAsync([
@@ -115,36 +116,36 @@ App.start({
                 ]);
             });
 
-            bind(recorder, "record_path").subscribe((record_path) => {
+            createBinding(recorder, "record_path").subscribe(() => {
                 execAsync([
                     "notify-send",
                     "Recording Saved",
-                    `Saved to Path ${record_path}`,
+                    `Saved to Path ${recorder.record_path}`,
                     "--action=view=View",
                     "--action=edit=Edit",
                 ]).then((res) => {
                     if (res === "view") {
-                        subprocess(["vlc", record_path]);
+                        subprocess(["vlc", recorder.record_path]);
                     }
                     else if (res === "edit") {
-                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", record_path]);
+                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.record_path]);
                     }
                 });
             });
 
-            bind(recorder, "replay_path").subscribe((replay_path) => {
+            createBinding(recorder, "replay_path").subscribe(() => {
                 execAsync([
                     "notify-send",
                     "Replay Saved",
-                    `Saved to Path ${replay_path}`,
+                    `Saved to Path ${recorder.replay_path}`,
                     "--action=view=View",
                     "--action=edit=Edit",
                 ]).then((res) => {
                     if (res === "view") {
-                        subprocess(["vlc", replay_path]);
+                        subprocess(["vlc", recorder.replay_path]);
                     }
                     else if (res === "edit") {
-                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", replay_path]);
+                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.replay_path]);
                     }
                 });
             });

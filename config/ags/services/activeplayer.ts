@@ -1,4 +1,4 @@
-import GObject, { register, property } from "astal/gobject";
+import GObject, { register, property, signal, getter } from "ags/gobject";
 
 import AstalMpris from "gi://AstalMpris";
 
@@ -21,12 +21,7 @@ export default class ActivePlayer extends GObject.Object {
     private _players: AstalMpris.Player[] = [];
     private _active_player = 0;
 
-    @property(AstalMpris.Player) declare position: number;
-    @property(AstalMpris.Player) get player() {
-        if (this._players.length <= 0) {
-            return null;
-        }
-
+    @getter(AstalMpris.Player) get player() {
         return this._players[this._active_player] ?? null;
     }
 

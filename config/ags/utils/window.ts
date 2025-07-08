@@ -1,4 +1,5 @@
-import { App, Astal, Gdk } from "astal/gtk4";
+import { Astal, Gdk } from "ags/gtk4";
+import App from "ags/gtk4/app";
 
 export class WindowHandler {
     private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Astal.Window>();

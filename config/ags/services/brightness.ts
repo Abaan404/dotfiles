@@ -1,6 +1,6 @@
-import GObject, { register, property } from "astal/gobject";
-import { monitorFile, readFileAsync } from "astal/file";
-import { exec, execAsync } from "astal/process";
+import GObject, { register, getter } from "ags/gobject";
+import { monitorFile, readFileAsync } from "ags/file";
+import { exec, execAsync } from "ags/process";
 import { clamp } from "../utils/helpers";
 
 @register({ GTypeName: "Brightness" })
@@ -15,6 +15,7 @@ export default class Brightness extends GObject.Object {
 
     private _devices = new Map<string, BrightnessDevice>();
 
+    @getter(Array<BrightnessDevice>)
     get devices() {
         return Array.from(this._devices.values());
     }
@@ -58,17 +59,19 @@ export default class Brightness extends GObject.Object {
 
 @register({ GTypeName: "BrightnessDevice" })
 class BrightnessDevice extends GObject.Object {
-    @property(String)
+    declare static $gtype: GObject.GType<BrightnessDevice>;
+
+    @getter(String)
     get type(): string {
         return this._type;
     }
 
-    @property(String)
+    @getter(String)
     get name(): string {
         return this._name;
     }
 
-    @property(Number)
+    @getter(Number)
     get percentage(): number {
         return this._brightness / this._max_brightness;
     }

@@ -1,5 +1,7 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4";
-import { GLib, Variable, bind, execAsync } from "astal";
+import App from "ags/gtk4/app";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
+import { createComputed, createExternal, createState, For, With, createBinding, Accessor, onCleanup } from "ags";
+import { execAsync } from "ags/process";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalTray from "gi://AstalTray";
@@ -12,41 +14,36 @@ import ActivePlayer from "../services/activeplayer";
 
 import { truncate, clamp, get_internet_name, get_player_glyph, symbolic_strength } from "../utils/helpers";
 import window_handler from "../utils/window";
-import app from "astal/gtk4/app";
+import GLib from "gi://GLib";
 
 function Launcher() {
-    const reveal = Variable(false);
+    const [reveal, setReveal] = createState(false);
 
     return (
-        <box
-            cssClasses={["launcher"]}
-            onButtonPressed={(_, e) => {
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        execAsync(["bash", "-c", "pkill rofi || rofi -show drun"]).catch(() => {});
-                        break;
+        <button
+            class="launcher"
+            onClicked={() => execAsync(["bash", "-c", "pkill rofi || rofi -show drun"]).catch(() => {})}>
+            <Gtk.EventControllerMotion
+                onEnter={() => setReveal(true)}
+                onLeave={() => setReveal(false)} />
 
-                    default:
-                        break;
-                }
-            }}
-            onHoverEnter={() => reveal.set(true)}
-            onHoverLeave={() => reveal.set(false)}>
-            <image iconName="launcher-symbolic" />
-            <revealer
-                transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-                transitionDuration={500}
-                revealChild={reveal()}>
-                <label label="Launcher" />
-            </revealer>
-        </box>
+            <box>
+                <image iconName="launcher-symbolic" />
+                <revealer
+                    transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+                    transitionDuration={500}
+                    revealChild={reveal}>
+                    <label label="Launcher" />
+                </revealer>
+            </box>
+        </button>
     );
 }
 
 function Workspaces() {
     const hyprland = AstalHyprland.get_default();
 
-    const workspaces = Variable.derive([bind(hyprland, "workspaces"), bind(hyprland, "focused_workspace")], (workspaces, focused) => {
+    const workspaces = createComputed([createBinding(hyprland, "workspaces"), createBinding(hyprland, "focused_workspace")], (workspaces, focused) => {
         const visible = [
             { id: 1, glyph: "" },
             { id: 2, glyph: "" },
@@ -63,8 +60,8 @@ function Workspaces() {
         return visible.map(ws => (
             <button
                 widthRequest={44}
-                cssClasses={focused.id == ws.id ? ["active"] : ["inactive"]}
-                onButtonPressed={() => hyprland.dispatch("workspace", ws.id.toString())}>
+                class={focused.id == ws.id ? "active" : "inactive"}
+                onClicked={() => hyprland.dispatch("workspace", ws.id.toString())}>
                 {ws.glyph}
             </button>
         ));
@@ -72,65 +69,84 @@ function Workspaces() {
 
     return (
         <box
-            cssClasses={["workspaces"]}
-            onDestroy={() => workspaces.drop()}>
-            {workspaces()}
+            class="workspaces">
+            <For each={workspaces}>
+                {value => value}
+            </For>
         </box>
     );
 }
 
-const showSystray = Variable(false);
+const [showSystray, setShowSystray] = createState(false);
 
 function SysInfo() {
-    const ram = Variable("0.0G")
-        .poll(5000, ["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]);
+    const ram = createExternal("0.0G", (set) => {
+        const interval = setInterval(() => execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]).then(res => set(res)), 5000);
+        return () => clearInterval(interval);
+    });
 
-    const cpu = Variable("0.0G")
-        .poll(5000, ["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]);
+    const cpu = createExternal("0.0G", (set) => {
+        const interval = setInterval(() => execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]).then(res => set(res)), 5000);
+        return () => clearInterval(interval);
+    });
 
     return (
-        <box
-            cssClasses={["sysinfo"]}
-            onButtonPressed={(_, e) => {
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        showSystray.set(!showSystray.get());
-                        break;
+        <button
+            class="sysinfo"
+            onClicked={() => setShowSystray(!showSystray.get())}>
+            <Gtk.GestureClick
+                button={Gdk.BUTTON_SECONDARY}
+                onPressed={() => App.inspector()} />
 
-                    case Gdk.BUTTON_SECONDARY:
-                        app.inspector();
-                        break;
-
-                    default:
-                        break;
-                }
-            }}
-            spacing={12}>
-            {ram().as(val => ` ${val}`)}
-            {cpu().as(val => ` ${val}%`)}
-        </box>
+            <box
+                spacing={12}>
+                <label label={ram(val => ` ${val}`)} />
+                <label label={cpu(val => ` ${val}%`)} />
+            </box>
+        </button>
     );
 }
 
 function SysTray() {
     const tray = AstalTray.get_default();
+    const items = createBinding(tray, "items");
 
     return (
         <revealer
             transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-            revealChild={showSystray()}
+            revealChild={showSystray}
             transitionDuration={500}>
             <box
-                cssClasses={["systray"]}>
-                {bind(tray, "items").as(items => items.map(item => (
-                    <menubutton
-                        tooltipMarkup={bind(item, "tooltipMarkup")}
-                        // @ts-ignore: the prop exists
-                        actionGroup={bind(item, "actionGroup").as(ag => ["dbusmenu", ag])}
-                        menuModel={bind(item, "menuModel")}>
-                        <image gicon={bind(item, "gicon")} />
-                    </menubutton>
-                )))}
+                class="systray">
+                <For each={items}>
+                    {(item) => {
+                        const pop = Gtk.PopoverMenu.new_from_model(item.menuModel);
+
+                        return (
+                            <button
+                                $={(self) => {
+                                    pop.set_parent(self);
+                                    pop.insert_action_group("dbusmenu", item.actionGroup); pop.set_has_arrow(false);
+                                    pop.set_has_arrow(false);
+                                    const conns = [
+                                        item.connect("notify::menu-model", () => pop.set_menu_model(item.menuModel)),
+                                        item.connect("notify::action-group", () => pop.insert_action_group("dbusmenu", item.actionGroup)),
+                                    ];
+                                    onCleanup(() => {
+                                        pop.unparent();
+                                        conns.map(id => item.disconnect(id));
+                                    });
+                                }}
+                                valign={Gtk.Align.CENTER}
+                                tooltip_markup={createBinding(item, "tooltipMarkup")}>
+                                <Gtk.GestureClick
+                                    button={Gdk.BUTTON_PRIMARY}
+                                    onPressed={() => pop.popup()} />
+                                <image gicon={createBinding(item, "gicon")} />
+                            </button>
+                        );
+                    }}
+                </For>
             </box>
         </revealer>
     );
@@ -138,61 +154,57 @@ function SysTray() {
 
 function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     const active_player = ActivePlayer.get_default();
+    const player = createBinding(active_player, "player");
 
     return (
-        <box
-            cssClasses={["player"]}
-            onScroll={(_1, _2, dy) => active_player.player?.set_volume(clamp(active_player.player.get_volume() - dy / 15, 0, 1))}
-            onButtonPressed={(_, e) => {
-                const player = active_player.player;
-                if (!player) {
-                    return;
-                }
+        <button
+            class="player"
+            onClicked={() => window_handler.toggle_window("mpris", gdkmonitor)}
+            visible={createBinding(active_player, "player").as(player => player !== null)}>
+            <Gtk.EventControllerScroll
+                flags={Gtk.EventControllerScrollFlags.VERTICAL}
+                onScroll={(_1, _2, dy) => active_player.player?.set_volume(clamp(active_player.player.get_volume() - dy / 15, 0, 1))} />
+            <Gtk.GestureClick
+                button={Gdk.BUTTON_SECONDARY}
+                onPressed={() => {
+                    if (player.get().get_can_go_next()) {
+                        player.get().next();
+                    }
+                }} />
+            <Gtk.GestureClick
+                button={Gdk.BUTTON_MIDDLE}
+                onPressed={() => {
+                    if (player.get().get_can_play()) {
+                        player.get().play_pause();
+                    }
+                }} />
 
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        window_handler.toggle_window("mpris", gdkmonitor);
-                        break;
+            <box
+                spacing={20}>
+                <label label={createBinding(active_player, "player").as((player) => {
+                    if (!player) {
+                        return get_player_glyph("");
+                    }
 
-                    case Gdk.BUTTON_SECONDARY:
-                        if (player.get_can_go_next()) {
-                            player.next();
+                    return get_player_glyph(player.get_bus_name());
+                })} />
+                <With value={player}>
+                    {(player) => {
+                        if (!player) {
+                            return <label label="No Title" />;
                         }
-                        break;
 
-                    case Gdk.BUTTON_MIDDLE:
-                        if (player.get_can_play()) {
-                            player.play_pause();
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }}
-            visible={bind(active_player, "player").as(player => player !== null)}
-            spacing={20}>
-            <label label={bind(active_player, "player").as((player) => {
-                if (!player) {
-                    return get_player_glyph("");
-                }
-
-                return get_player_glyph(player.get_bus_name());
-            })} />
-            {bind(active_player, "player").as((player) => {
-                if (!player) {
-                    return <label label="No Title" />;
-                }
-
-                return (
-                    <box spacing={8}>
-                        <label label={bind(player, "title").as(title => title && title !== "" ? truncate(title, 30) : "No Title")} />
-                        <label label="-" />
-                        <label label={bind(player, "artist").as(artist => artist && artist !== "" ? truncate(artist, 30) : "")} />
-                    </box>
-                );
-            })}
-        </box>
+                        return (
+                            <box spacing={8}>
+                                <label label={createBinding(player, "title").as(title => title && title !== "" ? truncate(title, 30) : "No Title")} />
+                                <label label="-" />
+                                <label label={createBinding(player, "artist").as(artist => artist && artist !== "" ? truncate(artist, 30) : "")} />
+                            </box>
+                        );
+                    }}
+                </With>
+            </box>
+        </button>
     );
 }
 
@@ -201,60 +213,49 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     const bluetooth = AstalBluetooth.get_default();
     const audio = AstalWp.get_default()?.get_audio();
 
-    function EndpointWidget({ endpoint, glyph, spacing }: { endpoint?: AstalWp.Endpoint | null; glyph: Variable<string>; spacing: number }) {
-        let volume = Variable("0%");
-        let visible = Variable(false);
+    function EndpointWidget({ endpoint, glyph, spacing }: { endpoint?: AstalWp.Endpoint | null; glyph: Accessor<string>; spacing: number }) {
+        let [volume] = createState("0%");
+        let [visible] = createState(false);
 
         if (endpoint) {
-            volume = Variable.derive(
-                [bind(endpoint, "volume")],
+            volume = createComputed(
+                [createBinding(endpoint, "volume")],
                 volume => `${Math.ceil(volume * 100)}%`,
             );
 
-            visible = Variable.derive(
-                [bind(endpoint, "mute")],
+            visible = createComputed(
+                [createBinding(endpoint, "mute")],
                 mute => !mute,
             );
         }
 
         return (
-            <button
-                onScroll={(_1, _2, dy) => endpoint?.set_volume(clamp(endpoint.get_volume() - dy / 15, 0, 1))}
-                onButtonPressed={(_, e) => {
-                    switch (e.get_button()) {
-                        case Gdk.BUTTON_MIDDLE:
-                            endpoint?.set_mute(!endpoint.get_mute());
-                            break;
-
-                        default:
-                            break;
-                    }
-                }}
-                onDestroy={() => {
-                    volume.drop();
-                    visible.drop();
-                }}>
-                <box
-                    cssClasses={["sink"]}
-                    spacing={spacing}>
-                    <label label={glyph()} />
-                    <label label={volume()} visible={visible()} />
-                </box>
-            </button>
+            <box
+                class="sink"
+                spacing={spacing}>
+                <Gtk.GestureClick
+                    button={Gdk.BUTTON_MIDDLE}
+                    onPressed={() => endpoint?.set_mute(!endpoint.get_mute())} />
+                <Gtk.EventControllerScroll
+                    flags={Gtk.EventControllerScrollFlags.VERTICAL}
+                    onScroll={(_1, _2, dy) => endpoint?.set_volume(clamp(endpoint.get_volume() - dy / 15, 0, 1))} />
+                <label label={glyph} />
+                <label label={volume} visible={visible} />
+            </box>
         );
     }
 
     const speaker = audio?.get_default_speaker();
     const microphone = audio?.get_default_microphone();
 
-    let class_names = Variable(["audio", "muted"]);
-    let speaker_glyph = Variable("󰖁 ");
-    let microphone_glyph = Variable(" ");
+    let [class_names] = createState(["audio", "muted"]);
+    let [speaker_glyph] = createState("󰖁 ");
+    let [microphone_glyph] = createState(" ");
 
     if (audio) {
         if (speaker) {
-            class_names = Variable.derive(
-                [bind(bluetooth, "is_connected"), bind(speaker, "mute")],
+            class_names = createComputed(
+                [createBinding(bluetooth, "is_connected"), createBinding(speaker, "mute")],
                 (is_connected, mute) => {
                     const ret = ["audio"];
 
@@ -270,8 +271,8 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                 },
             );
 
-            speaker_glyph = Variable.derive(
-                [bind(speaker, "icon"), bind(speaker, "volume"), bind(speaker, "mute")],
+            speaker_glyph = createComputed(
+                [createBinding(speaker, "icon"), createBinding(speaker, "volume"), createBinding(speaker, "mute")],
                 (icon, volume, mute) => {
                     if (icon.includes("headset")) {
                         return " ";
@@ -287,8 +288,8 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         }
 
         if (microphone) {
-            microphone_glyph = Variable.derive(
-                [bind(microphone, "mute")],
+            microphone_glyph = createComputed(
+                [createBinding(microphone, "mute")],
                 (mute) => {
                     if (mute) {
                         return " ";
@@ -303,23 +304,11 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
     return (
         <box
-            cssClasses={class_names()}
-            spacing={10}
-            onButtonPressed={(_, e) => {
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        window_handler.toggle_window("media", gdkmonitor);
-                        break;
-
-                    default:
-                        break;
-                }
-            }}
-            onDestroy={() => {
-                speaker_glyph.drop();
-                microphone_glyph.drop();
-                class_names.drop();
-            }}>
+            class={class_names(class_names => class_names.join(" "))}
+            spacing={10}>
+            <Gtk.GestureClick
+                button={Gdk.BUTTON_PRIMARY}
+                onPressed={() => window_handler.toggle_window("media", gdkmonitor)} />
             <EndpointWidget endpoint={speaker} glyph={speaker_glyph} spacing={6} />
             <EndpointWidget endpoint={microphone} glyph={microphone_glyph} spacing={1} />
         </box>
@@ -328,22 +317,25 @@ function Audio({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
 function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     function TimeInfo() {
-        const time = (format: string) => Variable("").poll(1000, () =>
-            GLib.DateTime.new_now_local().format(format)!);
+        const time = (format: string) => createExternal(GLib.DateTime.new_now_local().format(format) ?? "", (set) => {
+            const interval = setInterval(() => set(GLib.DateTime.new_now_local().format(format) ?? ""), 1000);
+            return () => clearInterval(interval);
+        });
 
-        const reveal = Variable(false);
+        const [reveal, setReveal] = createState(false);
         return (
             <button
-                cssClasses={["clock"]}
-                onHoverEnter={() => reveal.set(true)}
-                onHoverLeave={() => reveal.set(false)}>
+                class="clock">
+                <Gtk.EventControllerMotion
+                    onEnter={() => setReveal(true)}
+                    onLeave={() => setReveal(false)} />
                 <box>
-                    <label label={time("%H:%M")()} />
+                    <label label={time("%H:%M")} />
                     <revealer
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
-                        reveal_child={reveal()}>
-                        <label label={time("%a, %d %B %Y")()} />
+                        reveal_child={reveal}>
+                        <label label={time("%a, %d %B %Y")} />
                     </revealer>
                 </box>
             </button>
@@ -355,71 +347,67 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         const wired = network.get_wired();
         const wifi = network.get_wifi();
 
-        let internet: Variable<string[]> = Variable(["disconnected"]);
-        let ssid: Variable<string | null> = Variable(null);
-        let icon = Variable("network-wireless-signal-none-symbolic");
+        let [internet] = createState("disconnected");
+        let [ssid, setSsid] = createState<string | null>(null);
+        let [icon] = createState("network-wireless-signal-none-symbolic");
 
         if (!wifi && !wired) {
             return (<></>);
         }
 
         if (network.primary === AstalNetwork.Primary.WIRED && wired) {
-            ssid = Variable("Wired");
+            setSsid("Wired");
 
-            icon = Variable.derive(
-                [bind(wired, "icon_name")],
+            icon = createComputed(
+                [createBinding(wired, "icon_name")],
                 icon_name => icon_name,
             );
 
-            internet = Variable.derive(
-                [bind(wired, "internet")],
-                internet => [get_internet_name(internet)],
+            internet = createComputed(
+                [createBinding(wired, "internet")],
+                internet => get_internet_name(internet),
             );
         }
 
         else if (network.primary === AstalNetwork.Primary.WIFI && wifi) {
-            ssid = Variable.derive(
-                [bind(wifi, "active_access_point")],
+            ssid = createComputed(
+                [createBinding(wifi, "active_access_point")],
                 active_access_point => active_access_point ? active_access_point.get_ssid() : null,
             );
 
-            icon = Variable.derive(
-                [bind(wifi, "icon_name")],
+            icon = createComputed(
+                [createBinding(wifi, "icon_name")],
                 icon_name => icon_name,
             );
 
-            internet = Variable.derive(
-                [bind(wifi, "internet"), ssid],
+            internet = createComputed(
+                [createBinding(wifi, "internet"), ssid],
                 (internet, ssid) => {
                     if (!ssid) {
-                        return ["disconnected"];
+                        return "disconnected";
                     }
 
-                    return [get_internet_name(internet)];
+                    return get_internet_name(internet);
                 },
             );
         }
 
-        const reveal = Variable(false);
+        const [reveal, setReveal] = createState(false);
         return (
             <button
-                cssClasses={["network"]}
-                onHoverEnter={() => reveal.set(true)}
-                onHoverLeave={() => reveal.set(false)}
-                onDestroy={() => {
-                    internet.drop();
-                    ssid.drop();
-                    icon.drop();
-                }}>
+                class="network">
+                <Gtk.EventControllerMotion
+                    onEnter={() => setReveal(true)}
+                    onLeave={() => setReveal(false)} />
                 <box>
                     <image
-                        cssClasses={internet()}
-                        iconName={icon()} />
+                        class={internet}
+                        iconName={icon} />
                     <revealer
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
-                        reveal_child={reveal()}>
-                        <label label={ssid().as(ssid => ssid || "unknown")} />
+                        reveal_child={reveal}>
+                        <label label={ssid(ssid => ssid || "unknown")} />
                     </revealer>
                 </box>
             </button>
@@ -430,26 +418,30 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         const battery = AstalBattery.get_default();
         const brightness = Brightness.get_default();
 
-        const reveal = Variable(false);
+        const [reveal, setReveal] = createState(false);
         return (
             <button
-                cssClasses={["battery"]}
-                onScroll={(_1, _2, dy) => {
-                    brightness.devices.forEach((device) => {
-                        if (device.type == "backlight") {
-                            device.percentage -= dy / 15;
-                        }
-                    });
-                }}
-                onHoverEnter={() => reveal.set(true)}
-                onHoverLeave={() => reveal.set(false)}>
+                class="battery">
+                <Gtk.EventControllerScroll
+                    flags={Gtk.EventControllerScrollFlags.VERTICAL}
+                    onScroll={(_1, _2, dy) => {
+                        brightness.devices.forEach((device) => {
+                            if (device.type == "backlight") {
+                                device.percentage -= dy / 15;
+                            }
+                        });
+                    }} />
+                <Gtk.EventControllerMotion
+                    onEnter={() => setReveal(true)}
+                    onLeave={() => setReveal(false)} />
+
                 <box>
-                    <label label={bind(battery, "percentage").as(percentage => symbolic_strength(percentage, [" ", " ", " ", " ", " "], 1))} />
+                    <label label={createBinding(battery, "percentage").as(percentage => symbolic_strength(percentage, [" ", " ", " ", " ", " "], 1))} />
                     <revealer
                         transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                         transitionDuration={500}
-                        reveal_child={reveal()}>
-                        <label label={bind(battery, "percentage").as(percentage => `${(Math.floor(percentage * 100)).toString()}%`)} />
+                        reveal_child={reveal}>
+                        <label label={createBinding(battery, "percentage").as(percentage => `${(Math.floor(percentage * 100)).toString()}%`)} />
                     </revealer>
                 </box>
             </button>
@@ -458,18 +450,11 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
     return (
         <box
-            cssClasses={["info"]}
-            spacing={10}
-            onButtonPressed={(_, e) => {
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        window_handler.toggle_window("glance", gdkmonitor);
-                        break;
-
-                    default:
-                        break;
-                }
-            }}>
+            class="info"
+            spacing={10}>
+            <Gtk.GestureClick
+                button={Gdk.BUTTON_PRIMARY}
+                onPressed={() => window_handler.toggle_window("glance", gdkmonitor)} />
             <AstalBatteryInfo />
             <AstalNetworkInfo />
             <TimeInfo />
@@ -478,33 +463,26 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 }
 
 function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
-    const reveal = Variable(false);
+    const [reveal, setReveal] = createState(false);
 
     return (
         <button
-            cssClasses={["power"]}
-            onHoverEnter={() => reveal.set(true)}
-            onHoverLeave={() => reveal.set(false)}
-            onButtonPressed={(_, e) => {
-                switch (e.get_button()) {
-                    case Gdk.BUTTON_PRIMARY:
-                        window_handler.toggle_window("powermenu", gdkmonitor);
-                        break;
-
-                    default:
-                        break;
-                }
-            }}>
+            class="widget"
+            onClicked={() => window_handler.toggle_window("powermenu", gdkmonitor)}>
+            <Gtk.EventControllerMotion
+                onEnter={() => setReveal(true)}
+                onLeave={() => setReveal(false)} />
             <box
-                cssClasses={["widget"]}>
+                class="power">
                 <image iconName="system-log-out-symbolic" />
                 <revealer
                     transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
                     transitionDuration={500}
-                    revealChild={reveal()}>
+                    revealChild={reveal}>
                     <label label="exit" />
                 </revealer>
             </box>
+
         </button>
     );
 }
@@ -512,8 +490,8 @@ function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
-            setup={self => self.set_default_size(1, 1)}
-            cssClasses={["bar"]}
+            $={self => self.set_default_size(1, 1)}
+            class="bar"
             gdkmonitor={gdkmonitor}
             visible={true}
             heightRequest={30}
@@ -524,6 +502,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
             application={App}>
             <centerbox>
                 <box
+                    $type="start"
                     spacing={10}
                     halign={Gtk.Align.START}>
                     <Launcher />
@@ -532,11 +511,13 @@ export default function (gdkmonitor: Gdk.Monitor) {
                     <SysTray />
                 </box>
                 <box
+                    $type="center"
                     spacing={10}
                     halign={Gtk.Align.CENTER}>
                     <Player gdkmonitor={gdkmonitor} />
                 </box>
                 <box
+                    $type="end"
                     spacing={10}
                     halign={Gtk.Align.END}>
                     <Audio gdkmonitor={gdkmonitor} />

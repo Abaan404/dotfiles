@@ -1,10 +1,12 @@
-import GObject, { register, property, GLib } from "astal/gobject";
-import { Gio } from "astal/file";
-import { execAsync, subprocess } from "astal/process";
+import Gio from "gi://Gio";
+import GObject from "gi://GObject";
+import GLib from "gi://GLib";
+import { register, property, getter } from "ags/gobject";
+import { execAsync, subprocess } from "ags/process";
 
 import AstalIO from "gi://AstalIO";
-import { App } from "astal/gtk4";
-import { timeout } from "astal";
+import App from "ags/gtk4/app";
+import { timeout } from "ags/time";
 
 @register({ GTypeName: "Recorder" })
 export default class Recorder extends GObject.Object {
@@ -33,16 +35,16 @@ export default class Recorder extends GObject.Object {
     private _record_path = "";
     private _replay_path = "";
 
-    @property(String) declare window_replay: string;
-    @property(String) declare window_record: string;
+    @property(String) window_replay = "";
+    @property(String) window_record = "";
 
-    @property(Boolean) get is_mic_enabled() { return this._is_mic_enabled; };
-    @property(Boolean) get is_replaying() { return this._proc_replay !== null; }
-    @property(Boolean) get is_recording() { return this._proc_record !== null; }
-    @property(Boolean) get is_paused() { return this._is_paused; }
+    @getter(Boolean) get is_mic_enabled() { return this._is_mic_enabled; };
+    @getter(Boolean) get is_replaying() { return this._proc_replay !== null; }
+    @getter(Boolean) get is_recording() { return this._proc_record !== null; }
+    @getter(Boolean) get is_paused() { return this._is_paused; }
 
-    @property(String) get record_path() { return this._record_path; }
-    @property(String) get replay_path() { return this._replay_path; }
+    @getter(String) get record_path() { return this._record_path; }
+    @getter(String) get replay_path() { return this._replay_path; }
 
     set is_mic_enabled(value) {
         if (this._is_mic_enabled === value) {
