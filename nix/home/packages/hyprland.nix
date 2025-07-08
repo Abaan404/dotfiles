@@ -13,11 +13,14 @@
     pkgs.slurp
     pkgs.grim
 
+    # theming
+    inputs.switch-theme.packages.${pkgs.system}.default
+
     # polkit
     pkgs.hyprpolkitagent
 
     # wallpaper
-    inputs.swww.packages.${pkgs.system}.swww
+    inputs.swww.packages.${pkgs.system}.default
 
     # notifications
     pkgs.libnotify

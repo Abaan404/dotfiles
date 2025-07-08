@@ -23,7 +23,7 @@ install system:
     install -m 644 -v -D $(readlink -f $(which Hyprland) | cut -c-59)/share/hypr/wall* -t ~/Pictures/wallpapers/
 
     # load configs
-    python3 ./scripts/reload.py
+    switch-theme
 
     echo "Installation Completed. Run 'Hyprland' as a command to begin"
 

@@ -68,10 +68,10 @@ class TemplateWriter:
         img.crop(box).save(CONFIG["config_path"].joinpath("rofi/image.png"))  # pyright: ignore
 
         # hyprland
-        subprocess.Popen(["hyprctl", "reload"])
+        subprocess.Popen(["hyprctl", "reload"], start_new_session=True)
 
         # qt theme
-        subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"])
+        subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"], start_new_session=True)
 
         # ags/astal
         for file in [
@@ -82,7 +82,7 @@ class TemplateWriter:
             img.save(path.joinpath(file.name))
 
         subprocess.run(["ags", "quit"])
-        subprocess.Popen(["ags", "run", "--gtk4"], env=os.environ.copy())
+        subprocess.Popen(["ags", "run"], env=os.environ.copy(), start_new_session=True)
 
         # wvkbd
         subprocess.run(["killall", "wvkbd-abaan404"])
@@ -111,7 +111,8 @@ class TemplateWriter:
                 f"{self.mappings["accent"]}",
                 "-O",
                 "--hidden",
-            ]
+            ],
+            start_new_session=True,
         )
 
 
@@ -173,7 +174,7 @@ if __name__ == "__main__":
         print("Invalid wallpaper type", file=sys.stderr)
         exit(1)
 
-    subprocess.Popen(["swww", "img", wallpaper, "--transition-type=grow", "--transition-fps=120", "--transition-pos=top-right"])
+    subprocess.Popen(["swww", "img", wallpaper, "--transition-type=grow", "--transition-fps=120", "--transition-pos=top-right"], start_new_session=True)
 
     # use pywal to get colors
     colors = pywal.colors.get(wallpaper, backend=CONFIG["backend"])

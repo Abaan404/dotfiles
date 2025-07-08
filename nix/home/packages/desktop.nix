@@ -47,6 +47,7 @@
     pkgs.wineWowPackages.staging
     pkgs.bottles
     pkgs.lutris
+    pkgs.mangohud
 
     # image/video editing
     pkgs.davinci-resolve
@@ -147,6 +148,7 @@
     packages = [
       "org.vinegarhq.Sober"
       "org.gnome.gitlab.YaLTeR.VideoTrimmer"
+      "io.mrarm.mcpelauncher"
     ];
 
     overrides = {

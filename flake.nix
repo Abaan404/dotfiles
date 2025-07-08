@@ -48,6 +48,12 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # switch-theme
+    switch-theme = {
+      url = "path:./nix/switch-theme";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # preconfig hardware
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
