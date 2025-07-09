@@ -3,7 +3,7 @@ import GLib from "gi://GLib";
 import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { createComputed, createExternal, createState, For, With, createBinding, Accessor, onCleanup } from "ags";
 import { execAsync } from "ags/process";
-import { createPoll, interval } from "ags/time";
+import { createPoll } from "ags/time";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalTray from "gi://AstalTray";
@@ -18,15 +18,15 @@ import { truncate, clamp, get_internet_name, get_player_glyph, symbolic_strength
 import window_handler from "../utils/window";
 
 function Launcher() {
-    const [reveal, setReveal] = createState(false);
+    const [reveal, set_reveal] = createState(false);
 
     return (
         <button
             class="launcher"
             onClicked={() => execAsync(["bash", "-c", "pkill rofi || rofi -show drun"]).catch(() => {})}>
             <Gtk.EventControllerMotion
-                onEnter={() => setReveal(true)}
-                onLeave={() => setReveal(false)} />
+                onEnter={() => set_reveal(true)}
+                onLeave={() => set_reveal(false)} />
 
             <box>
                 <image iconName="launcher-symbolic" />
@@ -79,7 +79,7 @@ function Workspaces() {
     );
 }
 
-const [showSystray, setShowSystray] = createState(false);
+const [showSystray, set_show_systray] = createState(false);
 
 function SysInfo() {
     const ram = createPoll("0.0G", 5000, ["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]);
@@ -88,7 +88,7 @@ function SysInfo() {
     return (
         <button
             class="sysinfo"
-            onClicked={() => setShowSystray(!showSystray.get())}>
+            onClicked={() => set_show_systray(!showSystray.get())}>
             <Gtk.GestureClick
                 button={Gdk.BUTTON_SECONDARY}
                 onPressed={() => App.inspector()} />
@@ -193,7 +193,7 @@ function Player({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                             <box spacing={8}>
                                 <label label={createBinding(player, "title").as(title => title && title !== "" ? truncate(title, 30) : "No Title")} />
                                 <label label="-" />
-                                <label label={createBinding(player, "artist").as(artist => artist && artist !== "" ? truncate(artist, 30) : "")} />
+                                <label label={createBinding(player, "artist").as(artist => artist && artist !== "" ? truncate(artist, 30) : "No Artist")} />
                             </box>
                         );
                     }}
@@ -317,13 +317,13 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             return () => clearInterval(interval);
         });
 
-        const [reveal, setReveal] = createState(false);
+        const [reveal, set_reveal] = createState(false);
         return (
             <button
                 class="clock">
                 <Gtk.EventControllerMotion
-                    onEnter={() => setReveal(true)}
-                    onLeave={() => setReveal(false)} />
+                    onEnter={() => set_reveal(true)}
+                    onLeave={() => set_reveal(false)} />
                 <box>
                     <label label={time("%H:%M")} />
                     <revealer
@@ -343,7 +343,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         const wifi = network.get_wifi();
 
         let [internet] = createState("disconnected");
-        let [ssid, setSsid] = createState<string | null>(null);
+        let [ssid, set_ssid] = createState<string | null>(null);
         let [icon] = createState("network-wireless-signal-none-symbolic");
 
         if (!wifi && !wired) {
@@ -351,7 +351,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         }
 
         if (network.primary === AstalNetwork.Primary.WIRED && wired) {
-            setSsid("Wired");
+            set_ssid("Wired");
 
             icon = createComputed(
                 [createBinding(wired, "icon_name")],
@@ -387,13 +387,13 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             );
         }
 
-        const [reveal, setReveal] = createState(false);
+        const [reveal, set_reveal] = createState(false);
         return (
             <button
                 class="network">
                 <Gtk.EventControllerMotion
-                    onEnter={() => setReveal(true)}
-                    onLeave={() => setReveal(false)} />
+                    onEnter={() => set_reveal(true)}
+                    onLeave={() => set_reveal(false)} />
                 <box>
                     <image
                         class={internet}
@@ -413,7 +413,7 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         const battery = AstalBattery.get_default();
         const brightness = Brightness.get_default();
 
-        const [reveal, setReveal] = createState(false);
+        const [reveal, set_reveal] = createState(false);
         return (
             <button
                 class="battery">
@@ -427,8 +427,8 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
                         });
                     }} />
                 <Gtk.EventControllerMotion
-                    onEnter={() => setReveal(true)}
-                    onLeave={() => setReveal(false)} />
+                    onEnter={() => set_reveal(true)}
+                    onLeave={() => set_reveal(false)} />
 
                 <box>
                     <label label={createBinding(battery, "percentage").as(percentage => symbolic_strength(percentage, [" ", " ", " ", " ", " "], 1))} />
@@ -458,15 +458,15 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 }
 
 function Power({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
-    const [reveal, setReveal] = createState(false);
+    const [reveal, set_reveal] = createState(false);
 
     return (
         <button
             class="widget"
             onClicked={() => window_handler.toggle_window("powermenu", gdkmonitor)}>
             <Gtk.EventControllerMotion
-                onEnter={() => setReveal(true)}
-                onLeave={() => setReveal(false)} />
+                onEnter={() => set_reveal(true)}
+                onLeave={() => set_reveal(false)} />
             <box
                 class="power">
                 <image iconName="system-log-out-symbolic" />

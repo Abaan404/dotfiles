@@ -20,7 +20,7 @@ interface NotificationData {
 
 export default function (gdkmonitor: Gdk.Monitor) {
     const notifd = AstalNotifd.get_default();
-    const [notifications, setNotifications] = createState<NotificationData[]>([]);
+    const [notifications, set_notifications] = createState<NotificationData[]>([]);
 
     function hide_notification(id: number) {
         const notifs = notifications.get();
@@ -34,7 +34,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
         notifs[idx].progressInterval.cancel();
 
         notifs.splice(idx, 1);
-        setNotifications([...notifs]);
+        set_notifications([...notifs]);
     }
 
     notifd.connect("notified", (_, id) => {
@@ -48,7 +48,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
         }
 
         const notification = notifd.get_notification(id);
-        const [hideTimeout, setHideTimeout] = createState(notification.get_expire_timeout() > MAX_NOTIFICATION_TIMEOUT || notification.get_expire_timeout() <= 0
+        const [hideTimeout, set_hide_timeout] = createState(notification.get_expire_timeout() > MAX_NOTIFICATION_TIMEOUT || notification.get_expire_timeout() <= 0
             ? MAX_NOTIFICATION_TIMEOUT
             : notification.get_expire_timeout());
 
@@ -59,11 +59,11 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 ? timeout(hideTimeout.get(), () => hide_notification(id))
                 : null,
             progress: hideTimeout,
-            progressInterval: interval(10, () => setHideTimeout(data.progress.get() - 10)),
+            progressInterval: interval(10, () => set_hide_timeout(data.progress.get() - 10)),
         };
 
         notifs.push(data);
-        setNotifications([...notifs]);
+        set_notifications([...notifs]);
     });
 
     notifd.connect("resolved", (_, id) => hide_notification(id));

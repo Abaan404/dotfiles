@@ -158,13 +158,17 @@ function Network() {
 
     let [ssid, set_ssid] = createState<string | null>(null);
     let [icon] = createState("network-wireless-signal-none-symbolic");
-    let [internet] = createState<string>("disconnected");
+    let [internet] = createState("disconnected");
 
     const [flight_mode, set_flight_mode] = createState<boolean>(false);
     execAsync(["nmcli", "-t", "radio", "all"]).then(res => set_flight_mode(res.includes("disabled")));
 
     const dispose = flight_mode.subscribe(() => {
         execAsync(["nmcli", "radio", "all", flight_mode.get() ? "off" : "on"]);
+
+        if (flight_mode.get()) {
+            set_scanning(false);
+        }
     });
 
     onCleanup(() => dispose());
@@ -265,7 +269,8 @@ function Network() {
                 </button>
                 <button
                     class={internet}
-                    hexpand={true}>
+                    hexpand={true}
+                    onClicked={() => wifi?.set_enabled(!wifi.get_enabled())}>
                     <box
                         halign={Gtk.Align.CENTER}
                         spacing={10}>

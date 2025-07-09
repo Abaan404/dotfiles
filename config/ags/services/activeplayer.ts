@@ -1,4 +1,4 @@
-import GObject, { register, property, signal, getter } from "ags/gobject";
+import GObject, { register, getter } from "ags/gobject";
 
 import AstalMpris from "gi://AstalMpris";
 

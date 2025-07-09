@@ -1,6 +1,6 @@
 import App from "ags/gtk4/app";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
-import { createBinding, With } from "ags";
+import { Accessor, createBinding, With } from "ags";
 
 import AstalMpris from "gi://AstalMpris";
 import ActivePlayer from "../services/activeplayer";
@@ -11,6 +11,7 @@ import GLib from "gi://GLib";
 
 export default function (gdkmonitor: Gdk.Monitor) {
     const active_player = ActivePlayer.get_default();
+    const player = createBinding(active_player, "player");
 
     return (
         <window
@@ -53,8 +54,8 @@ export default function (gdkmonitor: Gdk.Monitor) {
                                     player?.play_pause();
                                 }
                             }}>
-                            <With value={createBinding(active_player, "player")}>
-                                {(player: AstalMpris.Player) => {
+                            <With value={player}>
+                                {(player) => {
                                     if (!player) {
                                         return (
                                             <image iconName="media-playback-pause-symbolic" />
@@ -84,8 +85,8 @@ export default function (gdkmonitor: Gdk.Monitor) {
                             <image iconName="media-skip-forward-symbolic" />
                         </button>
                     </box>
-                    <With value={createBinding(active_player, "player")}>
-                        {(player: AstalMpris.Player) => {
+                    <With value={player}>
+                        {(player) => {
                             if (!player) {
                                 return (
                                     <Gtk.Picture
@@ -110,8 +111,8 @@ export default function (gdkmonitor: Gdk.Monitor) {
                     class="right"
                     spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    <With value={createBinding(active_player, "player")}>
-                        {(player: AstalMpris.Player) => {
+                    <With value={player}>
+                        {(player) => {
                             if (!player) {
                                 return (
                                     <box
@@ -137,8 +138,8 @@ export default function (gdkmonitor: Gdk.Monitor) {
                             );
                         }}
                     </With>
-                    <With value={createBinding(active_player, "player")}>
-                        {(player: AstalMpris.Player) => {
+                    <With value={player}>
+                        {(player) => {
                             if (!player) {
                                 return (
                                     <box

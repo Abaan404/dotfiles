@@ -115,28 +115,6 @@ export default function (gdkmonitor: Gdk.Monitor) {
         );
     }
 
-    // function get_stream_widgets(endpoints: AstalWp.Endpoint[]) {
-    //     return endpoints
-    //         .filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_STREAM)
-    //         .map((stream) => {
-    //             const label = createComputed(
-    //                 [createBinding(stream, "description"), createBinding(stream, "name")],
-    //                 (description, name) => `󰕾  ${description}: ${name}`,
-    //             );
-    //
-    //             const mute = createComputed(
-    //                 [createBinding(stream, "mute")],
-    //                 mute => mute ? "󰝟 " : "󰕾 ",
-    //             );
-    //
-    //             return (
-    //                 <EndpointSlider
-    //                     name={label}
-    //                     mute={mute}
-    //                     current_endpoint={stream} />
-    //             );
-    //         });
-    // }
     const [reveal, set_reveal] = createState(false);
 
     return (
