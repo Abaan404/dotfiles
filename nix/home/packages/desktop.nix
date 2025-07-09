@@ -12,7 +12,7 @@
     inputs.zen-browser.packages.${pkgs.system}.twilight-official
 
     # file manager
-    pkgs.dolphin
+    pkgs.libsForQt5.dolphin
     pkgs.kdePackages.kdegraphics-thumbnailers
     pkgs.kdePackages.kio-extras-kf5
     pkgs.kdePackages.kio-fuse
@@ -36,7 +36,7 @@
     pkgs.hunspellDicts.uk_UA
     pkgs.tectonic
     pkgs.swayimg
-    pkgs.okular
+    pkgs.kdePackages.okular
 
     # gamging
     pkgs.tetrio-desktop
@@ -51,8 +51,8 @@
 
     # image/video editing
     pkgs.davinci-resolve
-    pkgs.kolourpaint
-    pkgs.kdenlive
+    pkgs.kdePackages.kolourpaint
+    pkgs.kdePackages.kdenlive
     pkgs.inkscape
     pkgs.swappy
     pkgs.krita
@@ -122,7 +122,7 @@
 
     style = {
       name = "kvantum";
-      package = pkgs.layan-kde;
+      package = pkgs.utterly-nord-plasma;
     };
   };
 

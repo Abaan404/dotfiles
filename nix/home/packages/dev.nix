@@ -6,7 +6,7 @@
     pkgs-unstable.neovim
     pkgs.jetbrains.idea-community
     pkgs.vscodium
-    pkgs.kate
+    pkgs.kdePackages.kate
 
     # C/C++
     # pkgs.clang

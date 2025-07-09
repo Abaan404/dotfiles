@@ -7,7 +7,7 @@
     packages = [
       pkgs.liberation_ttf
       pkgs.font-awesome
-      (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      pkgs.nerd-fonts.jetbrains-mono
     ];
   };
 
