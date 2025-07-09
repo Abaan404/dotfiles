@@ -1,9 +1,11 @@
-import GObject, { register, property, GLib } from "astal/gobject";
-import { Gio, readFileAsync, writeFileAsync } from "astal/file";
-import { interval, timeout } from "astal/time";
+import Gio from "gi://Gio";
+import Soup from "gi://Soup";
+import GLib from "gi://GLib";
+import GObject, { register, getter } from "ags/gobject";
+import { readFileAsync, writeFileAsync } from "ags/file";
+import { interval, timeout } from "ags/time";
 
 import AstalIO from "gi://AstalIO";
-import Soup from "gi://Soup";
 
 @register({ GTypeName: "Weather" })
 export default class Weather extends GObject.Object {
@@ -29,14 +31,14 @@ export default class Weather extends GObject.Object {
     private _city_id = 0;
     private readonly _image_path = "!!HOME/.dotfiles/data/weather.png";
 
-    @property(String) get location() { return this._location || "Unknown"; }
-    @property(String) get temperature() { return this._temperature; }
-    @property(Number) get feels_like() { return this._feels_like; }
-    @property(String) get description() { return this._description; }
-    @property(Number) get windspeed() { return this._windspeed; }
-    @property(Number) get visibility() { return this._visibility; }
-    @property(Number) get city_id() { return this._city_id; }
-    @property(String) get image_path() { return this._image_path; }
+    @getter(String) get location() { return this._location || "Unknown"; }
+    @getter(Number) get temperature() { return this._temperature; }
+    @getter(Number) get feels_like() { return this._feels_like; }
+    @getter(String) get description() { return this._description; }
+    @getter(Number) get windspeed() { return this._windspeed; }
+    @getter(Number) get visibility() { return this._visibility; }
+    @getter(Number) get city_id() { return this._city_id; }
+    @getter(String) get image_path() { return this._image_path; }
 
     set location(value) {
         if (value !== this._location && value !== "Unknown") {

@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751126708,
-        "narHash": "sha256-AodIKw7TmI7rHVcOfEsO82stupMYIMVQeLAUQfVxnkU=",
+        "lastModified": 1752002093,
+        "narHash": "sha256-RXXq7mUhnZy923CfbUKrn67b8+tYL/uXLy5j1ahzEFg=",
         "owner": "aylur",
         "repo": "astal",
-        "rev": "ac90f09385a2295da9fdc108aaba4a317aaeacc7",
+        "rev": "57e7efe06b0374907fc8329ca314a76122b17008",
         "type": "github"
       },
       "original": {
@@ -199,11 +199,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751814111,
-        "narHash": "sha256-akQjVtl1y68phc+f9w4ZdA02mEt3mqnTLOGI7zRNqBs=",
+        "lastModified": 1751986921,
+        "narHash": "sha256-lRVaL5ZOzg3OJNcp5RgCwgrXi/gdVgYAs9pGJKSenOc=",
         "owner": "doronbehar",
         "repo": "nix-matlab",
-        "rev": "bfd3d51886264a1539a69166738ad8934382947e",
+        "rev": "2b6e33435a188dc8870e420abf4969d2b1b4ee8b",
         "type": "gitlab"
       },
       "original": {
@@ -322,7 +322,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-6BU+ojLWO/eCw/afAQME2JBr7HiVwdmhgx4iuWd2qIw=",
+        "narHash": "sha256-dNtpgf8y69HC/NJ8Z673ptJb59/03riqdLozZETSD9g=",
         "path": "./nix/switch-theme",
         "type": "path"
       },

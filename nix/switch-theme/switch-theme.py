@@ -11,9 +11,8 @@ from PIL import Image
 from string import Template
 from pathlib import Path
 
-dotenv.load_dotenv()
-
 CONFIG = {
+    "secrets": Path("~/.dotfiles/.env").expanduser(),
     "config_template_path": Path("~/.dotfiles/config").expanduser(),
     "config_path": Path("~/.config").expanduser(),
     "wallpaper_folder": Path("~/Pictures/wallpapers").expanduser(),
@@ -21,6 +20,8 @@ CONFIG = {
     "unsplash_query": "mountain",
     "backend": "colorthief",  # ensure the package for the backend is installed
 }
+
+dotenv.load_dotenv(CONFIG["secrets"])
 
 
 class CustomTemplate(Template):
