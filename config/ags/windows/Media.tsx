@@ -1,123 +1,29 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4";
-import { bind, Variable } from "astal";
+import App from "ags/gtk4/app";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
+import { createBinding, createState, createComputed, Accessor, For, onCleanup } from "ags";
 
 import AstalWp from "gi://AstalWp";
 
-import { truncate, symbolic_strength } from "../utils/helpers";
-
-function EndpointSlider({ name, mute, current_endpoint, endpoints }: { name: Variable<string>; mute: Variable<string>; current_endpoint: AstalWp.Endpoint; endpoints?: Variable<AstalWp.Endpoint[]> }) {
-    const reveal_devices = Variable(false);
-
-    return (
-        <box
-            onDestroy={() => {
-                name.drop();
-                mute.drop();
-                endpoints?.drop();
-            }}
-            cssClasses={["volume-box"]}
-            orientation={Gtk.Orientation.VERTICAL}>
-            <box
-                spacing={10}>
-                <label
-                    cssClasses={["default", "name"]}
-                    hexpand={true}
-                    halign={Gtk.Align.START}
-                    label={name().as(description => truncate(description, 46))} />
-                <button
-                    cssClasses={["mute"]}
-                    onButtonPressed={(_, e) => {
-                        switch (e.get_button()) {
-                            case Gdk.BUTTON_PRIMARY:
-                                current_endpoint.set_mute(!current_endpoint.get_mute());
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }}>
-                    <label label={mute()} />
-                </button>
-                {endpoints && (
-                    <button
-                        cssClasses={["list"]}
-                        onButtonPressed={(_, e) => {
-                            switch (e.get_button()) {
-                                case Gdk.BUTTON_PRIMARY:
-                                    reveal_devices.set(!reveal_devices.get());
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }}>
-                        <label label=" " />
-                    </button>
-                )}
-            </box>
-            {endpoints && endpoints().as(endpoints => (
-                <revealer
-                    transitionDuration={500}
-                    transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                    visible={endpoints.length > 1} // must have more than one endpoints
-                    revealChild={reveal_devices()}>
-                    <box
-                        cssClasses={["available-endpoints"]}
-                        orientation={Gtk.Orientation.VERTICAL}
-                        spacing={10}
-                        halign={Gtk.Align.START}>
-                        {endpoints
-                            .filter(endpoint => endpoint.get_id() !== current_endpoint.get_id())
-                            .map((endpoint) => {
-                                return (
-                                    <button
-                                        cssClasses={["name"]}
-                                        onButtonPressed={(_, e) => {
-                                            switch (e.get_button()) {
-                                                case Gdk.BUTTON_PRIMARY:
-                                                    endpoint.set_is_default(true);
-                                                    break;
-
-                                                default:
-                                                    break;
-                                            }
-                                        }}>
-                                        <label
-                                            halign={Gtk.Align.START}
-                                            hexpand={true}
-                                            label={bind(endpoint, "description").as(description => `${truncate(description, 46)}`)} />
-                                    </button>
-                                );
-                            })}
-                    </box>
-                </revealer>
-            ))}
-            <slider
-                drawValue={false}
-                min={0}
-                max={1}
-                value={bind(current_endpoint, "volume")}
-                onChangeValue={self => current_endpoint.set_volume(self.get_value())} />
-        </box>
-    );
-}
+import { symbolic_strength } from "../utils/helpers";
+import { EndpointSlider } from "../components/EndpointSlider";
+import { StreamSlider } from "../components/StreamSlider";
 
 export default function (gdkmonitor: Gdk.Monitor) {
-    const audio = AstalWp.get_default();
+    const audio = AstalWp.get_default()?.get_audio();
 
     if (!audio) {
         return (
             <window
-                setup={self => self.set_default_size(-1, -1)}
+                $={self => self.set_default_size(-1, -1)}
                 name="media"
-                cssClasses={["media"]}
+                class="media"
                 gdkmonitor={gdkmonitor}
                 visible={true}
                 anchor={Astal.WindowAnchor.TOP
                     | Astal.WindowAnchor.RIGHT}
                 application={App}>
                 <box
-                    cssClasses={["layout-box"]}
+                    class="layout-box"
                     spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
                     <label label="Could not connect to WirePlumber" />
@@ -128,17 +34,14 @@ export default function (gdkmonitor: Gdk.Monitor) {
 
     const speaker = audio.get_default_speaker();
     const microphone = audio.get_default_microphone();
-    const endpoints = Variable<AstalWp.Endpoint[]>(audio.get_endpoints() || []);
-
-    audio.connect("endpoint-added", () => endpoints.set(audio.get_endpoints() || []));
-    audio.connect("endpoint-removed", () => endpoints.set(audio.get_endpoints() || []));
 
     let speaker_widget = <></>;
     let microphone_widget = <></>;
+    let stream_widgets = <></>;
 
     if (speaker) {
-        const label = Variable.derive(
-            [bind(speaker, "icon"), bind(speaker, "description"), bind(speaker, "volume")],
+        const label = createComputed(
+            [createBinding(audio.default_speaker, "icon"), createBinding(audio.default_speaker, "description"), createBinding(audio.default_speaker, "volume")],
             (icon, description, volume) => {
                 if (icon.includes("headset")) {
                     return `  ${description}`;
@@ -149,15 +52,21 @@ export default function (gdkmonitor: Gdk.Monitor) {
             },
         );
 
-        const mute = Variable.derive(
-            [bind(speaker, "mute")],
+        const mute = createComputed(
+            [createBinding(audio.default_speaker, "mute")],
             mute => mute ? "󰝟 " : "󰕾 ",
         );
 
-        const speakers = Variable.derive(
-            [endpoints(), bind(speaker, "id")],
-            (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_SPEAKER)),
-        );
+        const [speakers, set_speakers] = createState<AstalWp.Endpoint[]>(audio.get_speakers() || []);
+        audio.connect("speaker-added", () => set_speakers(audio.get_speakers() || []));
+        audio.connect("speaker-removed", () => set_speakers(audio.get_speakers() || []));
+
+        const dispose = createBinding(speaker, "description").subscribe(() => set_speakers(audio.get_speakers() || []));
+        onCleanup(() => dispose());
+
+        const [streams, set_streams] = createState(audio.get_streams() || []);
+        audio.connect("stream-added", () => set_streams(audio.get_streams() || []));
+        audio.connect("stream-removed", () => set_streams(audio.get_streams() || []));
 
         speaker_widget = (
             <EndpointSlider
@@ -166,23 +75,36 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 current_endpoint={speaker}
                 endpoints={speakers} />
         );
+
+        stream_widgets = (
+            <For each={streams}>
+                {stream => (
+                    <StreamSlider
+                        stream={stream}
+                        endpoints={speakers} 
+                        setEndpoints={set_speakers}/>
+                )}
+            </For>
+        );
     }
 
     if (microphone) {
-        const label = Variable.derive(
-            [bind(microphone, "description")],
+        const label = createComputed(
+            [createBinding(audio.default_microphone, "description")],
             description => `  ${description}`,
         );
 
-        const mute = Variable.derive(
-            [bind(microphone, "mute")],
+        const mute = createComputed(
+            [createBinding(audio.default_microphone, "mute")],
             mute => mute ? " " : " ",
         );
 
-        const microphones = Variable.derive(
-            [endpoints(), bind(microphone, "id")],
-            (endpoints, _) => (endpoints.filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_MICROPHONE)),
-        );
+        const [microphones, set_microphones] = createState<AstalWp.Endpoint[]>(audio.get_microphones() || []);
+        audio.connect("microphone-added", () => set_microphones(audio.get_microphones() || []));
+        audio.connect("microphone-removed", () => set_microphones(audio.get_microphones() || []));
+
+        const dispose = createBinding(microphone, "description").subscribe(() => set_microphones(audio.get_microphones() || []));
+        onCleanup(() => dispose());
 
         microphone_widget = (
             <EndpointSlider
@@ -193,75 +115,62 @@ export default function (gdkmonitor: Gdk.Monitor) {
         );
     }
 
-    function get_stream_widgets(endpoints: AstalWp.Endpoint[]) {
-        return endpoints
-            .filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_STREAM)
-            .map((stream) => {
-                const label = Variable.derive(
-                    [bind(stream, "description"), bind(stream, "name")],
-                    (description, name) => `󰕾  ${description}: ${name}`,
-                );
-
-                const mute = Variable.derive(
-                    [bind(stream, "mute")],
-                    mute => mute ? "󰝟 " : "󰕾 ",
-                );
-
-                return (
-                    <EndpointSlider
-                        name={label}
-                        mute={mute}
-                        current_endpoint={stream} />
-                );
-            });
-    }
-
-    const stream_widgets = Variable<Gtk.Widget[]>(get_stream_widgets(endpoints.get()));
-    const reveal = Variable(false);
-
-    endpoints.subscribe(endpoints => stream_widgets.set(get_stream_widgets(endpoints)));
+    // function get_stream_widgets(endpoints: AstalWp.Endpoint[]) {
+    //     return endpoints
+    //         .filter(endpoint => endpoint.get_media_class() === AstalWp.MediaClass.AUDIO_STREAM)
+    //         .map((stream) => {
+    //             const label = createComputed(
+    //                 [createBinding(stream, "description"), createBinding(stream, "name")],
+    //                 (description, name) => `󰕾  ${description}: ${name}`,
+    //             );
+    //
+    //             const mute = createComputed(
+    //                 [createBinding(stream, "mute")],
+    //                 mute => mute ? "󰝟 " : "󰕾 ",
+    //             );
+    //
+    //             return (
+    //                 <EndpointSlider
+    //                     name={label}
+    //                     mute={mute}
+    //                     current_endpoint={stream} />
+    //             );
+    //         });
+    // }
+    const [reveal, set_reveal] = createState(false);
 
     return (
         <window
-            setup={self => self.set_default_size(1, 1)}
+            $={self => self.set_default_size(1, 1)}
             name="media"
-            cssClasses={["media"]}
+            class="media"
             gdkmonitor={gdkmonitor}
             visible={true}
             anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
             application={App}>
             <box
-                cssClasses={["layout-box"]}
+                class="layout-box"
                 spacing={10}
                 orientation={Gtk.Orientation.VERTICAL}>
                 {speaker && speaker_widget}
                 {microphone && microphone_widget}
                 <box
                     orientation={Gtk.Orientation.VERTICAL}
-                    cssClasses={["mixer"]}>
+                    class="mixer">
                     <button
-                        cssClasses={["show"]}
-                        onButtonPressed={(_, e) => {
-                            switch (e.get_button()) {
-                                case Gdk.BUTTON_PRIMARY:
-                                    reveal.set(!reveal.get());
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }}>
+                        class="show"
+                        onClicked={() => set_reveal(!reveal.get())}>
                         <label label="Applications" />
                     </button>
                     <revealer
                         transitionDuration={500}
                         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                        revealChild={reveal()}>
+                        revealChild={reveal}>
                         <box
-                            cssClasses={["streams"]}
+                            class="streams"
                             spacing={10}
                             orientation={Gtk.Orientation.VERTICAL}>
-                            {stream_widgets()}
+                            {stream_widgets}
                         </box>
                     </revealer>
                 </box>

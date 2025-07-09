@@ -3,7 +3,7 @@ import GLib from "gi://GLib";
 import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { createComputed, createExternal, createState, For, With, createBinding, Accessor, onCleanup } from "ags";
 import { execAsync } from "ags/process";
-import { interval } from "ags/time";
+import { createPoll, interval } from "ags/time";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalTray from "gi://AstalTray";
@@ -82,15 +82,8 @@ function Workspaces() {
 const [showSystray, setShowSystray] = createState(false);
 
 function SysInfo() {
-    const ram = createExternal("0.0G", (set) => {
-        const i = interval(5000, () => execAsync(["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]).then(res => set(res)));
-        return () => i.cancel();
-    });
-
-    const cpu = createExternal("0.0G", (set) => {
-        const i = interval(5000, () => execAsync(["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]).then(res => set(res)));
-        return () => i.cancel();
-    });
+    const ram = createPoll("0.0G", 5000, ["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]);
+    const cpu = createPoll("0.0", 5000, ["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]);
 
     return (
         <button
