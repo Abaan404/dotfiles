@@ -8,6 +8,8 @@ $button-highlight-height: 30px;
     margin-left: 40px;
 
     .layout-box {
+        min-width: 450px;
+
         button {
             padding: $button-open-height $button-open-height;
             border-radius: 10px;

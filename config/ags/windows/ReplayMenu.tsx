@@ -1,5 +1,6 @@
-import { App, Gtk, Gdk, Astal } from "astal/gtk4";
-import { bind } from "astal";
+import App from "ags/gtk4/app";
+import { Gtk, Gdk, Astal } from "ags/gtk4";
+import { createBinding } from "ags";
 
 import Recorder from "../services/recorder";
 
@@ -10,22 +11,13 @@ function ReplayButton() {
 
     return (
         <MenuList
-            cssClasses={["replay"]}
+            class="replay"
             label="Replay"
             align="left">
             <button
-                cssClasses={bind(recorder, "is_replaying").as(is_replaying => is_replaying ? [] : ["disabled"])}
+                class={createBinding(recorder, "is_replaying").as(is_replaying => is_replaying ? "" : "disabled")}
                 hexpand={true}
-                onButtonPressed={(_, e) => {
-                    switch (e.get_button()) {
-                        case Gdk.BUTTON_PRIMARY:
-                            recorder.replay();
-                            break;
-
-                        default:
-                            break;
-                    }
-                }}>
+                onClicked={() => recorder.replay()}>
 
                 <image
                     pixelSize={40}
@@ -40,44 +32,26 @@ function RecordButton() {
 
     return (
         <MenuList
-            cssClasses={["record"]}
+            class="record"
             label="Record"
             align="left">
             <box>
                 <button
-                    cssClasses={bind(recorder, "is_recording").as(is_recording => is_recording ? ["recording"] : [])}
+                    class={createBinding(recorder, "is_recording").as(is_recording => is_recording ? "recording" : "")}
                     hexpand={true}
-                    onButtonPressed={(_, e) => {
-                        switch (e.get_button()) {
-                            case Gdk.BUTTON_PRIMARY:
-                                recorder.record(!recorder.is_recording);
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }}>
+                    onClicked={() => recorder.record(!recorder.is_recording)}>
 
                     <image
                         pixelSize={40}
-                        iconName={bind(recorder, "is_recording").as(is_recording => is_recording ? "media-playback-stop-symbolic" : "media-record-symbolic")} />
+                        iconName={createBinding(recorder, "is_recording").as(is_recording => is_recording ? "media-playback-stop-symbolic" : "media-record-symbolic")} />
                 </button>
                 <revealer
                     transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
                     transitionDuration={200}
-                    revealChild={bind(recorder, "is_recording")}>
+                    revealChild={createBinding(recorder, "is_recording")}>
                     <button
-                        cssClasses={bind(recorder, "is_paused").as(is_paused => is_paused ? ["paused", "pause"] : ["pause"])}
-                        onButtonPressed={(_, e) => {
-                            switch (e.get_button()) {
-                                case Gdk.BUTTON_PRIMARY:
-                                    recorder.is_paused = !recorder.is_paused;
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }}>
+                        class={createBinding(recorder, "is_paused").as(is_paused => is_paused ? "paused pause" : "pause")}
+                        onClicked={() => recorder.is_paused = !recorder.is_paused}>
 
                         <image
                             pixelSize={40}
@@ -94,22 +68,13 @@ function MicButton() {
 
     return (
         <MenuList
-            cssClasses={["microphone"]}
+            class="microphone"
             label="Toggle Mic"
             align="left">
             <button
-                cssClasses={bind(recorder, "is_mic_enabled").as(is_mic_enabled => is_mic_enabled ? [] : ["disabled"])}
+                class={createBinding(recorder, "is_mic_enabled").as(is_mic_enabled => is_mic_enabled ? "" : "disabled")}
                 hexpand={true}
-                onButtonPressed={(_, e) => {
-                    switch (e.get_button()) {
-                        case Gdk.BUTTON_PRIMARY:
-                            recorder.is_mic_enabled = !recorder.is_mic_enabled;
-                            break;
-
-                        default:
-                            break;
-                    }
-                }}>
+                onClicked={() => recorder.is_mic_enabled = !recorder.is_mic_enabled}>
 
                 <image
                     pixelSize={40}
@@ -122,15 +87,15 @@ function MicButton() {
 export default function (gdkmonitor: Gdk.Monitor) {
     return (
         <window
-            setup={self => self.set_default_size(1, 1)}
+            $={self => self.set_default_size(1, 1)}
             name="replaymenu"
             gdkmonitor={gdkmonitor}
             visible={true}
             anchor={Astal.WindowAnchor.LEFT}
             application={App}>
-            <box cssClasses={["replaymenu"]}>
+            <box class="replaymenu">
                 <box
-                    cssClasses={["layout-box"]}
+                    class="layout-box"
                     spacing={20}
                     orientation={Gtk.Orientation.VERTICAL}
                     valign={Gtk.Align.CENTER}>

@@ -35,8 +35,8 @@ export default class Recorder extends GObject.Object {
     private _record_path = "";
     private _replay_path = "";
 
-    @property(String) window_replay = "";
-    @property(String) window_record = "";
+    @property(String) window_replay = "screen";
+    @property(String) window_record = "portal";
 
     @getter(Boolean) get is_mic_enabled() { return this._is_mic_enabled; };
     @getter(Boolean) get is_replaying() { return this._proc_replay !== null; }
@@ -185,8 +185,7 @@ export default class Recorder extends GObject.Object {
     }
 
     constructor() {
-        // @ts-ignore: this is correct, the super constructor is just mistyped
-        super({ window_record: "portal", window_replay: "screen" } as any);
+        super();
 
         this.setup_replay();
 

@@ -28,7 +28,7 @@ App.start({
         window_handler.register_window("mpris", Mpris);
         window_handler.register_window("media", Media);
         // window_handler.register_window("glance", Glance);
-        // window_handler.register_window("replaymenu", ReplayMenu);
+        window_handler.register_window("replaymenu", ReplayMenu);
         window_handler.register_window("notifications", Notifications);
 
         // display bar and notifications by default
