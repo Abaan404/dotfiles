@@ -1,31 +1,5 @@
 return {
     {
-        "numToStr/Comment.nvim",
-        dependencies = {
-            {
-                "JoosepAlviste/nvim-ts-context-commentstring",
-                lazy = false, -- breaks otherwise
-            },
-        },
-        keys = {
-            { "<leader>/", mode = "n" },
-            { "<leader>/", mode = "v" },
-            { "<leader>\\", mode = "n" },
-            { "<leader>\\", mode = "v" },
-        },
-        opts = {
-            pre_hook = function() return vim.bo.commentstring end,
-            toggler = {
-                line = "<leader>/",
-                block = "<leader>\\",
-            },
-            opleader = {
-                line = "<leader>/",
-                block = "<leader>\\",
-            },
-        },
-    },
-    {
         "windwp/nvim-autopairs",
         event = "InsertEnter",
         opts = {},

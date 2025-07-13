@@ -1,7 +1,8 @@
 local set = vim.keymap.set
 
--- toggle relativenumber
-set("n", "<leader>rn", "<cmd>setl rnu! <CR>")
+--comments
+set("n", "<leader>/", "gcc", { remap = true })
+set("v", "<leader>/", "gc", { remap = true })
 
 -- soft word-wrap motion
 set("n", "<Down>", "gj")
@@ -21,8 +22,8 @@ for i = 1, 9, 1 do
 end
 
 -- Neotree
-set("n", "<C-n>", "<Cmd>Neotree toggle<CR>");
-set("n", "<leader>e", "<Cmd>Neotree action=focus<CR>");
+set("n", "<C-n>", "<Cmd>Neotree toggle<CR>")
+set("n", "<leader>e", "<Cmd>Neotree action=focus<CR>")
 
 -- Telescope
 local telescope_builtin = require("telescope.builtin")
@@ -100,7 +101,8 @@ set("n", "<leader>db", dap.toggle_breakpoint)
 set("n", "<leader>dc", function() dap.toggle_breakpoint(vim.fn.input("Set Condition: ")) end)
 set("n", "<S-CR>", dap.step_into)
 set("n", "<CR>", dap.step_over)
-set("n", "<leader>dr", function() dap.continue() end)
+set("n", "<leader>dr", dap.continue)
+set("n", "<leader>dn", "<Cmd>DapNew<CR>")
 set("n", "<leader>dt", function()
     dap.terminate()
     dapui.close()
