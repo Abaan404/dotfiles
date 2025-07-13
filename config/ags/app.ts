@@ -1,5 +1,5 @@
 import App from "ags/gtk4/app";
-import { createBinding } from "ags";
+import { createBinding, onCleanup } from "ags";
 import { execAsync, subprocess } from "ags/process";
 
 import style from "./style.scss";
@@ -40,7 +40,8 @@ App.start({
             const battery = AstalBattery.get_default();
             const recorder = Recorder.get_default();
 
-            createBinding(battery, "charging").subscribe(() => recorder.is_replaying = battery.get_charging());
+            const dispose = createBinding(battery, "charging").subscribe(() => recorder.is_replaying = battery.get_charging());
+            onCleanup(() => dispose());
         }
 
         // control mic mute led
@@ -49,11 +50,13 @@ App.start({
             const brightness = Brightness.get_default();
 
             if (audio) {
-                createBinding(audio.default_microphone, "mute").subscribe(() => brightness.devices.forEach((device) => {
+                const dispose = createBinding(audio.default_microphone, "mute").subscribe(() => brightness.devices.forEach((device) => {
                     if (device.name === "platform::micmute") {
                         device.percentage = Number(audio.default_microphone.get_mute());
                     }
                 }));
+
+                onCleanup(() => dispose());
             }
         }
 
@@ -62,7 +65,7 @@ App.start({
             const battery = AstalBattery.get_default();
             const powerprofiles = AstalPowerProfiles.get_default();
 
-            createBinding(battery, "percentage").subscribe(() => {
+            const dispose = createBinding(battery, "percentage").subscribe(() => {
                 if (battery.charging) {
                     return;
                 }
@@ -100,55 +103,69 @@ App.start({
                     ]);
                 }
             });
+
+            onCleanup(() => dispose());
         }
 
         // notify recording/replay
         {
             const recorder = Recorder.get_default();
 
-            createBinding(recorder, "is_recording").subscribe(() => {
-                if (!recorder.is_recording) {
-                    return;
-                }
-                execAsync([
-                    "notify-send",
-                    "Recording Started",
-                ]);
-            });
-
-            createBinding(recorder, "record_path").subscribe(() => {
-                execAsync([
-                    "notify-send",
-                    "Recording Saved",
-                    `Saved to Path ${recorder.record_path}`,
-                    "--action=view=View",
-                    "--action=edit=Edit",
-                ]).then((res) => {
-                    if (res === "view") {
-                        subprocess(["vlc", recorder.record_path]);
+            {
+                const dispose = createBinding(recorder, "is_recording").subscribe(() => {
+                    if (!recorder.is_recording) {
+                        return;
                     }
-                    else if (res === "edit") {
-                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.record_path]);
-                    }
+                    execAsync([
+                        "notify-send",
+                        "Recording Started",
+                    ]);
                 });
-            });
 
-            createBinding(recorder, "replay_path").subscribe(() => {
-                execAsync([
-                    "notify-send",
-                    "Replay Saved",
-                    `Saved to Path ${recorder.replay_path}`,
-                    "--action=view=View",
-                    "--action=edit=Edit",
-                ]).then((res) => {
-                    if (res === "view") {
-                        subprocess(["vlc", recorder.replay_path]);
-                    }
-                    else if (res === "edit") {
-                        subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.replay_path]);
-                    }
+                onCleanup(() => dispose());
+            }
+
+            {
+                const dispose = createBinding(recorder, "record_path").subscribe(() => {
+                    execAsync([
+                        "notify-send",
+                        "Recording Saved",
+                        `Saved to Path ${recorder.record_path}`,
+                        "--action=view=View",
+                        "--action=edit=Edit",
+                    ]).then((res) => {
+                        if (res === "view") {
+                            subprocess(["vlc", recorder.record_path]);
+                        }
+                        else if (res === "edit") {
+                            subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.record_path]);
+                        }
+                    });
                 });
-            });
+
+                onCleanup(() => dispose());
+            }
+
+            {
+                const dispose = createBinding(recorder, "replay_path").subscribe(() => {
+                    execAsync([
+                        "notify-send",
+                        "Replay Saved",
+                        `Saved to Path ${recorder.replay_path}`,
+                        "--action=view=View",
+                        "--action=edit=Edit",
+                    ]).then((res) => {
+                        if (res === "view") {
+                            subprocess(["vlc", recorder.replay_path]);
+                        }
+                        else if (res === "edit") {
+                            subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.replay_path]);
+                        }
+                    });
+                });
+
+                onCleanup(() => dispose());
+            }
         }
     },
 

@@ -18,6 +18,9 @@ function ReplayButton() {
                 class={createBinding(recorder, "is_replaying").as(is_replaying => is_replaying ? "" : "disabled")}
                 hexpand={true}
                 onClicked={() => recorder.replay()}>
+                <Gtk.GestureClick
+                    button={Gdk.BUTTON_SECONDARY}
+                    onPressed={() => recorder.is_replaying = !recorder.is_replaying} />
 
                 <image
                     pixelSize={40}
