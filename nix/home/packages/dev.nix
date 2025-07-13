@@ -1,52 +1,21 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = [
     # editors
-    pkgs-unstable.neovim
     pkgs.jetbrains.idea-community
-    pkgs.vscodium
+    pkgs.quartus-prime-lite
     pkgs.kdePackages.kate
-
-    # C/C++
-    # pkgs.clang
-    pkgs.clang-tools
-    pkgs.valgrind
-    pkgs.gnumake
-    pkgs.cmake
-    pkgs.ninja
-    pkgs.meson
-    pkgs.just
-
-    # rust
-    pkgs.cargo
-
-    # web
-    pkgs.dart-sass
-    pkgs.nodejs
-    pkgs.gcc
-    pkgs.bun
-
-    # matlab
+    pkgs.neovim
+    pkgs.vscodium
     pkgs.octave
     pkgs.matlab
-
-    # java
-    pkgs-unstable.gradle
-    pkgs.openjdk21
-    # pkgs.jdk17
-    # pkgs.jdk8
-
-    # verilog
-    pkgs.quartus-prime-lite
-    pkgs.verible
 
     # debugging
     pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter
     pkgs.vscode-extensions.vscjava.vscode-java-debug
     pkgs.gdb
     pkgs.lldb
-    pkgs.wireshark
 
     # lsp
     pkgs.vala-language-server
@@ -65,6 +34,7 @@
     pkgs.vim-language-server
     pkgs.lua-language-server
     pkgs.glsl_analyzer
+    pkgs.clang-tools
     pkgs.tinymist
     pkgs.asm-lsp
     pkgs.pyright
@@ -74,8 +44,8 @@
 
     # formatters
     pkgs.nodePackages.prettier
-    pkgs-unstable.typstyle
-    pkgs-unstable.eslint_d
+    pkgs.typstyle
+    pkgs.eslint_d
     pkgs.nixfmt-rfc-style
     pkgs.stylua
     pkgs.black

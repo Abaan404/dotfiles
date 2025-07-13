@@ -8,11 +8,10 @@
   imports = [
     ./packages/hyprland.nix
     ./packages/desktop.nix
-    ./packages/python3.nix
     ./packages/cli.nix
     ./packages/dev.nix
-
     ./files/matlab.nix
+    ./scripts.nix
   ];
 
   nixpkgs.overlays = [

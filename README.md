@@ -45,7 +45,7 @@ UNSPLASH_ACCESS_KEY= # https://unsplash.com/developers
 
 -   Switch theme with SUPER + H, see `./config/hypr/keybinds.conf` for all keybinds.
 -   while nix is meant to manage your configs, `~/.dotfiles/nix/switch-theme/switch-theme.py` will also manage them by copying `~/.dotfiles/config` into `~/.config` while it overwrites certain keys for theming purposes.
--   The wallpaper path (`~/Pictures/wallpapers/`) and pywal backend (`colorthief`) can be modified within the `./scripts/reload.py` file.
+-   The wallpaper path (`~/Pictures/wallpapers/`) and pywal backend (`colorthief`) can be modified within the `./nix/switch-theme/switch-theme.py` file.
 -   The way this repo is setup, it expects that you have this repo cloned in `~/.dotfiles` exactly as is and with your `.env` variables defined in the same directory.
 
 ### Credits and Acknowledgements

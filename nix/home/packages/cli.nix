@@ -64,8 +64,6 @@
       nvmi = "nvim";
       vnim = "nvim";
 
-      p = "python3";
-
       lla = "ls -la";
     };
   };

@@ -27,16 +27,17 @@
     pkgs.sonusmix
     pkgs.vlc
 
-    # word processing
-    pkgs-unstable.typst
+    # notetaking
+    pkgs.kdePackages.okular
     pkgs.styluslabs-write
-    pkgs.fritzing
+    pkgs.tectonic
+    pkgs.typst
+
+    # word processing
     pkgs.libreoffice-fresh
     pkgs.hunspell
     pkgs.hunspellDicts.uk_UA
-    pkgs.tectonic
     pkgs.swayimg
-    pkgs.kdePackages.okular
 
     # gamging
     pkgs.tetrio-desktop
@@ -70,6 +71,7 @@
     pkgs.networkmanagerapplet
     pkgs.openconnect
     pkgs.networkmanager-openconnect
+    pkgs.wireshark
 
     # vnc
     pkgs.tigervnc

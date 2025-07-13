@@ -36,6 +36,7 @@
     }))
 
     # misc
+    pkgs.just
     pkgs.wev
     inputs.envycontrol.packages.${pkgs.system}.envycontrol
   ];
