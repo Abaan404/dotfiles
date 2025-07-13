@@ -1,5 +1,6 @@
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 import { Gtk } from "ags/gtk4";
 import { createBinding, Accessor, FCProps } from "ags";
 
@@ -25,9 +26,12 @@ export function Notification({ notification, onHide, progress }: NotificationPro
     if (image.get()) {
         image_widget = (
             <box class="image">
-                <Gtk.Picture
-                    contentFit={Gtk.ContentFit.COVER}
-                    file={image(img => Gio.File.new_for_path(img))} />
+                <Adw.Clamp
+                    maximumSize={64}>
+                    <Gtk.Picture
+                        contentFit={Gtk.ContentFit.COVER}
+                        file={image(img => Gio.File.new_for_path(img))} />
+                </Adw.Clamp>
             </box>
         );
     }

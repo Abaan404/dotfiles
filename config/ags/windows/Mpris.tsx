@@ -1,4 +1,7 @@
 import App from "ags/gtk4/app";
+import Gio from "gi://Gio";
+import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import { Accessor, createBinding, With } from "ags";
 
@@ -6,8 +9,6 @@ import AstalMpris from "gi://AstalMpris";
 import ActivePlayer from "../services/activeplayer";
 
 import { get_player_glyph, get_player_name, to_timestamp, truncate } from "../utils/helpers";
-import Gio from "gi://Gio";
-import GLib from "gi://GLib";
 
 export default function (gdkmonitor: Gdk.Monitor) {
     const active_player = ActivePlayer.get_default();
@@ -85,27 +86,31 @@ export default function (gdkmonitor: Gdk.Monitor) {
                             <image iconName="media-skip-forward-symbolic" />
                         </button>
                     </box>
-                    <With value={player}>
-                        {(player) => {
-                            if (!player) {
+                    <Adw.Clamp
+                        orientation={Gtk.Orientation.VERTICAL}
+                        maximumSize={150}>
+                        <With value={player}>
+                            {(player) => {
+                                if (!player) {
+                                    return (
+                                        <Gtk.Picture
+                                            file={Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png")} />
+                                    );
+                                }
+
                                 return (
-                                    <Gtk.Picture
-                                        file={Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png")} />
+                                    <Gtk.Picture file={createBinding(player, "cover_art").as((cover_art) => {
+                                        const file = Gio.File.new_for_path(cover_art);
+                                        if (!file.query_exists(null)) {
+                                            return Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png");
+                                        }
+
+                                        return file;
+                                    })} />
                                 );
-                            }
-
-                            return (
-                                <Gtk.Picture file={createBinding(player, "cover_art").as((cover_art) => {
-                                    const file = Gio.File.new_for_path(cover_art);
-                                    if (!file.query_exists(null)) {
-                                        return Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png");
-                                    }
-
-                                    return file;
-                                })} />
-                            );
-                        }}
-                    </With>
+                            }}
+                        </With>
+                    </Adw.Clamp>
                 </box>
                 <box
                     class="right"
