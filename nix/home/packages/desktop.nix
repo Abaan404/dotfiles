@@ -57,7 +57,7 @@
     pkgs.inkscape
     pkgs.swappy
     pkgs.krita
-    pkgs.gimp
+    pkgs.gimp3
 
     # theming
     pkgs.kdePackages.qtstyleplugin-kvantum
