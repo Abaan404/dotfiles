@@ -19,6 +19,14 @@
         pyPkgs = pkgs.python312Packages;
       in
       {
+        devShells.${system}.default = pkgs.mkShell {
+          buildInputs = [
+            pyPkgs.python-dotenv
+            pyPkgs.requests
+            pyPkgs.pywal
+            pyPkgs.pillow
+          ];
+        };
         packages.default = pyPkgs.buildPythonApplication {
           pname = "switch-theme";
           version = "1.0.0";
@@ -26,11 +34,11 @@
 
           format = "other";
 
-          propagatedBuildInputs = with pyPkgs; [
-            python-dotenv
-            requests
-            pywal
-            pillow
+          propagatedBuildInputs = [
+            pyPkgs.python-dotenv
+            pyPkgs.requests
+            pyPkgs.pywal
+            pyPkgs.pillow
           ];
 
           installPhase = ''

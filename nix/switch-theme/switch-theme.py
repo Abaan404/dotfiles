@@ -2,6 +2,7 @@
 
 # i tried ok
 
+import datetime
 import subprocess, sys, os
 import dotenv
 import requests
@@ -12,6 +13,7 @@ from string import Template
 from pathlib import Path
 
 CONFIG = {
+    "logs": Path("~/.dotfiles/log/").expanduser(),
     "secrets": Path("~/.dotfiles/.env").expanduser(),
     "config_template_path": Path("~/.dotfiles/config").expanduser(),
     "config_path": Path("~/.config").expanduser(),
@@ -82,8 +84,10 @@ class TemplateWriter:
             img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()])  # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
+        CONFIG["logs"].mkdir(exist_ok=True)
+
         subprocess.run(["ags", "quit"])
-        subprocess.Popen(["ags", "run"], env=os.environ.copy(), start_new_session=True)
+        subprocess.Popen(["ags", "run", "--log-file", CONFIG["logs"] / Path(f"{datetime.datetime.now().isoformat()}.log")], env=os.environ.copy(), start_new_session=True)
 
         # wvkbd
         subprocess.run(["killall", "wvkbd-abaan404"])
