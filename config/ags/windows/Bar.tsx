@@ -444,16 +444,16 @@ function Info({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     }
 
     return (
-        <box
-            class="info"
-            spacing={10}>
-            <Gtk.GestureClick
-                button={Gdk.BUTTON_PRIMARY}
-                onPressed={() => window_handler.toggle_window("glance", gdkmonitor)} />
-            <AstalBatteryInfo />
-            <AstalNetworkInfo />
-            <TimeInfo />
-        </box>
+        <button
+            onClicked={() => window_handler.toggle_window("glance", gdkmonitor)}>
+            <box
+                class="info"
+                spacing={10}>
+                <AstalBatteryInfo />
+                <AstalNetworkInfo />
+                <TimeInfo />
+            </box>
+        </button>
     );
 }
 
