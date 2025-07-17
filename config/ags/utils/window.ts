@@ -5,11 +5,8 @@ export class WindowHandler {
     private registry = new Map<string, (gdkmonitor: Gdk.Monitor) => Gtk.Window>();
     private windows = new Map<string, () => void>();
 
-    toggle_window(name: string, gdkmonitor: Gdk.Monitor) {
+    spawn_window(name: string, gdkmonitor: Gdk.Monitor) {
         if (this.windows.has(name)) {
-            const dispose = this.windows.get(name)!;
-            dispose();
-            this.windows.delete(name);
             return;
         }
 
@@ -27,6 +24,25 @@ export class WindowHandler {
 
             this.windows.set(name, remove);
         });
+    }
+
+    destroy_window(name: string) {
+        if (!this.windows.has(name)) {
+            return;
+        }
+
+        const dispose = this.windows.get(name)!;
+        dispose();
+        this.windows.delete(name);
+    }
+
+    toggle_window(name: string, gdkmonitor: Gdk.Monitor) {
+        if (this.windows.has(name)) {
+            this.destroy_window(name);
+        }
+        else {
+            this.spawn_window(name, gdkmonitor);
+        }
     }
 
     register_window(name: string, window_factory: (gdkmonitor: Gdk.Monitor) => Gtk.Window) {
