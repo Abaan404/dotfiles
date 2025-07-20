@@ -1,9 +1,4 @@
-{
-  pkgs,
-  pkgs-unstable,
-  inputs,
-  ...
-}:
+{ pkgs, inputs, ... }:
 
 {
   home.packages = [
@@ -26,6 +21,7 @@
     pkgs.spotify
     pkgs.sonusmix
     pkgs.vlc
+    pkgs.video-trimmer
 
     # notetaking
     pkgs.kdePackages.okular
@@ -149,16 +145,7 @@
     uninstallUnmanaged = false;
     packages = [
       "org.vinegarhq.Sober"
-      "org.gnome.gitlab.YaLTeR.VideoTrimmer"
       "io.mrarm.mcpelauncher"
     ];
-
-    overrides = {
-      "org.gnome.gitlab.YaLTeR.VideoTrimmer".Context = {
-        filesystems = [
-          "~/Videos/Replays"
-        ];
-      };
-    };
   };
 }

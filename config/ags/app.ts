@@ -153,7 +153,7 @@ App.start({
                             subprocess(["vlc", recorder.record_path]);
                         }
                         else if (res === "edit") {
-                            subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.record_path]);
+                            subprocess(["video-trimmer", recorder.record_path]);
                         }
                     });
                 });
@@ -174,7 +174,7 @@ App.start({
                             subprocess(["vlc", recorder.replay_path]);
                         }
                         else if (res === "edit") {
-                            subprocess(["flatpak", "run", "org.gnome.gitlab.YaLTeR.VideoTrimmer", recorder.replay_path]);
+                            subprocess(["video-trimmer", recorder.replay_path]);
                         }
                     });
                 });
