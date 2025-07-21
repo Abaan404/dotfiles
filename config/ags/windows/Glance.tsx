@@ -163,16 +163,6 @@ function Network() {
     const [flight_mode, set_flight_mode] = createState<boolean>(false);
     execAsync(["nmcli", "-t", "radio", "all"]).then(res => set_flight_mode(res.includes("disabled")));
 
-    const dispose = flight_mode.subscribe(() => {
-        execAsync(["nmcli", "radio", "all", flight_mode.get() ? "off" : "on"]);
-
-        if (flight_mode.get()) {
-            set_scanning(false);
-        }
-    });
-
-    onCleanup(() => dispose());
-
     if (wifi) {
         scanner = createComputed(
             [createBinding(wifi, "scanning"), scanning],
@@ -261,7 +251,14 @@ function Network() {
                 </button>
                 <button
                     class={flight_mode(flight_mode => flight_mode ? "success" : "")}
-                    onClicked={() => set_flight_mode(!flight_mode.get())}>
+                    onClicked={() => {
+                        set_flight_mode(!flight_mode.get());
+                        execAsync(["nmcli", "radio", "all", flight_mode.get() ? "off" : "on"]);
+
+                        if (flight_mode.get()) {
+                            set_scanning(false);
+                        }
+                    }}>
                     <box
                         spacing={10}>
                         <label label=" " />
@@ -381,10 +378,14 @@ function Bluetooth() {
 
     adapter.set_discoverable_timeout(600);
 
-    const [devices, set_devices] = createState(bluetooth.get_devices());
-    createBinding(bluetooth, "is_powered").subscribe(() => set_devices([]));
-    bluetooth.connect("device-added", () => set_devices(bluetooth.get_devices()));
-    bluetooth.connect("device-removed", () => set_devices(bluetooth.get_devices()));
+    const signals_devices = createConnection(null,
+        [bluetooth, "device-added", () => null],
+        [bluetooth, "device-removed", () => null]);
+
+    const devices = createComputed(
+        [signals_devices, createBinding(bluetooth, "is_powered")],
+        () => bluetooth.get_devices(),
+    );
 
     return (
         <box

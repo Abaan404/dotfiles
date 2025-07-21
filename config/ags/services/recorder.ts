@@ -73,7 +73,7 @@ export default class Recorder extends GObject.Object {
         }
 
         if (this.is_replaying) {
-            this._proc_replay?.kill();
+            this._proc_replay?.signal(2);
             this._proc_replay = null;
             this.notify("is_replaying");
         }
@@ -108,10 +108,9 @@ export default class Recorder extends GObject.Object {
         if (!begin_recording) {
             // Send signal SIGINT to gpu-screen-recorder (Ctrl+C, or killall -SIGINT gpu-screen-recorder) to stop and save the recording. When in replay mode this stops recording without saving.
             this._proc_record?.signal(2);
-            this.notify("record_path");
-
-            // this._proc_record?.kill(); // dont kill the process so it can save itself
             this._proc_record = null;
+
+            this.notify("record_path");
             this.notify("is_recording");
 
             this._is_paused = true;
@@ -145,7 +144,8 @@ export default class Recorder extends GObject.Object {
         }
 
         this._proc_record = subprocess(command);
-        this._proc_record.connect("exit", () => {
+        const conn = this._proc_record.connect("exit", () => {
+            this._proc_record?.disconnect(conn); // oneshot
             this._proc_record = null;
             this.notify("is_recording");
 
@@ -179,7 +179,7 @@ export default class Recorder extends GObject.Object {
             command.push("-a", `default_output`);
         }
 
-        this._proc_replay?.kill(); // kill if alive
+        this._proc_replay?.signal(2); // kill if alive
         this._proc_replay = subprocess(command, () => {}, () => {});
         this.notify("is_replaying");
     }
@@ -191,8 +191,8 @@ export default class Recorder extends GObject.Object {
 
         // kill on app shutdown
         App.connect("shutdown", () => {
-            this._proc_record?.kill();
-            this._proc_replay?.kill();
+            this._proc_record?.signal(2); // SIGINT
+            this._proc_replay?.signal(2); // SIGINT
         });
     }
 }

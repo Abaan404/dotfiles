@@ -43,33 +43,30 @@ function Launcher() {
 
 function Workspaces() {
     const hyprland = AstalHyprland.get_default();
-    const focused = createBinding(hyprland, "focused_workspace");
-
-    const workspaces = createComputed([createBinding(hyprland, "workspaces"), createBinding(hyprland, "focused_workspace")], (workspaces, focused) => {
-        const visible = [
-            { id: 1, glyph: "" },
-            { id: 2, glyph: "" },
-            { id: 3, glyph: "" },
-            { id: 4, glyph: "" },
-        ];
-
-        workspaces
-            .sort((a, b) => a.get_id() - b.get_id())
-            // named workspaces have negative indices
-            .filter(ws => ws.get_id() > visible[visible.length - 1].id)
-            .forEach(ws => visible.push({ id: ws.id, glyph: "" }));
-
-        return visible;
-    });
 
     return (
         <box
             class="workspaces">
-            <For each={workspaces}>
-                {workspace => (
+            <For each={createBinding(hyprland, "workspaces").as((workspaces) => {
+                const visible = [
+                    { id: 1, glyph: "" },
+                    { id: 2, glyph: "" },
+                    { id: 3, glyph: "" },
+                    { id: 4, glyph: "" },
+                ];
+
+                workspaces
+                    .sort((a, b) => a.get_id() - b.get_id())
+                    // named workspaces have negative indices
+                    .filter(ws => ws.get_id() > visible[visible.length - 1].id)
+                    .forEach(ws => visible.push({ id: ws.id, glyph: "" }));
+
+                return visible;
+            })}>
+                {(workspace: { id: number; glyph: string }) => (
                     <button
                         widthRequest={44}
-                        class={focused(focused => focused.id == workspace.id ? "active" : "inactive")}
+                        class={createBinding(hyprland, "focused_workspace").as(focused => focused.id == workspace.id ? "active" : "inactive")}
                         onClicked={() => hyprland.dispatch("workspace", workspace.id.toString())}>
                         {workspace.glyph}
                     </button>

@@ -22,33 +22,30 @@ export function Notification({ notification, onHide, progress }: NotificationPro
     let summary_widget = <></>;
     let body_widget = <></>;
 
-    const image = createBinding(notification, "image");
-    if (image.get()) {
+    if (notification.get_image()) {
         image_widget = (
             <box class="image">
                 <Adw.Clamp
                     maximumSize={64}>
                     <Gtk.Picture
                         contentFit={Gtk.ContentFit.COVER}
-                        file={image(img => Gio.File.new_for_path(img))} />
+                        file={createBinding(notification, "image").as(img => Gio.File.new_for_path(img))} />
                 </Adw.Clamp>
             </box>
         );
     }
 
-    const summary = createBinding(notification, "summary");
-    if (summary.get().length > 0) {
+    if (notification.get_summary().length > 0) {
         summary_widget = (
             <label
                 class="summary"
                 xalign={0}
                 wrap={true}
-                label={summary} />
+                label={createBinding(notification, "summary")} />
         );
     }
 
-    const body = createBinding(notification, "body");
-    if (body.get().length > 0) {
+    if (notification.get_body().length > 0) {
         body_widget = (
             <label
                 class="body"
@@ -57,7 +54,7 @@ export function Notification({ notification, onHide, progress }: NotificationPro
                 xalign={0}
                 wrap={true}
                 valign={Gtk.Align.CENTER}
-                label={body} />
+                label={createBinding(notification, "body")} />
         );
     }
 

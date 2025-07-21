@@ -1,6 +1,6 @@
 import App from "ags/gtk4/app";
 import { Astal, Gtk, Gdk } from "ags/gtk4";
-import { createBinding, createState, createComputed, Accessor, For, onCleanup } from "ags";
+import { createBinding, createState, createComputed, Accessor, For, createConnection } from "ags";
 
 import AstalWp from "gi://AstalWp";
 
@@ -57,16 +57,20 @@ export default function (gdkmonitor: Gdk.Monitor) {
             mute => mute ? "󰝟 " : "󰕾 ",
         );
 
-        const [speakers, set_speakers] = createState<AstalWp.Endpoint[]>(audio.get_speakers() || []);
-        audio.connect("speaker-added", () => set_speakers(audio.get_speakers() || []));
-        audio.connect("speaker-removed", () => set_speakers(audio.get_speakers() || []));
+        const signals_speakers = createConnection(null,
+            [audio, "speaker-added", () => null],
+            [audio, "speaker-removed", () => null],
+        );
 
-        const dispose = createBinding(speaker, "description").subscribe(() => set_speakers(audio.get_speakers() || []));
-        onCleanup(() => dispose());
+        const speakers = createComputed(
+            [signals_speakers, createBinding(speaker, "description")],
+            () => audio.get_speakers() || [],
+        );
 
-        const [streams, set_streams] = createState(audio.get_streams() || []);
-        audio.connect("stream-added", () => set_streams(audio.get_streams() || []));
-        audio.connect("stream-removed", () => set_streams(audio.get_streams() || []));
+        const streams = createConnection(audio.get_streams() || [],
+            [audio, "stream-added", () => audio.get_streams() || []],
+            [audio, "stream-removed", () => audio.get_streams() || []],
+        );
 
         speaker_widget = (
             <EndpointSlider
@@ -81,8 +85,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
                 {stream => (
                     <StreamSlider
                         stream={stream}
-                        endpoints={speakers} 
-                        setEndpoints={set_speakers}/>
+                        endpoints={speakers} />
                 )}
             </For>
         );
@@ -99,12 +102,15 @@ export default function (gdkmonitor: Gdk.Monitor) {
             mute => mute ? " " : " ",
         );
 
-        const [microphones, set_microphones] = createState<AstalWp.Endpoint[]>(audio.get_microphones() || []);
-        audio.connect("microphone-added", () => set_microphones(audio.get_microphones() || []));
-        audio.connect("microphone-removed", () => set_microphones(audio.get_microphones() || []));
+        const signals_microphones = createConnection(null,
+            [audio, "microphone-added", () => null],
+            [audio, "microphone-removed", () => null],
+        );
 
-        const dispose = createBinding(microphone, "description").subscribe(() => set_microphones(audio.get_microphones() || []));
-        onCleanup(() => dispose());
+        const microphones = createComputed(
+            [signals_microphones, createBinding(microphone, "description")],
+            () => audio.get_microphones() || [],
+        );
 
         microphone_widget = (
             <EndpointSlider

@@ -1,5 +1,5 @@
 import { Gtk } from "ags/gtk4";
-import { createBinding, createState, onCleanup, createComputed, Accessor, FCProps, For, Setter } from "ags";
+import { createBinding, createState, createComputed, Accessor, FCProps, For } from "ags";
 
 import AstalWp from "gi://AstalWp";
 
@@ -10,15 +10,16 @@ type StreamSliderProps = FCProps<
     {
         stream: AstalWp.Stream;
         endpoints: Accessor<AstalWp.Endpoint[]>;
-        setEndpoints: Setter<AstalWp.Endpoint[]>;
     }
 >;
 
-export function StreamSlider({ stream, endpoints, setEndpoints }: StreamSliderProps) {
+export function StreamSlider({ stream, endpoints }: StreamSliderProps) {
     const [reveal_targets, set_reveal_targets] = createState(false);
 
-    const dispose = createBinding(stream, "target_endpoint").subscribe(() => setEndpoints([...endpoints.get()]));
-    onCleanup(() => dispose());
+    const targettable_endpoints = createComputed(
+        [endpoints, createBinding(stream, "description"), createBinding(stream, "target_endpoint")],
+        () => endpoints.get().filter(endpoint => endpoint.get_id() !== stream.get_target_endpoint()?.get_id()),
+    );
 
     const label = createComputed(
         [createBinding(stream, "description"), createBinding(stream, "target_endpoint")],
@@ -60,7 +61,7 @@ export function StreamSlider({ stream, endpoints, setEndpoints }: StreamSliderPr
                     orientation={Gtk.Orientation.VERTICAL}
                     spacing={10}
                     halign={Gtk.Align.START}>
-                    <For each={endpoints(endpoints => endpoints.filter(endpoint => endpoint.get_id() !== stream.get_target_endpoint()?.get_id()))}>
+                    <For each={targettable_endpoints}>
                         {(endpoint: AstalWp.Endpoint) => (
                             <button
                                 onClicked={() => stream.set_target_endpoint(endpoint)}>

@@ -67,7 +67,7 @@ App.start({
             if (audio) {
                 const dispose = createBinding(audio.default_microphone, "mute").subscribe(() => brightness.devices.forEach((device) => {
                     if (device.name === "platform::micmute") {
-                        device.percentage = Number(audio.default_microphone.get_mute());
+                        device.percentage = Number(!audio.default_microphone.get_mute());
                     }
                 }));
 
@@ -109,7 +109,7 @@ App.start({
                     }
                 }
 
-                if (percent < 0.05) {
+                if (percent < 5) {
                     execAsync([
                         "notify-send",
                         "Battery Critical",

@@ -70,6 +70,7 @@
     enable = true;
 
     extraPackages = [
+      pkgs.glib-networking
       pkgs.libadwaita
       inputs.astal.packages.${pkgs.system}.astal4
       inputs.astal.packages.${pkgs.system}.io
