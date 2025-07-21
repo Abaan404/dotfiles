@@ -7,6 +7,10 @@
     networkmanager = {
       enable = true;
     };
+
+    wireless.iwd = {
+        enable = true;
+    };
   };
 
   hardware.bluetooth = {
