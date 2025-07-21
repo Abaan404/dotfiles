@@ -1,7 +1,7 @@
 import Gio from "gi://Gio";
 import App from "ags/gtk4/app";
 import { Astal, Gtk, Gdk } from "ags/gtk4";
-import { createState, createBinding, onCleanup, createComputed, For, With } from "ags";
+import { createState, createBinding, onCleanup, createComputed, For, With, createConnection } from "ags";
 import { readFileAsync } from "ags/file";
 import { execAsync } from "ags/process";
 
@@ -622,31 +622,43 @@ function QuickInfo() {
 function NotificationList() {
     const notifd = AstalNotifd.get_default();
 
-    const [notifications, set_notifications] = createState<AstalNotifd.Notification[]>(notifd.get_notifications());
-    notifd.connect("notified", () => set_notifications(notifd.get_notifications()));
-    notifd.connect("resolved", () => set_notifications(notifd.get_notifications()));
+    const notifications = createConnection(notifd.get_notifications(),
+        [notifd, "notified", () => notifd.get_notifications()],
+        [notifd, "resolved", () => notifd.get_notifications()]);
 
     return (
         <box
             class="notification-list"
             orientation={Gtk.Orientation.VERTICAL}
             heightRequest={300}
-            spacing={10}>
+            spacing={20}>
+            <box>
+                <label
+                    class="list-header"
+                    halign={Gtk.Align.CENTER}
+                    label="Notifications" />
+                <box
+                    hexpand={true}
+                    halign={Gtk.Align.END}
+                    spacing={10}>
+                    <button
+                        class={createBinding(notifd, "dont_disturb").as(dont_disturb => dont_disturb ? "dnd enabled" : "dnd")}
+                        onClicked={() => notifd.set_dont_disturb(!notifd.get_dont_disturb())}>
+                        <image pixelSize={18} iconName="notification-disabled-symbolic" />
+                    </button>
+                    <button
+                        class="clear"
+                        onClicked={() => notifd.get_notifications().forEach(notification => notification.dismiss())}>
+                        <image pixelSize={18} iconName="close-symbolic" />
+                    </button>
+                </box>
+            </box>
             <Gtk.ScrolledWindow
-                heightRequest={400}
+                heightRequest={350}
                 vexpand={true}>
                 <box
                     spacing={20}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    <box
-                        orientation={Gtk.Orientation.VERTICAL}
-                        spacing={10}>
-                        <label
-                            class="list-header"
-                            halign={Gtk.Align.CENTER}
-                            label="Notifications" />
-                        <Gtk.Separator />
-                    </box>
                     <With value={notifications}>
                         {(notifications) => {
                             if (notifications.length === 0) {

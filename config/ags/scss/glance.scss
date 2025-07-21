@@ -227,6 +227,19 @@
             font-weight: bolder;
         }
 
+        .dnd, .clear {
+            background-color: colors.$secondary;
+            border-radius: 10px;
+            padding: 10px 20px;
+
+            @include animations.fade("&:hover", colors.$accent);
+            @include animations.fade("&:active", colors.$secondary);
+        }
+
+        .enabled {
+            background-color: colors.$bad;
+        }
+
         .caught-up {
             padding: 20px;
 

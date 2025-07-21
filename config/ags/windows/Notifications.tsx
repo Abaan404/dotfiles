@@ -16,7 +16,7 @@ export default function (gdkmonitor: Gdk.Monitor) {
             $={self => self.set_default_size(-1, -1)}
             name="notifications"
             gdkmonitor={gdkmonitor}
-            visible={true}
+            visible={createBinding(notifd, "dont_disturb").as(dont_disturb => !dont_disturb)}
             anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
             application={App}>
             <box class="notifications">
