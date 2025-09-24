@@ -5,14 +5,10 @@ return {
         -- event = "InsertEnter", -- lazy loading this causes it to not auto-attach?
         dependencies = {
             "j-hui/fidget.nvim",
-            "folke/neodev.nvim",
             "RRethy/vim-illuminate",
-            "hrsh7th/cmp-nvim-lsp",
+            "saghen/blink.cmp",
         },
         config = function()
-            -- Neodev setup before LSP config
-            require("neodev").setup()
-
             -- Turn on LSP status information
             require("fidget").setup({})
 
@@ -47,98 +43,97 @@ return {
                 },
             })
 
-            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-                callback = function() vim.diagnostic.open_float(nil, { focus = false, scope = "cursor" }) end,
-            })
-
-            -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-            local settings = {
-                lua_ls = {
-                    Lua = {
-                        completion = {
-                            callSnippet = "Replace",
-                        },
-                        diagnostics = {
-                            globals = { "vim" },
-                        },
-                        workspace = {
-                            library = {
-                                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                                [vim.fn.stdpath("config") .. "/lua"] = true,
-                            },
-                        },
-                    },
-                },
-                tinymist = {
-                    exportPdf = "onType",
-                    outputPath = "$root/$dir/$name",
-                },
-                texlab = {
-                    texlab = {
-                        build = {
-                            executable = "tectonic",
-                            args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
-                            onSave = true,
-                            forwardSearchAfter = true,
-                        },
-                        forwardSearch = {
-                            executable = "zathura",
-                            args = {
-                                "--synctex-forward",
-                                "%l:1:%f",
-                                "%p",
-                            },
-                        },
-                    },
-                },
-                matlab_ls = {
-                    matlab = {
-                        indexWorkspace = true,
-                        installPath = "/usr/local/MATLAB/R2023b",
-                        matlabConnectionTiming = "onStart",
-                        telemetry = true,
-                    },
-                },
-            }
-
             -- NOTE: servers are downloaded externally, mason is no longer used in these dots
             local servers = {
-                "clangd",
-                "glsl_analyzer",
-                "cmake",
-                "mesonlsp",
-                "html",
-                "cssls",
-                "jsonls",
-                "lua_ls",
-                "ts_ls",
-                "kotlin_language_server",
-                "asm_lsp",
-                "bashls",
-                "yamlls",
-                "vimls",
-                "verible",
-                "matlab_ls",
-                "pyright",
-                "dockerls",
-                "docker_compose_language_service",
-                "texlab",
-                "tinymist",
-                "nixd",
-                "vala_ls",
-                "tailwindcss",
-                "hyprls",
+                { "slangd" },
+                { "clangd" },
+                { "glsl_analyzer" },
+                { "cmake" },
+                { "mesonlsp" },
+                { "html" },
+                { "cssls" },
+                { "jsonls" },
+                {
+                    "lua_ls",
+                    {
+                        Lua = {
+                            completion = {
+                                callSnippet = "Replace",
+                            },
+                            diagnostics = {
+                                globals = { "vim" },
+                            },
+                            workspace = {
+                                library = {
+                                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                                    [vim.fn.stdpath("config") .. "/lua"] = true,
+                                },
+                            },
+                        },
+                    },
+                },
+                { "ts_ls" },
+                { "kotlin_language_server" },
+                { "asm_lsp" },
+                { "bashls" },
+                { "yamlls" },
+                { "vimls" },
+                { "verible" },
+                {
+                    "matlab_ls",
+                    {
+                        matlab = {
+                            indexWorkspace = true,
+                            installPath = "/usr/local/MATLAB/R2023b",
+                            matlabConnectionTiming = "onStart",
+                            telemetry = true,
+                        },
+                    },
+                },
+                { "pyright" },
+                { "dockerls" },
+                { "docker_compose_language_service" },
+                {
+                    "texlab",
+                    {
+                        texlab = {
+                            build = {
+                                executable = "tectonic",
+                                args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
+                                onSave = true,
+                                forwardSearchAfter = true,
+                            },
+                            forwardSearch = {
+                                executable = "zathura",
+                                args = {
+                                    "--synctex-forward",
+                                    "%l:1:%f",
+                                    "%p",
+                                },
+                            },
+                        },
+                    },
+                },
+                {
+                    "tinymist",
+                    {
+                        exportPdf = "onType",
+                        outputPath = "$root/$dir/$name",
+                    },
+                },
+                { "nixd" },
+                { "vala_ls" },
+                { "tailwindcss" },
+                { "hyprls" },
             }
+
+            local capabilities = require("blink.cmp").get_lsp_capabilities()
 
             -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)
             for _, server in ipairs(servers) do
-                require("lspconfig")[server].setup({
-                    capabilities = capabilities,
-                    settings = settings[server],
-                })
+                local name, settings = server[1], server[2]
+                vim.lsp.enable(name)
+                vim.lsp.config(name, { capabilities = capabilities, settings = settings or {} })
             end
         end,
     },
@@ -172,7 +167,7 @@ return {
                     prepend_args = { "--tab-width", "4" },
                 },
                 typstyle = {
-                    prepend_args = { "--tab-width", "4" },
+                    prepend_args = { "--tab-width", "4", "--line-width", "120" },
                 },
                 black = {
                     prepend_args = { "--line-length", "10000" },
@@ -187,5 +182,18 @@ return {
             "neovim/nvim-lspconfig",
             "mfussenegger/nvim-dap",
         },
+    },
+    {
+        "pandalec/gradle.nvim",
+        ft = { "java" },
+        dependencies = {
+            "nvim-telescope/telescope.nvim",
+            "akinsho/toggleterm.nvim",
+        },
+        config = function()
+            require("gradle").setup({
+                keymaps = false,
+            })
+        end,
     },
 }

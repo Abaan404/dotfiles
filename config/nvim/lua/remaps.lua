@@ -82,6 +82,18 @@ set("n", "<leader>lk", function()
 end)
 set("n", "<leader>lD", vim.lsp.buf.declaration)
 
+set(
+    "n",
+    "K",
+    function()
+        vim.diagnostic.open_float(nil, {
+            focus = false,
+            scope = "cursor",
+            close_events = { "BufLeave", "CursorMoved", "InsertEnter" },
+        })
+    end
+)
+
 -- neogen
 local neogen = require("neogen")
 
@@ -118,7 +130,14 @@ set("n", "<leader>cmtr", "<cmd>CMakeSelectLaunchTarget<CR>")
 set("n", "<leader>cmtt", "<cmd>CMakeRunTest<CR>")
 set("n", "<leader>cme", "<cmd>CMakeOpenExecutor<CR>")
 set("n", "<leader>cmr", "<cmd>CMakeOpenRunner<CR>")
-set("n", "<C-c>", "<cmd>ClangdSwitchSourceHeader<CR>")
+set("n", "<C-c>", "<cmd>LspClangdSwitchSourceHeader<CR>")
+
+-- gradle
+local gradle = require("gradle")
+
+set("n", "<leader>grr", gradle.tasks.refresh_tasks_async)
+set("n", "<leader>grt", gradle.telescope.pick_tasks)
+set("n", "<leader>grw", gradle.terminal.toggle)
 
 -- GitSigns
 local gitsigns = require("gitsigns")
@@ -145,4 +164,4 @@ local peepsight = require("peepsight")
 set("n", "<leader>p", peepsight.toggle)
 
 -- auto-session
-set("n", "<leader>ql", "<Cmd>SessionRestore<CR>")
+set("n", "<leader>ql", "<Cmd>AutoSession restore<CR>")
