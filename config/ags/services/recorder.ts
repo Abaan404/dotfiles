@@ -2,9 +2,8 @@ import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import { register, property, getter } from "ags/gobject";
-import { execAsync, subprocess } from "ags/process";
+import { execAsync, Process, subprocess } from "ags/process";
 
-import AstalIO from "gi://AstalIO";
 import App from "ags/gtk4/app";
 import { timeout } from "ags/time";
 
@@ -29,8 +28,8 @@ export default class Recorder extends GObject.Object {
     private _is_paused = true;
     private _is_mic_enabled = false;
 
-    private _proc_replay: AstalIO.Process | null = null;
-    private _proc_record: AstalIO.Process | null = null;
+    private _proc_replay: Process | null = null;
+    private _proc_record: Process | null = null;
 
     private _record_path = "";
     private _replay_path = "";

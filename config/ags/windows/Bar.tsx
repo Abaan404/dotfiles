@@ -4,6 +4,7 @@ import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { createComputed, createExternal, createState, For, With, createBinding, Accessor, onCleanup } from "ags";
 import { execAsync } from "ags/process";
 import { createPoll } from "ags/time";
+import { openInspector } from "ags/app";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalTray from "gi://AstalTray";
@@ -88,7 +89,7 @@ function SysInfo() {
             onClicked={() => set_show_systray(!showSystray.get())}>
             <Gtk.GestureClick
                 button={Gdk.BUTTON_SECONDARY}
-                onPressed={() => App.inspector()} />
+                onPressed={() => openInspector(App.instanceName)} />
 
             <box
                 spacing={12}>

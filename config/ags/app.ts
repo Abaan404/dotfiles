@@ -184,8 +184,8 @@ App.start({
         }
     },
 
-    requestHandler(request: string, res: (response: any) => void) {
-        const requestv = request.split(" ");
+    requestHandler(request: string[], res: (response: any) => void) {
+        const requestv = request[0].split(" ");
 
         switch (requestv[0]) {
             case "window":

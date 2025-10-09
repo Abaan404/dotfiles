@@ -435,7 +435,7 @@ function Bluetooth() {
                 <box
                     spacing={10}
                     orientation={Gtk.Orientation.VERTICAL}>
-                    <For each={devices(devices => devices.filter(device => device.get_alias().replaceAll("-", ":") !== device.get_address()))}>
+                    <For each={devices(devices => devices.filter(device => device.get_alias().replace(/-/g, ":") !== device.get_address()))}>
                         {(device: AstalBluetooth.Device) => (
                             <button
                                 class={createBinding(device, "connected").as(connected => connected ? "entry active" : "entry")}
