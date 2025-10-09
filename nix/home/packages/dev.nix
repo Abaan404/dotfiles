@@ -34,9 +34,11 @@
     pkgs.vim-language-server
     pkgs.lua-language-server
     pkgs.glsl_analyzer
+    pkgs.shader-slang
     pkgs.clang-tools
     pkgs.tinymist
     pkgs.asm-lsp
+    pkgs.verible
     pkgs.pyright
     pkgs.hyprls
     pkgs.texlab

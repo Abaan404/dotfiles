@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   # Add fonts
@@ -6,13 +6,12 @@
     fontDir.enable = true;
     packages = [
       pkgs.liberation_ttf
-      pkgs.font-awesome
+      pkgs.roboto
+      pkgs.source-sans
       pkgs.nerd-fonts.jetbrains-mono
+      pkgs-unstable.font-awesome
     ];
   };
-
-  # Set your time zone.
-  time.timeZone = "America/Regina";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";

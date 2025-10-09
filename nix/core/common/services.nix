@@ -12,6 +12,7 @@
       };
     };
 
+    automatic-timezoned.enable = true;
     gvfs.enable = true;
     dbus.enable = true;
     upower.enable = true;

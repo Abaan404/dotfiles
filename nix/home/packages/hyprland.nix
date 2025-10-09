@@ -9,7 +9,7 @@
     pkgs.pyprland
 
     # screenshot
-    pkgs.swappy
+    pkgs.satty
     pkgs.slurp
     pkgs.grim
 

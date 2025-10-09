@@ -35,7 +35,12 @@
 
       action=$(notify-send "Screenshot Captured" --app-name="Screenshot" --action=edit=edit --hint=string:image-path:"$FILENAME")
       if [[ $action == "edit" ]]; then
-          swappy -f "$FILENAME"
+          satty --filename $FILENAME \
+            --output-filename "$FILENAME-edit" \
+            --early-exit \
+            --action-on-enter save-to-clipboard \
+            --save-after-copy \
+            --copy-command 'wl-copy'
       fi
     '')
 

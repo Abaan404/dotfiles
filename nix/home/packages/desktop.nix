@@ -38,6 +38,8 @@
     # gamging
     pkgs.tetrio-desktop
     pkgs.prismlauncher
+    pkgs.mcpelauncher-ui-qt
+    pkgs.r2modman
     pkgs.vesktop
 
     # wine
@@ -54,6 +56,10 @@
     pkgs.swappy
     pkgs.krita
     pkgs.gimp3
+
+    # modeling
+    pkgs.blender
+    pkgs.blockbench
 
     # theming
     pkgs.kdePackages.qtstyleplugin-kvantum
@@ -145,7 +151,6 @@
     uninstallUnmanaged = false;
     packages = [
       "org.vinegarhq.Sober"
-      "io.mrarm.mcpelauncher"
     ];
   };
 }
