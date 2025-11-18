@@ -18,12 +18,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # matlab
-    matlab = {
-      url = "gitlab:doronbehar/nix-matlab";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     # HM config
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -63,7 +57,6 @@
       nixpkgs,
       nixpkgs-unstable,
       home-manager,
-      matlab,
       ...
     }@inputs:
     let
@@ -78,8 +71,6 @@
         inherit system;
         config.allowUnfree = true;
       };
-
-      flake-overlays = [ matlab.overlay ];
     in
     {
       nixosConfigurations = {
@@ -126,7 +117,6 @@
 
             inherit inputs;
             inherit pkgs-unstable;
-            inherit flake-overlays;
           };
 
           modules = [

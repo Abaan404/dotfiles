@@ -9,7 +9,6 @@
     pkgs.neovim
     pkgs.vscodium
     pkgs.octave
-    pkgs.matlab
 
     # debugging
     pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter
@@ -28,7 +27,6 @@
     pkgs.vscode-langservers-extracted
     pkgs.tailwindcss-language-server
     pkgs.kotlin-language-server
-    pkgs.matlab-language-server
     pkgs.cmake-language-server
     pkgs.yaml-language-server
     pkgs.vim-language-server

@@ -1,5 +1,4 @@
 {
-  flake-overlays,
   username,
   ...
 }:
@@ -10,15 +9,8 @@
     ./packages/desktop.nix
     ./packages/cli.nix
     ./packages/dev.nix
-    ./files/matlab.nix
     ./scripts.nix
   ];
-
-  nixpkgs.overlays = [
-    (final: prev: {
-      # Your own overlays...
-    })
-  ] ++ flake-overlays;
 
   home.username = username;
   home.homeDirectory = "/home/${username}";

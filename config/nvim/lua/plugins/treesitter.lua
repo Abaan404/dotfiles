@@ -42,7 +42,6 @@ return {
                     "yuck",
 
                     "latex",
-                    "matlab",
                 },
 
                 sync_install = false,

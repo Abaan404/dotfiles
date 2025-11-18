@@ -7,8 +7,12 @@ return {
             "j-hui/fidget.nvim",
             "RRethy/vim-illuminate",
             "saghen/blink.cmp",
+            "folke/neoconf.nvim",
         },
         config = function()
+            -- per project settings
+            require("neoconf").setup({})
+
             -- Turn on LSP status information
             require("fidget").setup({})
 
@@ -56,17 +60,19 @@ return {
                 {
                     "lua_ls",
                     {
-                        Lua = {
-                            completion = {
-                                callSnippet = "Replace",
-                            },
-                            diagnostics = {
-                                globals = { "vim" },
-                            },
-                            workspace = {
-                                library = {
-                                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                                    [vim.fn.stdpath("config") .. "/lua"] = true,
+                        settings = {
+                            Lua = {
+                                completion = {
+                                    callSnippet = "Replace",
+                                },
+                                diagnostics = {
+                                    globals = { "vim" },
+                                },
+                                workspace = {
+                                    library = {
+                                        [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                                        [vim.fn.stdpath("config") .. "/lua"] = true,
+                                    },
                                 },
                             },
                         },
@@ -78,16 +84,10 @@ return {
                 { "bashls" },
                 { "yamlls" },
                 { "vimls" },
-                { "verible" },
                 {
-                    "matlab_ls",
+                    "verible",
                     {
-                        matlab = {
-                            indexWorkspace = true,
-                            installPath = "/usr/local/MATLAB/R2023b",
-                            matlabConnectionTiming = "onStart",
-                            telemetry = true,
-                        },
+                        cmd = { "verible-verilog-ls", "--rules_config_search" },
                     },
                 },
                 { "pyright" },
@@ -96,19 +96,21 @@ return {
                 {
                     "texlab",
                     {
-                        texlab = {
-                            build = {
-                                executable = "tectonic",
-                                args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
-                                onSave = true,
-                                forwardSearchAfter = true,
-                            },
-                            forwardSearch = {
-                                executable = "zathura",
-                                args = {
-                                    "--synctex-forward",
-                                    "%l:1:%f",
-                                    "%p",
+                        settings = {
+                            texlab = {
+                                build = {
+                                    executable = "tectonic",
+                                    args = { "-X", "compile", "%f", "--keep-intermediates", "--keep-logs" },
+                                    onSave = true,
+                                    forwardSearchAfter = true,
+                                },
+                                forwardSearch = {
+                                    executable = "zathura",
+                                    args = {
+                                        "--synctex-forward",
+                                        "%l:1:%f",
+                                        "%p",
+                                    },
                                 },
                             },
                         },
@@ -117,8 +119,10 @@ return {
                 {
                     "tinymist",
                     {
-                        exportPdf = "onType",
-                        outputPath = "$root/$dir/$name",
+                        settings = {
+                            exportPdf = "onType",
+                            outputPath = "$root/$dir/$name",
+                        },
                     },
                 },
                 { "nixd" },
@@ -131,9 +135,12 @@ return {
 
             -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)
             for _, server in ipairs(servers) do
-                local name, settings = server[1], server[2]
+                local name, overrides = server[1], server[2]
+                if not overrides then overrides = {} end
+                overrides.capabilities = capabilities
+
                 vim.lsp.enable(name)
-                vim.lsp.config(name, { capabilities = capabilities, settings = settings or {} })
+                vim.lsp.config(name, overrides)
             end
         end,
     },
