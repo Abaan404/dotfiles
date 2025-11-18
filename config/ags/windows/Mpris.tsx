@@ -100,9 +100,15 @@ export default function (gdkmonitor: Gdk.Monitor) {
 
                                 return (
                                     <Gtk.Picture file={createBinding(player, "cover_art").as((cover_art) => {
+                                        const fallback = Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png");
+
+                                        if (cover_art == null) {
+                                            return fallback;
+                                        }
+
                                         const file = Gio.File.new_for_path(cover_art);
                                         if (!file.query_exists(null)) {
-                                            return Gio.File.new_for_path(GLib.get_user_config_dir() + "/ags/assets/playerart.png");
+                                            return fallback;
                                         }
 
                                         return file;
