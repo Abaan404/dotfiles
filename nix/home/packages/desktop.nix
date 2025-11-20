@@ -8,6 +8,7 @@
 
     # file manager
     pkgs.libsForQt5.dolphin
+    pkgs.libsForQt5.konsole
     pkgs.kdePackages.kdegraphics-thumbnailers
     pkgs.kdePackages.kio-extras-kf5
     pkgs.kdePackages.kio-fuse
