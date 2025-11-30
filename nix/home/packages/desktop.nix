@@ -28,6 +28,7 @@
     pkgs.kdePackages.okular
     pkgs.styluslabs-write
     pkgs.tectonic
+    pkgs.drawio
     pkgs.typst
 
     # word processing
