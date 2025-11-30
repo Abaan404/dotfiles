@@ -8,6 +8,8 @@ return {
             "RRethy/vim-illuminate",
             "saghen/blink.cmp",
             "folke/neoconf.nvim",
+            not require("utils.os").is_nixos() and "williamboman/mason.nvim" or nil,
+            not require("utils.os").is_nixos() and "williamboman/mason-lspconfig.nvim" or nil,
         },
         config = function()
             -- per project settings
@@ -47,7 +49,6 @@ return {
                 },
             })
 
-            -- NOTE: servers are downloaded externally, mason is no longer used in these dots
             local servers = {
                 { "slangd" },
                 { "clangd" },
@@ -87,7 +88,7 @@ return {
                 {
                     "verible",
                     {
-                        cmd = { "verible-verilog-ls", "--rules_config_search" },
+                        cmd = { "verible-verilog-ls", "--rules_config_search", "--flagfile", ".rules.verible_format" },
                     },
                 },
                 { "pyright" },
@@ -132,11 +133,21 @@ return {
             }
 
             local capabilities = require("blink.cmp").get_lsp_capabilities()
+            if not require("utils.os").is_nixos() then
+                -- use mason on non nixos machines
+                -- otherwise setup lsp for all servers installed by nix (see nix/packages/dev.nix)
+                local mason = require("mason")
+                local mason_lspconfig = require("mason-lspconfig")
 
-            -- setup lsp for all servers installed by nix (see nix/packages/dev.nix)
+                mason.setup()
+                mason_lspconfig.setup({
+                    ensure_installed = vim.tbl_map(function(s) return s[1] end, servers),
+                    automatic_installation = true,
+                })
+            end
+
             for _, server in ipairs(servers) do
-                local name, overrides = server[1], server[2]
-                if not overrides then overrides = {} end
+                local name, overrides = server[1], server[2] or {}
                 overrides.capabilities = capabilities
 
                 vim.lsp.enable(name)
