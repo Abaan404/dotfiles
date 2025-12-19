@@ -29,6 +29,7 @@ return {
                     "cmake",
                     "meson",
                     "typst",
+                    "doxygen",
 
                     "markdown",
                     "markdown_inline",
