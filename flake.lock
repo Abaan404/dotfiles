@@ -2,7 +2,9 @@
   "nodes": {
     "ags": {
       "inputs": {
-        "astal": "astal",
+        "astal": [
+          "astal"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -22,27 +24,6 @@
       }
     },
     "astal": {
-      "inputs": {
-        "nixpkgs": [
-          "ags",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1764173295,
-        "narHash": "sha256-Jh4VtPcK2Ov+RTcV9FtyQRsxiJmXFQGfqX6jjM7/mgc=",
-        "owner": "aylur",
-        "repo": "astal",
-        "rev": "7d1fac8a4b2a14954843a978d2ddde86168c75ef",
-        "type": "github"
-      },
-      "original": {
-        "owner": "aylur",
-        "repo": "astal",
-        "type": "github"
-      }
-    },
-    "astal_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -101,26 +82,22 @@
         "type": "github"
       }
     },
-    "home-manager_2": {
+    "local": {
       "inputs": {
+        "flake-utils": "flake-utils",
         "nixpkgs": [
-          "zen-browser",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1767104570,
-        "narHash": "sha256-GKgwu5//R+cLdKysZjGqvUEEOGXXLdt93sNXeb2M/Lk=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "e4e78a2cbeaddd07ab7238971b16468cc1d14daf",
-        "type": "github"
+        "path": "./nix/local",
+        "type": "path"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
-      }
+        "path": "./nix/local",
+        "type": "path"
+      },
+      "parent": []
     },
     "nix-flatpak": {
       "locked": {
@@ -189,32 +166,15 @@
     "root": {
       "inputs": {
         "ags": "ags",
-        "astal": "astal_2",
+        "astal": "astal",
         "home-manager": "home-manager",
+        "local": "local",
         "nix-flatpak": "nix-flatpak",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
-        "switch-theme": "switch-theme",
         "zen-browser": "zen-browser"
       }
-    },
-    "switch-theme": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "nixpkgs": [
-          "nixpkgs-unstable"
-        ]
-      },
-      "locked": {
-        "path": "./nix/switch-theme",
-        "type": "path"
-      },
-      "original": {
-        "path": "./nix/switch-theme",
-        "type": "path"
-      },
-      "parent": []
     },
     "systems": {
       "locked": {
@@ -233,9 +193,11 @@
     },
     "zen-browser": {
       "inputs": {
-        "home-manager": "home-manager_2",
+        "home-manager": [
+          "home-manager"
+        ],
         "nixpkgs": [
-          "nixpkgs-unstable"
+          "nixpkgs"
         ]
       },
       "locked": {

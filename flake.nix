@@ -16,6 +16,7 @@
     ags = {
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.astal.follows = "astal";
     };
 
     # HM config
@@ -27,13 +28,14 @@
     # zen-browser (see: https://github.com/NixOS/nixpkgs/pull/363992#pullrequestreview-2523997020)
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
 
-    # switch-theme
-    switch-theme = {
-      url = "path:./nix/switch-theme";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # locally maintained packages
+    local = {
+      url = "path:./nix/local";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # preconfig hardware

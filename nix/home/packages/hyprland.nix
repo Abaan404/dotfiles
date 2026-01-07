@@ -14,7 +14,7 @@
     pkgs.grim
 
     # theming
-    inputs.switch-theme.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.local.packages.${pkgs.stdenv.hostPlatform.system}.switch-theme
 
     # polkit
     pkgs.hyprpolkitagent

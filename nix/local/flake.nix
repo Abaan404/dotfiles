@@ -27,26 +27,8 @@
             pyPkgs.pillow
           ];
         };
-        packages.default = pyPkgs.buildPythonApplication {
-          pname = "switch-theme";
-          version = "1.0.0";
-          src = ./.;
 
-          format = "other";
-
-          propagatedBuildInputs = [
-            pyPkgs.python-dotenv
-            pyPkgs.requests
-            pyPkgs.pywal
-            pyPkgs.pillow
-          ];
-
-          installPhase = ''
-            mkdir -p $out/bin
-            cp switch-theme.py $out/bin/switch-theme
-            chmod +x $out/bin/switch-theme
-          '';
-        };
+        packages.switch-theme = pkgs.callPackage ./switch-theme/default.nix { };
       }
     );
 }
