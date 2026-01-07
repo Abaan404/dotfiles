@@ -14,13 +14,13 @@
     pkgs.grim
 
     # theming
-    inputs.switch-theme.packages.${pkgs.system}.default
+    inputs.switch-theme.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # polkit
     pkgs.hyprpolkitagent
 
     # wallpaper
-    inputs.swww.packages.${pkgs.system}.default
+    pkgs.swww
 
     # notifications
     pkgs.libnotify
@@ -38,12 +38,10 @@
     # misc
     pkgs.just
     pkgs.wev
-    inputs.envycontrol.packages.${pkgs.system}.envycontrol
   ];
 
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
     font = "JetBrainsMono NF Extra-Bold 12";
     theme = "~/.config/rofi/theme.rasi";
     extraConfig = {
@@ -62,7 +60,7 @@
       kb-secondary-paste = "Control+v,Insert";
     };
     plugins = [
-      (pkgs.rofi-calc.override { rofi-unwrapped = pkgs.rofi-wayland-unwrapped; })
+      pkgs.rofi-calc
     ];
   };
 
@@ -72,19 +70,19 @@
     extraPackages = [
       pkgs.glib-networking
       pkgs.libadwaita
-      inputs.astal.packages.${pkgs.system}.astal4
-      inputs.astal.packages.${pkgs.system}.io
-      inputs.astal.packages.${pkgs.system}.apps
-      inputs.astal.packages.${pkgs.system}.auth
-      inputs.astal.packages.${pkgs.system}.battery
-      inputs.astal.packages.${pkgs.system}.hyprland
-      inputs.astal.packages.${pkgs.system}.mpris
-      inputs.astal.packages.${pkgs.system}.network
-      inputs.astal.packages.${pkgs.system}.bluetooth
-      inputs.astal.packages.${pkgs.system}.powerprofiles
-      inputs.astal.packages.${pkgs.system}.tray
-      inputs.astal.packages.${pkgs.system}.wireplumber
-      inputs.astal.packages.${pkgs.system}.notifd
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.astal4
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.io
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.apps
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.auth
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.mpris
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.network
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.bluetooth
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.powerprofiles
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.tray
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.wireplumber
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.notifd
     ];
   };
 

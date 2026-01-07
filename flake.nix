@@ -3,7 +3,7 @@
 
   inputs = {
     # nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
@@ -20,19 +20,7 @@
 
     # HM config
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # envycontrol (optimus PRIME)
-    envycontrol = {
-      url = "github:bayasdev/envycontrol";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # swww-git (FIXME: remove when v0.9.6 has been released)
-    swww = {
-      url = "github:LGFae/swww";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -125,9 +113,9 @@
 
             ./nix/home/home.nix
             {
-              programs.git = {
-                userName = "abaan404";
-                userEmail = "67100191+Abaan404@users.noreply.github.com";
+              programs.git.settings.user = {
+                name = "abaan404";
+                email = "67100191+Abaan404@users.noreply.github.com";
               };
             }
           ];

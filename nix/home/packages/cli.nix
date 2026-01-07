@@ -10,7 +10,7 @@
     pkgs.playerctl
     pkgs.quickemu
     pkgs.killall
-    pkgs.glxinfo
+    pkgs.mesa-demos
     pkgs.ripgrep
     pkgs.unzip
     pkgs.p7zip

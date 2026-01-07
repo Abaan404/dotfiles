@@ -4,11 +4,11 @@
   home.packages = [
     # browser
     pkgs.firefox
-    inputs.zen-browser.packages.${pkgs.system}.twilight-official
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight-official
 
     # file manager
-    pkgs.libsForQt5.dolphin
-    pkgs.libsForQt5.konsole
+    pkgs.kdePackages.konsole
+    pkgs.kdePackages.dolphin
     pkgs.kdePackages.kdegraphics-thumbnailers
     pkgs.kdePackages.kio-extras-kf5
     pkgs.kdePackages.kio-fuse
@@ -20,7 +20,6 @@
     # media
     pkgs.pavucontrol
     pkgs.spotify
-    pkgs.sonusmix
     pkgs.vlc
     pkgs.video-trimmer
 
@@ -65,9 +64,7 @@
 
     # theming
     pkgs.kdePackages.qtstyleplugin-kvantum
-    pkgs.libsForQt5.qtstyleplugin-kvantum
-    pkgs.libsForQt5.qt5ct
-    pkgs.qt6ct
+    pkgs.qt6Packages.qt6ct
     pkgs.zenity
 
     # networking
@@ -124,12 +121,7 @@
 
   qt = {
     enable = true;
-    platformTheme.name = "qt5ct";
-
-    style = {
-      name = "kvantum";
-      package = pkgs.utterly-nord-plasma;
-    };
+    platformTheme.name = "qt6ct";
   };
 
   programs.obs-studio = {

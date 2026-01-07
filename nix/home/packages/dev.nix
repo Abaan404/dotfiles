@@ -3,7 +3,7 @@
 {
   home.packages = [
     # editors
-    pkgs.jetbrains.idea-community
+    pkgs.jetbrains.idea
     pkgs.quartus-prime-lite
     pkgs.kdePackages.kate
     pkgs.neovim
@@ -22,7 +22,7 @@
     pkgs.bash-language-server
     pkgs.mesonlsp
     pkgs.jdt-language-server
-    pkgs.dockerfile-language-server-nodejs
+    pkgs.dockerfile-language-server
     pkgs.docker-compose-language-service
     pkgs.vscode-langservers-extracted
     pkgs.tailwindcss-language-server

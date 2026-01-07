@@ -27,7 +27,7 @@
     enable = true;
     lfs.enable = true;
 
-    extraConfig = {
+    settings = {
       init.defaultBranch = "main";
       url = {
         "git@github.com:" = {
