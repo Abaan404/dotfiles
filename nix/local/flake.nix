@@ -29,6 +29,7 @@
         };
 
         packages.switch-theme = pkgs.callPackage ./switch-theme/default.nix { };
+        packages.ninjabrainbot = pkgs.callPackage ./ninjabrainbot/default.nix { };
       }
     );
 }

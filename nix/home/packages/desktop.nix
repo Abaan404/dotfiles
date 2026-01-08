@@ -42,6 +42,8 @@
     pkgs.mcpelauncher-ui-qt
     pkgs.r2modman
     pkgs.vesktop
+    pkgs.waywall
+    inputs.local.packages.${pkgs.stdenv.hostPlatform.system}.ninjabrainbot
 
     # wine
     pkgs.wineWowPackages.staging
