@@ -41,6 +41,7 @@ return {
                     "json",
                     "toml",
                     "yuck",
+                    "hyprlang",
 
                     "latex",
                 },
@@ -55,7 +56,6 @@ return {
             })
 
             -- attach ts to typst ft
-            -- vim.treesitter.language.register("typst", "typ")
             vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
                 pattern = { "*.typ" },
                 callback = function() vim.opt.filetype = "typst" end,
