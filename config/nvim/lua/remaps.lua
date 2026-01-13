@@ -158,10 +158,5 @@ set("n", "<leader>gP", "<cmd>Git pull origin<CR>")
 set("n", "<leader>gps", "<cmd>Git stash<CR>")
 set("n", "<leader>gpp", "<cmd>Git stash pop<CR>")
 
--- Peepsight
-local peepsight = require("peepsight")
-
-set("n", "<leader>p", peepsight.toggle)
-
 -- auto-session
 set("n", "<leader>ql", "<Cmd>AutoSession restore<CR>")

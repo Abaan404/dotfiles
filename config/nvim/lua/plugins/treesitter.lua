@@ -1,12 +1,11 @@
 return {
     {
-        "nvim-treesitter/playground",
-    },
-    {
         "nvim-treesitter/nvim-treesitter",
+        lazy = false,
+        build = ":TSUpdate",
         config = function()
             ---@diagnostic disable-next-line: missing-fields
-            require("nvim-treesitter.configs").setup({
+            require("nvim-treesitter").setup({
                 ensure_installed = {
                     "vim",
                     "vimdoc",
