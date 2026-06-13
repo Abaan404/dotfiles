@@ -55,6 +55,7 @@
       plugins = [
         "git"
         "sudo"
+        "direnv"
       ];
     };
 

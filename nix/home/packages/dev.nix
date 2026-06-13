@@ -55,6 +55,12 @@
     pkgs.tree-sitter
   ];
 
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   programs.kitty = {
     enable = true;
 
