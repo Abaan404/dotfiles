@@ -37,8 +37,21 @@
     pkgs.swayimg
 
     # gamging
+    (pkgs.symlinkJoin {
+      name = "prismlauncher-nfd-fix";
+      paths = [ pkgs.prismlauncher ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+
+      # axiom and similar mods (that use NativeFileDialog) depend on gsettings schemas working
+      postBuild = ''
+        wrapProgram $out/bin/prismlauncher \
+          --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
+          --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+      '';
+    })
+
+
     pkgs.tetrio-desktop
-    pkgs.prismlauncher
     pkgs.mcpelauncher-ui-qt
     pkgs.r2modman
     pkgs.vesktop
