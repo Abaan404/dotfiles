@@ -2,7 +2,6 @@ return {
     {
         "mfussenegger/nvim-dap",
         dependencies = {
-            "rcarriga/nvim-dap-ui",
             "neovim/nvim-lspconfig",
         },
         event = "BufReadPre",
@@ -38,53 +37,58 @@ return {
         end,
     },
     {
-        "rcarriga/nvim-dap-ui",
+        "igorlfs/nvim-dap-view",
         dependencies = {
             "mfussenegger/nvim-dap",
-            "nvim-neotest/nvim-nio",
+            "sainnhe/sonokai",
         },
         config = function()
-            require("dapui").setup({
-                layouts = {
-                    {
-                        elements = {
-                            {
-                                id = "repl",
-                                size = 0.5,
-                            },
-                            {
-                                id = "console",
-                                size = 0.5,
-                            },
-                        },
-                        position = "bottom",
-                        size = 15,
+            require("dap-view").setup({
+                winbar = {
+                    sections = {
+                        "watches",
+                        "scopes",
+                        "exceptions",
+                        "breakpoints",
+                        "threads",
+                        "repl",
+                        "disassembly",
                     },
-                    {
-                        elements = {
-                            {
-                                id = "scopes",
-                                size = 0.5,
-                            },
-                            {
-                                id = "stacks",
-                                size = 0.5,
-                            },
-                        },
-                        position = "right",
-                        size = 60,
+                },
+                windows = {
+                    size = 0.40,
+                    position = "right",
+                    terminal = {
+                        size = 0.33,
+                        position = "below",
+                        -- List of debug adapters for which the terminal should be ALWAYS hidden
+                        -- Can also be set to "true" to never show the terminal
+                        hide = {},
                     },
                 },
             })
         end,
     },
     {
-        "theHamsta/nvim-dap-virtual-text",
-        config = function() require("nvim-dap-virtual-text").setup() end,
+        "https://codeberg.org/Jorenar/nvim-dap-disasm.git",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "igorlfs/nvim-dap-view",
+        },
+        config = function()
+            require("dap-disasm").setup({
+                dapview_register = true,
+                dapview = {
+                    keymap = "D",
+                    label = "Disassembly",
+                    short_label = "󰒓 [D]",
+                },
+            })
+        end,
     },
     {
         "Civitasv/cmake-tools.nvim",
-        ft = { "c", "cpp" },
+        ft = { "c", "cpp", "cmake", "slang" },
         config = function()
             require("cmake-tools").setup({
                 cmake_build_directory = "build/${variant:buildType}", -- this is used to specify generate directory for cmake, allows macro expansion
