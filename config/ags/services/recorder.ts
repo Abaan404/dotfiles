@@ -26,7 +26,7 @@ export default class Recorder extends GObject.Object {
     private readonly _audio_codec = "opus";
 
     private _is_paused = true;
-    private _is_mic_enabled = false;
+    private _is_mic_enabled = true;
 
     private _proc_replay: Process | null = null;
     private _proc_record: Process | null = null;
