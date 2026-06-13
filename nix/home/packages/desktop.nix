@@ -137,6 +137,14 @@
   qt = {
     enable = true;
     platformTheme.name = "qt6ct";
+
+    kde.settings = {
+      kdeglobals = {
+        Icons = {
+          Theme = "Tela-dark";
+        };
+      };
+    };
   };
 
   programs.obs-studio = {
