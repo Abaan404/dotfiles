@@ -1,4 +1,5 @@
-if not vim.g.JAVA_DEBUG_PATH then
+-- shada caches vim.g values, this path can change between updates. so instead of disabling it, just check if its valid
+if not vim.g.JAVA_DEBUG_PATH or vim.fn.filereadable(vim.g.JAVA_DEBUG_PATH) == 0 then
     local Job = require("plenary.job")
 
     local result = Job:new({
