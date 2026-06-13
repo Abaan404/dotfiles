@@ -20,8 +20,11 @@ return {
         end,
     },
     {
-        "projekt0n/github-nvim-theme",
-        config = function() vim.cmd("colorscheme github_dark_dimmed") end,
+        "sainnhe/sonokai",
+        config = function()
+            vim.g.sonokai_style = "andromeda"
+            vim.cmd("colorscheme sonokai")
+        end,
     },
     {
         "rmagatti/auto-session",

@@ -58,6 +58,7 @@ return {
                 { "html" },
                 { "cssls" },
                 { "jsonls" },
+                { "sqruff" },
                 {
                     "lua_ls",
                     {

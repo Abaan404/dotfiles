@@ -41,6 +41,7 @@
     pkgs.hyprls
     pkgs.texlab
     pkgs.nixd
+    pkgs.sqruff
 
     # formatters
     pkgs.nodePackages.prettier
