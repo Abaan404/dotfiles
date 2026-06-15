@@ -39,7 +39,7 @@ class TemplateWriter:
             # some js packages uses "!!" somewhere for some reason,
             # instead of changing delimiter just ignore the path
             # entirely
-            if conf.name in ["@girs", "node_modules"]:
+            if conf.name in ["@girs", "node_modules", ".luarc.json"]:
                 continue
 
             if conf.is_dir() or not conf.exists():
@@ -81,12 +81,16 @@ class TemplateWriter:
             Path("~/.dotfiles/assets/playerart.png").expanduser(),
         ]:
             img = Image.open(file).convert("RGBA")
-            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.getdata()])  # pyright: ignore ignoreGeneralTypeIssues
+            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.get_flattened_data()])  # pyright: ignore ignoreGeneralTypeIssues
             img.save(path.joinpath(file.name))
 
         CONFIG["logs"].mkdir(exist_ok=True)
 
         subprocess.run(["ags", "quit"])
+
+        # FIXME: ajs doesnt shutdown cleanly, clear spawned processes
+        subprocess.run(["killall", "gpu-screen-recorder"])
+
         subprocess.Popen(["ags", "run", "--log-file", CONFIG["logs"] / Path(f"{datetime.datetime.now().isoformat()}.log")], env=os.environ.copy(), start_new_session=True)
 
         # wvkbd
@@ -179,7 +183,7 @@ if __name__ == "__main__":
         print("Invalid wallpaper type", file=sys.stderr)
         exit(1)
 
-    subprocess.Popen(["swww", "img", wallpaper, "--transition-type=grow", "--transition-fps=120", "--transition-pos=top-right"], start_new_session=True)
+    subprocess.Popen(["awww", "img", wallpaper, "--transition-type=grow", "--transition-fps=120", "--transition-pos=top-right"], start_new_session=True)
 
     # use pywal to get colors
     colors = pywal.colors.get(wallpaper, backend=CONFIG["backend"])

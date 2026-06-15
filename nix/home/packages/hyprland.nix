@@ -20,7 +20,7 @@
     pkgs.hyprpolkitagent
 
     # wallpaper
-    pkgs.swww
+    pkgs.awww
 
     # notifications
     pkgs.libnotify
@@ -88,26 +88,21 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    settings = {
-      "$mainMod" = "SUPER";
-    };
 
     extraConfig = ''
-      monitor=,preferred,auto,1
-      monitor=eDP-1,preferred,auto,1,transform,0
+      require("animations")
+      require("environment")
+      require("keybinds")
+      require("rules")
+      -- require("hyprgrass")
 
-      source=~/.config/hypr/environment.conf
-      source=~/.config/hypr/scripts.conf
-      source=~/.config/hypr/keybinds.conf
-      source=~/.config/hypr/rules.conf
-      source=~/.config/hypr/animations.conf
-      source=~/.config/hypr/hyprgrass.conf
-      source=~/.config/hypr/hyprexpo.conf
+      hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
+      hl.env("XCURSOR_SIZE", "24")
     '';
 
     plugins = [
-      pkgs.hyprlandPlugins.hyprgrass
-      pkgs.hyprlandPlugins.hyprexpo
+      # https://github.com/NixOS/nixpkgs/issues/502324
+      # pkgs.hyprlandPlugins.hyprgrass
     ];
   };
 }

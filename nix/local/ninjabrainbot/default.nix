@@ -12,7 +12,7 @@ pkgs.maven.buildMavenPackage rec {
     rev = version;
     hash = "sha256-r8TpL3VLf2QHwFS+DdjxgxyuZu167fP6/lN7a8e9opM=";
   };
-  mvnHash = "sha256-zAVPH5a7ut21Ipz5BUY6cnRLT52bM8Yo2r8ClFon1p0=";
+  mvnHash = "sha256-2+p4ReD1M3VuyTu4TmCx9xrFf2QFm/FFBgs7a2eIpZY=";
 
   mvnDepsParameters = "assembly:single -DskipTests=true";
   mvnParameters = "assembly:single -DskipTests=true";
@@ -28,11 +28,11 @@ pkgs.maven.buildMavenPackage rec {
       --prefix LD_LIBRARY_PATH : "${
         pkgs.lib.makeLibraryPath [
           pkgs.libxkbcommon
-          pkgs.xorg.libX11
-          pkgs.xorg.libXt
-          pkgs.xorg.libXtst
-          pkgs.xorg.libXinerama
-          pkgs.xorg.libxcb
+          pkgs.libx11
+          pkgs.libxt
+          pkgs.libxtst
+          pkgs.libxinerama
+          pkgs.libxcb
         ]
       }" \
       --add-flags "-Dawt.useSystemAAFontSettings=on -jar $out/share/Ninjabrain-Bot-${version}.jar"

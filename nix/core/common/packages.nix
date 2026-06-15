@@ -13,6 +13,10 @@
     pkgs.lshw
     pkgs.usbutils
     pkgs.pciutils
+
+    # manuals
+    pkgs.man-pages
+    pkgs.man-pages-posix
   ];
 
   programs.dconf = {
@@ -56,4 +60,6 @@
   programs.wireshark = {
     enable = true;
   };
+
+  documentation.dev.enable = true;
 }

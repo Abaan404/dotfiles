@@ -44,10 +44,10 @@
     pkgs.sqruff
 
     # formatters
-    pkgs.nodePackages.prettier
+    pkgs.prettier
     pkgs.typstyle
     pkgs.eslint_d
-    pkgs.nixfmt-rfc-style
+    pkgs.nixfmt
     pkgs.stylua
     pkgs.black
 

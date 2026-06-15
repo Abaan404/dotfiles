@@ -6,6 +6,7 @@ let
     ps.requests
     ps.pywal
     ps.pillow
+    ps.colorthief
   ]);
 in
 pkgs.stdenv.mkDerivation {

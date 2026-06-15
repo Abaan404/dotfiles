@@ -50,16 +50,16 @@
       '';
     })
 
-
     pkgs.tetrio-desktop
     pkgs.mcpelauncher-ui-qt
     pkgs.r2modman
     pkgs.vesktop
+    pkgs.ryubing
     pkgs.waywall
     inputs.local.packages.${pkgs.stdenv.hostPlatform.system}.ninjabrainbot
 
     # wine
-    pkgs.wineWowPackages.staging
+    pkgs.wineWow64Packages.staging
     pkgs.bottles
     pkgs.lutris
     pkgs.mangohud
@@ -69,7 +69,6 @@
     pkgs.kdePackages.kolourpaint
     pkgs.kdePackages.kdenlive
     pkgs.inkscape
-    pkgs.swappy
     pkgs.krita
     pkgs.gimp3
 

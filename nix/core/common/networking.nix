@@ -8,7 +8,7 @@
       enable = true;
     };
 
-    wireless.iwd = {
+    wireless = {
         enable = true;
     };
   };
