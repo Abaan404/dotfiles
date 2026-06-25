@@ -4,3 +4,5 @@
 # cache
 data/
 log/
+
+.qmlls.ini

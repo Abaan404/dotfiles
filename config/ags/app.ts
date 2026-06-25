@@ -5,7 +5,7 @@ import { execAsync, subprocess } from "ags/process";
 import style from "./style.scss";
 import window_handler from "./utils/window";
 
-import Bar from "./windows/Bar";
+// import Bar from "./windows/Bar";
 import PowerMenu from "./windows/PowerMenu";
 import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
@@ -33,7 +33,7 @@ App.start({
         // window_handler.register_window("notifications", Notifications); // TODO fix notification or rewrite in QuickShell
 
         // display bar and notifications by default
-        App.get_monitors().map(Bar);
+        // App.get_monitors().map(Bar);
 
         // show notifications if available
         {

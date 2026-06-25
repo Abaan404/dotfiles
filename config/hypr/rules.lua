@@ -63,3 +63,6 @@ hl.window_rule({
 
     no_focus = true,
 })
+
+-- persistent workspaces
+hl.workspace_rule({ workspace = "r[1-4]", persistent = true })

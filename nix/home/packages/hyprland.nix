@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  inputs,
+  config,
+  ...
+}:
 
 {
   home.packages = [
@@ -15,6 +20,7 @@
 
     # theming
     inputs.local.packages.${pkgs.stdenv.hostPlatform.system}.switch-theme
+    pkgs.qtcreator
 
     # polkit
     pkgs.hyprpolkitagent
@@ -84,6 +90,20 @@
       inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.wireplumber
       inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.notifd
     ];
+  };
+
+  programs.quickshell = {
+    enable = true;
+    # Using custom singletons is not picked up by qmllint so doing this in order to supply a qmldir
+    package = pkgs.symlinkJoin {
+      name = "quickshell-localmodule";
+      paths = [ pkgs.quickshell ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/quickshell \
+          --set QML_IMPORT_PATH "${config.xdg.configHome}/quickshell/modules/"
+      '';
+    };
   };
 
   wayland.windowManager.hyprland = {

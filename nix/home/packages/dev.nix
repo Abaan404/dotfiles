@@ -19,6 +19,7 @@
     # lsp
     pkgs.vala-language-server
     pkgs.typescript-language-server
+    pkgs.kdePackages.qtdeclarative
     pkgs.bash-language-server
     pkgs.mesonlsp
     pkgs.jdt-language-server

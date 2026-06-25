@@ -86,11 +86,13 @@ class TemplateWriter:
 
         CONFIG["logs"].mkdir(exist_ok=True)
 
+        subprocess.run(["quickshell", "kill"])
         subprocess.run(["ags", "quit"])
 
         # FIXME: ajs doesnt shutdown cleanly, clear spawned processes
         subprocess.run(["killall", "gpu-screen-recorder"])
 
+        subprocess.Popen(["quickshell", "-d"])
         subprocess.Popen(["ags", "run", "--log-file", CONFIG["logs"] / Path(f"{datetime.datetime.now().isoformat()}.log")], env=os.environ.copy(), start_new_session=True)
 
         # wvkbd

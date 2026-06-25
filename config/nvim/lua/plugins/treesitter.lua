@@ -29,6 +29,7 @@ return {
                     "meson",
                     "typst",
                     "doxygen",
+                    "qmljs",
 
                     "markdown",
                     "markdown_inline",

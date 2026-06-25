@@ -131,6 +131,7 @@ return {
                 { "vala_ls" },
                 { "tailwindcss" },
                 { "hyprls" },
+                { "qmlls" },
             }
 
             local capabilities = require("blink.cmp").get_lsp_capabilities()
