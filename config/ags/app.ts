@@ -6,7 +6,7 @@ import style from "./style.scss";
 import window_handler from "./utils/window";
 
 // import Bar from "./windows/Bar";
-import PowerMenu from "./windows/PowerMenu";
+// import PowerMenu from "./windows/PowerMenu";
 import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
 import Glance from "./windows/Glance";
@@ -25,7 +25,7 @@ App.start({
     css: style,
     icons: `!!HOME/.dotfiles/assets`,
     main() {
-        window_handler.register_window("powermenu", PowerMenu);
+        // window_handler.register_window("powermenu", PowerMenu);
         window_handler.register_window("mpris", Mpris);
         window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);

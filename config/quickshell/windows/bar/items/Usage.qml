@@ -3,7 +3,7 @@ import QtQuick.Layouts
 
 import Quickshell.Io
 
-import ".."
+import qs.windows.bar
 
 BarItem {
     property bool showSystray: false

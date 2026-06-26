@@ -141,7 +141,7 @@ bind({
 -- Misc binds
 bind({
     ["SUPER"] = {
-        ["M"] = hl.dsp.exec_cmd('ags request "window powermenu"'),
+        ["M"] = hl.dsp.exec_cmd('qs ipc call power toggle'),
         ["G"] = hl.dsp.exec_cmd('ags request "window replaymenu"'),
         ["L"] = hl.dsp.exec_cmd("loginctl lock-session"),
         ["H"] = hl.dsp.exec_cmd("switch-theme"),

@@ -6,9 +6,9 @@ import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
 import Colors
+import Utils
 
-import ".."
-import "../../../utils/helpers.js" as Utils
+import qs.windows.bar
 
 Loader {
     visible: Pipewire.ready
@@ -51,7 +51,7 @@ Loader {
                         return "󰝟 ";
                     }
 
-                    return Utils.symbolicStrength(node.audio?.volume ?? 0, ["󰖀 ", "󰕾 "], 1);
+                    return StringsHelper.symbolicStrength(node.audio?.volume ?? 0, ["󰖀 ", "󰕾 "], 1);
                 }
             }
 

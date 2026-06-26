@@ -4,9 +4,9 @@ import QtQuick.Layouts
 import Quickshell.Io
 
 import Services
+import Utils
 
-import ".."
-import "../../../utils/helpers.js" as Utils
+import qs.windows.bar
 
 BarItem {
     onClicked: event => {
@@ -21,7 +21,7 @@ BarItem {
 
     onWheel: event => {
         const volume = ActivePlayer.player.volume + event.angleDelta.y / 1000;
-        ActivePlayer.player.volume = Utils.clamp(volume, 0, 1);
+        ActivePlayer.player.volume = MathHelper.clamp(volume, 0, 1);
     }
 
     RowLayout {
@@ -46,7 +46,7 @@ BarItem {
                     return "No Title";
                 }
 
-                return `${Utils.truncate(ActivePlayer.player?.trackTitle, 30) ?? ""} - ${Utils.truncate(ActivePlayer.player?.trackArtist, 30) ?? "No Artist"}`;
+                return `${StringsHelper.truncate(ActivePlayer.player?.trackTitle, 30) ?? ""} - ${StringsHelper.truncate(ActivePlayer.player?.trackArtist, 30) ?? "No Artist"}`;
             }
         }
     }

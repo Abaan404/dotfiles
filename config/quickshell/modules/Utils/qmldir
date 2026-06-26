@@ -1,0 +1,3 @@
+module Utils
+singleton MathHelper 1.0 MathHelper.qml
+singleton StringsHelper 1.0 StringsHelper.qml

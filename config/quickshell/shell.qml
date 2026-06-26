@@ -2,7 +2,8 @@ import QtQuick
 
 import Quickshell
 
-import "windows/bar"
+import qs.windows.bar
+import qs.windows.power
 
 ShellRoot {
     settings {
@@ -10,4 +11,5 @@ ShellRoot {
     }
 
     Bar {}
+    Power {}
 }

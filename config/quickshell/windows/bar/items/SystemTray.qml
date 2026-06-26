@@ -3,7 +3,7 @@ import QtQuick.Layouts
 
 import Quickshell.Services.SystemTray
 
-import ".."
+import qs.windows.bar
 
 BarItem {
     padding: 10

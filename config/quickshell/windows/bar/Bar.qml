@@ -3,7 +3,10 @@ import QtQuick.Layouts
 
 import Quickshell
 
-import "items"
+import Services
+
+import qs.windows
+import qs.windows.bar.items
 
 PanelWindow { // qmllint disable uncreatable-type
     implicitHeight: 30
@@ -19,6 +22,10 @@ PanelWindow { // qmllint disable uncreatable-type
         left: 10 // qmllint disable missing-property
         right: 10 // qmllint disable missing-property
         top: 10 // qmllint disable missing-property
+    }
+
+    Component.onCompleted: {
+        WindowState.register("bar", this);
     }
 
     RowLayout {
@@ -84,5 +91,9 @@ PanelWindow { // qmllint disable uncreatable-type
         Power {
             Layout.fillHeight: true
         }
+    }
+
+    WindowIpc {
+        target: "bar"
     }
 }

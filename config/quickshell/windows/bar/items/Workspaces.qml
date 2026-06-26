@@ -8,7 +8,7 @@ import Quickshell.Hyprland
 
 import Colors
 
-import ".."
+import qs.windows.bar
 
 BarItem {
     id: root

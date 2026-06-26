@@ -1,2 +1,3 @@
 module Services
 singleton ActivePlayer 1.0 ActivePlayer.qml
+singleton WindowState 1.0 WindowState.qml

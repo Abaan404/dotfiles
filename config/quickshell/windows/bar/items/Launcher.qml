@@ -5,7 +5,7 @@ import Quickshell.Io
 
 import Colors
 
-import ".."
+import qs.windows.bar
 
 BarItem {
     id: root

@@ -9,9 +9,9 @@ import Quickshell.Services.UPower
 import Quickshell.Networking
 
 import Colors
+import Utils
 
-import ".."
-import "../../../utils/helpers.js" as Utils
+import qs.windows.bar
 
 BarItem {
     id: root
@@ -41,7 +41,7 @@ BarItem {
                 spacingText: 4
 
                 BarText {
-                    text: Utils.symbolicStrength(battery.percentage, [" ", " ", " ", " ", " "], 1)
+                    text: StringsHelper.symbolicStrength(battery.percentage, [" ", " ", " ", " ", " "], 1)
 
                     color: {
                         if (battery.percentage <= 0.3) {
@@ -116,7 +116,7 @@ BarItem {
                                 }
 
                                 // qmlformat off
-                                const icon = Utils.symbolicStrength(internet.wifiNetwork?.signalStrength ?? 0, [
+                                const icon = StringsHelper.symbolicStrength(internet.wifiNetwork?.signalStrength ?? 0, [
                                     "network-wireless-signal-excellent-symbolic",
                                     "network-wireless-signal-good-symbolic",
                                     "network-wireless-signal-ok-symbolic",

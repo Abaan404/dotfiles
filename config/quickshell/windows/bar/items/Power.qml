@@ -2,18 +2,18 @@ import QtQuick
 import QtQuick.Controls
 
 import Quickshell
-import Quickshell.Io
 
 import Colors
+import Services
 
-import ".."
+import qs.windows.bar
 
 BarItem {
     id: root
     padding: 10
 
     onClicked: {
-        agsProc.running = true;
+        WindowState.toggle("power");
     }
 
     BarRevealerText {
@@ -39,10 +39,5 @@ BarItem {
                 color: Colors.text
             }
         }
-    }
-
-    Process {
-        id: agsProc
-        command: ["ags", "request", "window powermenu"]
     }
 }
