@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 
-import Quickshell.Io
-
 import Services
 import Utils
 
@@ -10,12 +8,16 @@ import qs.windows.bar
 
 BarItem {
     onClicked: event => {
-        if (event.button === Qt.RightButton) {
-            ActivePlayer.nextPlayer();
+        if (event.button === Qt.MiddleButton && ActivePlayer.player?.canTogglePlaying) {
+            ActivePlayer.player?.togglePlaying();
+        }
+
+        if (event.button === Qt.RightButton && ActivePlayer.player?.canGoNext) {
+            ActivePlayer.player?.next();
         }
 
         if (event.button === Qt.LeftButton) {
-            agsProc.running = true;
+            WindowState.toggle("mpris")
         }
     }
 
@@ -49,10 +51,5 @@ BarItem {
                 return `${StringsHelper.truncate(ActivePlayer.player?.trackTitle, 30) ?? ""} - ${StringsHelper.truncate(ActivePlayer.player?.trackArtist, 30) ?? "No Artist"}`;
             }
         }
-    }
-
-    Process {
-        id: agsProc
-        command: ["ags", "request", "window mpris"]
     }
 }

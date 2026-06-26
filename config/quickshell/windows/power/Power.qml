@@ -27,9 +27,8 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WrapperRectangle {
-        color: "transparent"
-
         rightMargin: parent.visible ? 40 : -40
+        color: "transparent"
 
         Behavior on rightMargin {
             NumberAnimation {

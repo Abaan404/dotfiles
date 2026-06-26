@@ -7,7 +7,7 @@ import window_handler from "./utils/window";
 
 // import Bar from "./windows/Bar";
 // import PowerMenu from "./windows/PowerMenu";
-import Mpris from "./windows/Mpris";
+// import Mpris from "./windows/Mpris";
 import Media from "./windows/Media";
 import Glance from "./windows/Glance";
 import ReplayMenu from "./windows/ReplayMenu";
@@ -26,7 +26,7 @@ App.start({
     icons: `!!HOME/.dotfiles/assets`,
     main() {
         // window_handler.register_window("powermenu", PowerMenu);
-        window_handler.register_window("mpris", Mpris);
+        // window_handler.register_window("mpris", Mpris);
         window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
         window_handler.register_window("replaymenu", ReplayMenu);

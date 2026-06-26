@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Effects
 
+import Quickshell
 import Quickshell.Io
 
 import Colors
@@ -26,7 +27,7 @@ BarItem {
                 anchors.centerIn: parent
 
                 fillMode: Image.PreserveAspectFit
-                source: "file:///home/abaan404/.dotfiles/assets/launcher-symbolic.svg"
+                source: Quickshell.env("HOME") + "/.dotfiles/assets/launcher-symbolic.svg"
                 sourceSize.height: 16
                 sourceSize.width: 16
             }

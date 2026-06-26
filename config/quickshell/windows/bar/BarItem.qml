@@ -53,7 +53,7 @@ WrapperRectangle {
         leftMargin: root.padding
         rightMargin: root.padding
 
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         hoverEnabled: root.hoverEnabled
         onClicked: event => root.clicked(event)
         onWheel: event => root.wheel(event)
