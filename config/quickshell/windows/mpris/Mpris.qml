@@ -10,6 +10,10 @@ import Colors
 import qs.windows
 
 PanelWindow { // qmllint disable uncreatable-type
+    mask: Region {
+        item: maskItem
+    }
+
     anchors {
         top: true
         left: true
@@ -45,22 +49,22 @@ PanelWindow { // qmllint disable uncreatable-type
         }
 
         WrapperRectangle {
+            id: maskItem
+
             color: Colors.primary
             radius: 10
 
             RowLayout {
-                RowLayout {
-                    Left {
-                        Layout.fillHeight: true
-                    }
+                Left {
+                    Layout.fillHeight: true
+                }
 
-                    Right {
-                        Layout.alignment: Qt.AlignTop
-                        Layout.topMargin: 10
-                        Layout.bottomMargin: 10
-                        Layout.leftMargin: 20
-                        Layout.rightMargin: 30
-                    }
+                Right {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.topMargin: 10
+                    Layout.bottomMargin: 10
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 30
                 }
             }
         }

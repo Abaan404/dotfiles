@@ -20,6 +20,10 @@ PanelWindow { // qmllint disable uncreatable-type
     visible: false
     exclusionMode: ExclusionMode.Ignore
 
+    mask: Region {
+        item: maskItem
+    }
+
     QtObject {
         id: internal
 
@@ -58,6 +62,8 @@ PanelWindow { // qmllint disable uncreatable-type
         }
 
         WrapperRectangle {
+            id: maskItem
+
             margin: 20
             radius: 10
             color: Colors.colors_color1

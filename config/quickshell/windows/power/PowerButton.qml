@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.impl 2.15
 
+import Quickshell
 import Quickshell.Widgets
 
 import Colors
@@ -13,6 +14,10 @@ RowLayout {
     property color sourceColor: Colors.accent
 
     property string text
+
+    readonly property Region region: Region {
+        item: maskItem
+    }
 
     signal clicked(event: MouseEvent)
 
@@ -91,6 +96,8 @@ RowLayout {
     }
 
     WrapperRectangle {
+        id: maskItem
+
         implicitWidth: 130
         implicitHeight: mouseArea.containsMouse ? implicitWidth : implicitWidth + 20
         radius: 10
