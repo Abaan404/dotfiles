@@ -19,13 +19,7 @@ ColumnLayout {
 
         onClicked: ActivePlayer.nextPlayer()
 
-        property color color: {
-            if (mouseArea.containsMouse && !mouseArea.containsPress) {
-                return Qt.lighter(Colors.text, 1.2);
-            }
-
-            return Colors.text;
-        }
+        property color color: ColorHelper.mouse(Colors.text, mouseArea.containsMouse, mouseArea.containsPress)
 
         RowLayout {
             spacing: 10

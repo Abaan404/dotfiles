@@ -8,6 +8,7 @@ import Quickshell.Widgets
 
 import Services
 import Colors
+import Utils
 
 WrapperRectangle {
     radius: 10
@@ -15,7 +16,7 @@ WrapperRectangle {
     color: Colors.secondary
 
     component ControlButton: WrapperMouseArea {
-        id: root
+        id: button
 
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -26,15 +27,9 @@ WrapperRectangle {
         property string icon
 
         ColorImage {
-            source: root.icon
+            source: button.icon
 
-            color: {
-                if (root.containsMouse && !root.containsPress) {
-                    return Qt.lighter(Colors.text, 1.2);
-                }
-
-                return Colors.text;
-            }
+            color: ColorHelper.mouse(Colors.text, button.containsMouse, button.containsPress)
 
             Behavior on color {
                 ColorAnimation {

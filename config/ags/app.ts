@@ -8,7 +8,7 @@ import window_handler from "./utils/window";
 // import Bar from "./windows/Bar";
 // import PowerMenu from "./windows/PowerMenu";
 // import Mpris from "./windows/Mpris";
-import Media from "./windows/Media";
+// import Media from "./windows/Media";
 import Glance from "./windows/Glance";
 import ReplayMenu from "./windows/ReplayMenu";
 // import Notifications from "./windows/Notifications";
@@ -27,7 +27,7 @@ App.start({
     main() {
         // window_handler.register_window("powermenu", PowerMenu);
         // window_handler.register_window("mpris", Mpris);
-        window_handler.register_window("media", Media);
+        // window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
         window_handler.register_window("replaymenu", ReplayMenu);
         // window_handler.register_window("notifications", Notifications); // TODO fix notification or rewrite in QuickShell

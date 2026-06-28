@@ -5,6 +5,7 @@ import Quickshell
 import qs.windows.bar
 import qs.windows.power
 import qs.windows.mpris
+import qs.windows.media
 
 ShellRoot {
     settings {
@@ -14,4 +15,5 @@ ShellRoot {
     Bar {}
     Power {}
     Mpris {}
+    Media {}
 }

@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell.Widgets
 
 import Colors
+import Utils
 
 WrapperRectangle {
     id: root
@@ -16,13 +17,7 @@ WrapperRectangle {
     property color background: Colors.primary
     property int padding: 14
 
-    color: {
-        if (mouseArea.containsMouse && !mouseArea.containsPress) {
-            return Qt.lighter(background, 1.2);
-        }
-
-        return background;
-    }
+    color: ColorHelper.mouse(background, mouseArea.containsMouse, mouseArea.containsPress)
 
     radius: 10
 
