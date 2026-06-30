@@ -18,9 +18,8 @@ BarItem {
         reveal: root.containsMouse
         spacingText: 10
 
-        Rectangle {
+        Item {
             implicitWidth: 16
-            color: "transparent"
 
             Image {
                 id: icon

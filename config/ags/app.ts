@@ -19,7 +19,7 @@ import AstalWp from "gi://AstalWp";
 import AstalHyprland from "gi://AstalHyprland";
 import Recorder from "./services/recorder";
 import Brightness from "./services/brightness";
-import NotificationQueue from "./services/notifications";
+// import NotificationQueue from "./services/notifications";
 
 App.start({
     css: style,
@@ -36,19 +36,19 @@ App.start({
         // App.get_monitors().map(Bar);
 
         // show notifications if available
-        {
-            const notifs = NotificationQueue.get_default();
-            const dispose = createBinding(notifs, "queue").subscribe(() => {
-                if (notifs.queue.length > 0) {
-                    App.get_monitors().map(monitor => window_handler.spawn_window("notifications", monitor));
-                }
-                else {
-                    window_handler.destroy_window("notifications");
-                }
-            });
-
-            onCleanup(() => dispose());
-        }
+        // {
+        //     const notifs = NotificationQueue.get_default();
+        //     const dispose = createBinding(notifs, "queue").subscribe(() => {
+        //         if (notifs.queue.length > 0) {
+        //             App.get_monitors().map(monitor => window_handler.spawn_window("notifications", monitor));
+        //         }
+        //         else {
+        //             window_handler.destroy_window("notifications");
+        //         }
+        //     });
+        //
+        //     onCleanup(() => dispose());
+        // }
 
         // disable instant replay on battery
         {

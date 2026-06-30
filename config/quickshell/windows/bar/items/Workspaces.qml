@@ -28,13 +28,12 @@ BarItem {
         Repeater {
             model: root.workspaces
 
-            delegate: WrapperRectangle {
+            delegate: WrapperItem {
                 id: workspace
 
                 required property HyprlandWorkspace modelData
 
                 Layout.alignment: Qt.AlignCenter
-                color: "transparent"
 
                 WrapperMouseArea {
                     id: mouseArea

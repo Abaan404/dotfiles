@@ -11,16 +11,16 @@ import qs.windows
 import Colors
 
 PanelWindow { // qmllint disable uncreatable-type
+    visible: false
+    color: "transparent"
+    implicitWidth: 400
+    implicitHeight: 690
+
+    exclusionMode: ExclusionMode.Ignore
+
     mask: Region {
         regions: [shutdownButton.region, rebootButton.region, suspendButton.region, hibernateButton.region]
     }
-
-    implicitWidth: 400
-    implicitHeight: 690
-    color: "transparent"
-
-    exclusionMode: ExclusionMode.Ignore
-    visible: false
 
     anchors {
         right: true
@@ -30,9 +30,8 @@ PanelWindow { // qmllint disable uncreatable-type
         WindowState.register("power", this);
     }
 
-    WrapperRectangle {
+    WrapperItem {
         rightMargin: parent.visible ? 40 : -40
-        color: "transparent"
 
         Behavior on rightMargin {
             NumberAnimation {

@@ -10,6 +10,12 @@ import Colors
 import qs.windows
 
 PanelWindow { // qmllint disable uncreatable-type
+    visible: false
+    color: "transparent"
+    implicitHeight: 200
+
+    exclusionMode: ExclusionMode.Ignore
+
     mask: Region {
         item: maskItem
     }
@@ -20,11 +26,6 @@ PanelWindow { // qmllint disable uncreatable-type
         right: true
     }
 
-    implicitHeight: 200
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
-    visible: false
-
     margins { // qmllint disable unqualified unresolved-type
         top: 50 // qmllint disable missing-property
     }
@@ -33,9 +34,8 @@ PanelWindow { // qmllint disable uncreatable-type
         WindowState.register("mpris", this);
     }
 
-    WrapperRectangle {
+    WrapperItem {
         topMargin: parent.visible ? 0 : -50
-        color: "transparent"
 
         anchors {
             horizontalCenter: parent.horizontalCenter
