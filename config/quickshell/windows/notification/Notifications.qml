@@ -51,15 +51,22 @@ PanelWindow { // qmllint disable uncreatable-type
             spacing: 20
             anchors.fill: parent
 
-            delegate: Popup {
+            delegate: WrapperItem {
                 required property var modelData
+                readonly property Region region: Region {
+                    item: popup
+                }
 
-                clip: true
                 width: ListView.view.width
+                clip: true
 
-                notification: modelData.notification
-                createdAt: modelData.createdAt
-                expireAt: modelData.expireAt
+                Popup {
+                    id: popup
+
+                    notification: parent.modelData.notification
+                    createdAt: parent.modelData.createdAt
+                    expireAt: parent.modelData.expireAt
+                }
             }
 
             // FIXME add doesnt work but populate works due to model being
@@ -69,7 +76,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 NumberAnimation {
                     property: "topMargin"
                     from: -50
-                    to: 10
+                    to: 0
                     duration: 400
                     easing.type: Easing.OutBack
                 }
