@@ -142,7 +142,7 @@ bind({
 bind({
     ["SUPER"] = {
         ["M"] = hl.dsp.exec_cmd('qs ipc call power toggle'),
-        ["G"] = hl.dsp.exec_cmd('ags request "window replaymenu"'),
+        ["G"] = hl.dsp.exec_cmd('qs ipc call replay toggle'),
         ["L"] = hl.dsp.exec_cmd("loginctl lock-session"),
         ["H"] = hl.dsp.exec_cmd("switch-theme"),
         ["GRAVE"] = hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),

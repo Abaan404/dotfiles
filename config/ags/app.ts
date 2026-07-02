@@ -10,7 +10,7 @@ import window_handler from "./utils/window";
 // import Mpris from "./windows/Mpris";
 // import Media from "./windows/Media";
 import Glance from "./windows/Glance";
-import ReplayMenu from "./windows/ReplayMenu";
+// import ReplayMenu from "./windows/ReplayMenu";
 // import Notifications from "./windows/Notifications";
 
 import AstalBattery from "gi://AstalBattery";
@@ -29,7 +29,7 @@ App.start({
         // window_handler.register_window("mpris", Mpris);
         // window_handler.register_window("media", Media);
         window_handler.register_window("glance", Glance);
-        window_handler.register_window("replaymenu", ReplayMenu);
+        // window_handler.register_window("replaymenu", ReplayMenu);
         // window_handler.register_window("notifications", Notifications); // TODO fix notification or rewrite in QuickShell
 
         // display bar and notifications by default
