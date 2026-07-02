@@ -1,7 +1,11 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls.impl 2.15
 
+import Quickshell
 import Quickshell.Io
+
+import Colors
 
 import qs.windows.bar
 
@@ -13,44 +17,110 @@ BarItem {
     RowLayout {
         spacing: 13
 
-        BarText {
+        RowLayout {
             id: mem
+
+            function update(): void {
+                memFile.reload();
+
+                const totalKb = Number(memFile.text().match(/^MemTotal:\s+(\d+)/m)?.[1] ?? 0);
+                const availableKb = Number(memFile.text().match(/^MemAvailable:\s+(\d+)/m)?.[1] ?? 0);
+
+                const usedGb = (totalKb - availableKb) / (1024 * 1024);
+
+                memText.text = `${Math.round(usedGb)}G`;
+            }
+
+            FileView {
+                id: memFile
+                path: "/proc/meminfo"
+            }
+
+            ColorImage {
+                source: Quickshell.iconPath("nvidia-ram-symbolic")
+
+                color: Colors.text
+
+                sourceSize {
+                    width: 14
+                    height: 14
+                }
+            }
+
+            BarText {
+                id: memText
+
+                text: "0G"
+            }
         }
 
-        BarText {
+        RowLayout {
             id: cpu
-        }
-    }
 
-    Process {
-        id: cpuProc
+            property int idle: 0
+            property int total: 0
 
-        command: ["bash", "-c", "top -bn1 | sed -n '/Cpu/p' | awk '{print $2}' | sed 's/..,//'"]
-        running: true
+            // https://stackoverflow.com/questions/3017162/how-to-get-total-cpu-usage-in-linux-using-c/3017438#3017438
+            function update(): void {
+                statFile.reload();
+                    // qmlformat off
+                    const jiffies = statFile
+                        .text()
+                        .split("\n")[0]
+                        .trim()
+                        .split(/\s+/)
+                        .slice(1)
+                        .map(Number);
+                    // qmlformat on
 
-        stdout: StdioCollector {
-            onStreamFinished: cpu.text = ` ${this.text.trim()}%`
-        }
-    }
+                const idle = jiffies[3] + jiffies[4];
+                const total = jiffies.reduce((a, b) => a + b, 0);
 
-    Process {
-        id: memProc
+                const totalOverPeriod = total - cpu.total;
+                const idleOverPeriod = idle - cpu.idle;
 
-        command: ["bash", "-c", "free -hg | awk 'NR == 2 {print $3}' | sed 's/Gi/G/'"]
-        running: true
+                cpu.idle = idle;
+                cpu.total = total;
 
-        stdout: StdioCollector {
-            onStreamFinished: mem.text = ` ${this.text.trim()}`
+                const usage = (1 - (idleOverPeriod / totalOverPeriod)) * 100;
+
+                cpuText.text = `${usage.toFixed(1)}%`;
+            }
+
+            FileView {
+                id: statFile
+                path: "/proc/stat"
+            }
+
+            ColorImage {
+                source: Quickshell.iconPath("applications-electronics-symbolic")
+
+                color: Colors.text
+
+                Layout.alignment: Qt.AlignCenter
+
+                sourceSize {
+                    width: 14
+                    height: 14
+                }
+            }
+
+            BarText {
+                id: cpuText
+
+                text: "0.0%"
+            }
         }
     }
 
     Timer {
-        interval: 2000
+        interval: 1000
         running: true
         repeat: true
+
         onTriggered: {
-            memProc.running = true;
-            cpuProc.running = true;
+            mem.update();
+            cpu.update();
         }
     }
 }

@@ -21,39 +21,42 @@ BarItem {
     }
 
     hoverEnabled: false
+    padding: 0
 
     RowLayout {
-        spacing: 25
+        spacing: 0
 
         Repeater {
             model: root.workspaces
 
-            delegate: WrapperItem {
-                id: workspace
+            delegate: WrapperMouseArea {
+                id: mouseArea
 
                 required property HyprlandWorkspace modelData
+                required property int index
+
+                leftMargin: index === 0 ? 14 : 12.5
+                rightMargin: index === root.workspaces.length ? 14 : 12.5
+                hoverEnabled: true
+                resizeChild: false
+
+                onClicked: modelData.activate()
 
                 Layout.alignment: Qt.AlignCenter
+                Layout.fillHeight: true
 
-                WrapperMouseArea {
-                    id: mouseArea
+                BarText {
+                    id: text
 
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: workspace.modelData.activate()
+                    anchors.centerIn: parent
+                    text: root.glyphs[mouseArea.modelData?.id - 1] ?? root.extraGlyph
+                    color: mouseArea.modelData.active || mouseArea.containsMouse ? "white" : Colors.text
 
-                    BarText {
-                        id: text
-
-                        text: root.glyphs[workspace.modelData?.id - 1] ?? root.extraGlyph
-                        color: workspace.modelData.active || mouseArea.containsMouse ? "white" : Colors.text
-
-                        Behavior on color {
-                            ColorAnimation {
-                                target: text
-                                property: "color"
-                                duration: 100
-                            }
+                    Behavior on color {
+                        ColorAnimation {
+                            target: text
+                            property: "color"
+                            duration: 100
                         }
                     }
                 }

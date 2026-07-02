@@ -12,6 +12,10 @@ PanelWindow { // qmllint disable uncreatable-type
     implicitHeight: 30
     color: "transparent"
 
+    mask: Region {
+        regions: [...left.children.map(item => item.region), ...middle.children.map(item => item.region), ...right.children.map(item => item.region)]
+    }
+
     anchors {
         top: true
         left: true
@@ -29,6 +33,8 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     RowLayout {
+        id: left
+
         spacing: 10
 
         anchors {
@@ -58,6 +64,8 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     RowLayout {
+        id: middle
+
         spacing: 10
 
         anchors {
@@ -72,6 +80,8 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     RowLayout {
+        id: right
+
         spacing: 10
 
         anchors {
