@@ -47,7 +47,7 @@ RowLayout {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
 
-                        text: button.modelData.identifier
+                        text: button.modelData.text
                         color: Colors.text
 
                         elide: Text.ElideRight
