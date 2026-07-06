@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 
 import Services
@@ -64,7 +63,7 @@ PanelWindow { // qmllint disable uncreatable-type
                     id: shutdownButton
                     source: Quickshell.iconPath("system-shutdown-symbolic")
                     sourceColor: Colors.bad
-                    onClicked: shutdown.running = true
+                    onClicked: Quickshell.execDetached(["systemctl", "poweroff"])
                 }
             }
 
@@ -82,7 +81,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 MenuButton {
                     id: rebootButton
                     source: Quickshell.iconPath("system-reboot-symbolic")
-                    onClicked: reboot.running = true
+                    onClicked: Quickshell.execDetached(["systemctl", "reboot"])
                 }
             }
 
@@ -100,7 +99,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 MenuButton {
                     id: suspendButton
                     source: Quickshell.iconPath("system-suspend-symbolic")
-                    onClicked: suspend.running = true
+                    onClicked: Quickshell.execDetached(["systemctl", "suspend"])
                 }
             }
 
@@ -118,7 +117,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 MenuButton {
                     id: hibernateButton
                     source: Quickshell.iconPath("system-hibernate-symbolic")
-                    onClicked: hibernate.running = true
+                    onClicked: Quickshell.execDetached(["systemctl", "hibernate"])
                 }
             }
         }
@@ -126,25 +125,5 @@ PanelWindow { // qmllint disable uncreatable-type
 
     WindowIpc {
         target: "power"
-    }
-
-    Process {
-        id: shutdown
-        command: ["systemctl", "poweroff"]
-    }
-
-    Process {
-        id: reboot
-        command: ["systemctl", "reboot"]
-    }
-
-    Process {
-        id: suspend
-        command: ["systemctl", "suspend"]
-    }
-
-    Process {
-        id: hibernate
-        command: ["systemctl", "hibernate"]
     }
 }

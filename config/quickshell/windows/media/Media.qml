@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Layouts
 
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
@@ -201,11 +200,13 @@ PanelWindow { // qmllint disable uncreatable-type
                                     }
 
                                     onClickedNode: output => {
-                                        procPwLink.input = node.id;
-                                        procPwLink.output = output.id;
-                                        procPwLink.disconnect = Boolean(Pipewire.links.values.find(link => link.source.id === streamEndpoint.node.id));
+                                        const disconnect = Boolean(Pipewire.links.values.find(link => link.source.id === streamEndpoint.node.id));
 
-                                        procPwLink.running = true;
+                                        if (disconnect) {
+                                            Quickshell.execDetached(["pw-link", "--disconnect", node.id, output.id]);
+                                        } else {
+                                            Quickshell.execDetached(["pw-link", node.id, output.id]);
+                                        }
                                     }
                                 }
                             }
@@ -218,17 +219,6 @@ PanelWindow { // qmllint disable uncreatable-type
         PwObjectTracker {
             objects: [...Pipewire.nodes.values.filter(node => node.isStream)]
         }
-    }
-
-    Process {
-        id: procPwLink
-
-        property int input
-        property int output
-        property bool disconnect
-        running: false
-
-        command: disconnect ? ["pw-link", "--disconnect", input, output] : ["pw-link", input, output]
     }
 
     WindowIpc {
