@@ -17,10 +17,7 @@ PanelWindow { // qmllint disable uncreatable-type
     implicitHeight: 510
 
     exclusionMode: ExclusionMode.Ignore
-
-    mask: Region {
-        regions: [replayButton.region, recordButton.region, muteButton.region, pauseButton.region]
-    }
+    mask: widget.region
 
     anchors {
         left: true
@@ -31,9 +28,11 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WrapperItem {
-        leftMargin: parent.visible ? 40 : -40
+        x: parent.visible ? 40 : -40
 
-        Behavior on leftMargin {
+        onXChanged: widget.region.changed()
+
+        Behavior on x {
             NumberAnimation {
                 duration: 400
                 easing.type: Easing.OutBack
@@ -42,10 +41,15 @@ PanelWindow { // qmllint disable uncreatable-type
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
         }
 
         ColumnLayout {
+            id: widget
+
+            property Region region: Region {
+                regions: [replayButton.region, recordButton.region, muteButton.region, pauseButton.region]
+            }
+
             spacing: 30
 
             RowLayout {
@@ -96,7 +100,7 @@ PanelWindow { // qmllint disable uncreatable-type
                     Behavior on revealProgress {
                         NumberAnimation {
                             id: revealAnim
-                            duration: 200
+                            duration: 400
                             easing.type: Easing.OutCubic
                         }
                     }

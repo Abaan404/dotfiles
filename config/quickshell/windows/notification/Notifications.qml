@@ -1,4 +1,3 @@
-pragma ComponentBehavior: Bound
 import QtQuick
 
 import Quickshell
@@ -7,16 +6,13 @@ import Quickshell.Widgets
 import Services
 
 PanelWindow { // qmllint disable uncreatable-type
-    mask: Region {
-        regions: widgets.contentItem.children.map(child => child.region)
-    }
-
     visible: NotificationState.objects.values.length > 0
     implicitWidth: 500
     color: "transparent"
 
     exclusionMode: ExclusionMode.Ignore
     focusable: mouseArea.containsMouse
+    mask: widget.region
 
     anchors {
         top: true
@@ -32,20 +28,31 @@ PanelWindow { // qmllint disable uncreatable-type
     WrapperMouseArea {
         id: mouseArea
 
-        anchors.topMargin: parent.visible ? 0 : -50
-        anchors.fill: parent
-
+        y: parent.visible ? 0 : -50
+        implicitHeight: parent.height
         hoverEnabled: true
 
-        Behavior on anchors.topMargin {
+        onYChanged: widget.region.changed()
+
+        Behavior on y {
             NumberAnimation {
                 duration: 400
                 easing.type: Easing.OutBack
             }
         }
 
+        anchors {
+            right: parent.right
+            left: parent.left
+        }
+
         ListView {
-            id: widgets
+            id: widget
+
+            property Region region: Region {
+                regions: widget.contentItem.children.map(child => child.region)
+                radius: 10
+            }
 
             model: NotificationState.objects.values
             spacing: 20
@@ -55,6 +62,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 required property var modelData
                 readonly property Region region: Region {
                     item: popup
+                    radius: 10
                 }
 
                 width: ListView.view.width

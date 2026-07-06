@@ -17,6 +17,7 @@ WrapperMouseArea {
 
     readonly property Region region: Region {
         item: root
+        radius: 10
     }
 
     implicitWidth: 130
@@ -24,7 +25,7 @@ WrapperMouseArea {
 
     Behavior on implicitHeight {
         NumberAnimation {
-            duration: 200
+            duration: 400
             easing.type: Easing.OutCubic
         }
     }

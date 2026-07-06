@@ -17,10 +17,7 @@ PanelWindow { // qmllint disable uncreatable-type
     implicitHeight: 690
 
     exclusionMode: ExclusionMode.Ignore
-
-    mask: Region {
-        regions: [shutdownButton.region, rebootButton.region, suspendButton.region, hibernateButton.region]
-    }
+    mask: widget.region
 
     anchors {
         right: true
@@ -31,9 +28,11 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WrapperItem {
-        rightMargin: parent.visible ? 40 : -40
+        x: parent.visible ? parent.width - width - 40 : parent.width - width + 40
 
-        Behavior on rightMargin {
+        onXChanged: widget.region.changed()
+
+        Behavior on x {
             NumberAnimation {
                 duration: 400
                 easing.type: Easing.OutBack
@@ -42,10 +41,15 @@ PanelWindow { // qmllint disable uncreatable-type
 
         anchors {
             verticalCenter: parent.verticalCenter
-            right: parent.right
         }
 
         ColumnLayout {
+            id: widget
+
+            property Region region: Region {
+                regions: [shutdownButton.region, rebootButton.region, suspendButton.region, hibernateButton.region]
+            }
+
             spacing: 30
 
             RowLayout {

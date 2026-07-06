@@ -1,4 +1,3 @@
-pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
@@ -18,10 +17,7 @@ PanelWindow { // qmllint disable uncreatable-type
 
     visible: false
     exclusionMode: ExclusionMode.Ignore
-
-    mask: Region {
-        item: maskItem
-    }
+    mask: widget.region
 
     QtObject {
         id: internal
@@ -45,9 +41,11 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WrapperItem {
-        topMargin: parent.visible ? 0 : -50
+        y: parent.visible ? 0 : -50
 
-        Behavior on topMargin {
+        onYChanged: widget.region.changed()
+
+        Behavior on y {
             NumberAnimation {
                 duration: 400
                 easing.type: Easing.OutBack
@@ -57,11 +55,14 @@ PanelWindow { // qmllint disable uncreatable-type
         anchors {
             right: parent.right
             left: parent.left
-            top: parent.top
         }
 
         WrapperRectangle {
-            id: maskItem
+            id: widget
+
+            property Region region: Region {
+                item: widget
+            }
 
             margin: 20
             radius: 10

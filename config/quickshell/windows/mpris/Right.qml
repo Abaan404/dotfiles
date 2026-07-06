@@ -51,8 +51,7 @@ ColumnLayout {
 
                 Behavior on color {
                     ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
+                        duration: 400
                     }
                 }
             }

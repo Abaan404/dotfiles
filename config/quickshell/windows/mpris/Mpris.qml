@@ -15,10 +15,7 @@ PanelWindow { // qmllint disable uncreatable-type
     implicitHeight: 200
 
     exclusionMode: ExclusionMode.Ignore
-
-    mask: Region {
-        item: maskItem
-    }
+    mask: widget.region
 
     anchors {
         top: true
@@ -35,7 +32,16 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WrapperItem {
-        topMargin: parent.visible ? 0 : -50
+        y: parent.visible ? 0 : -50
+
+        onYChanged: widget.region.changed()
+
+        Behavior on y {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutBack
+            }
+        }
 
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -49,7 +55,12 @@ PanelWindow { // qmllint disable uncreatable-type
         }
 
         WrapperRectangle {
-            id: maskItem
+            id: widget
+
+            property Region region: Region {
+                item: widget
+                radius: 10
+            }
 
             color: Colors.primary
             radius: 10
