@@ -32,6 +32,12 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    # quickshell (REMOVEME after https://git.outfoxxed.me/quickshell/quickshell/commit/ead3b00afdf603bb6d4c30fc9c9f582d8f712168 is in nixpkgs)
+    quickshell = {
+      url = "github:quickshell-mirror/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # locally maintained packages
     local = {
       url = "path:./nix/local";

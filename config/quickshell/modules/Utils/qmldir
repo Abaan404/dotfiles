@@ -1,4 +1,6 @@
 module Utils
-singleton MathHelper 1.0 MathHelper.qml
-singleton StringsHelper 1.0 StringsHelper.qml
+singleton BatteryHelper 1.0 BatteryHelper.qml
 singleton ColorHelper 1.0 ColorHelper.qml
+singleton MathHelper 1.0 MathHelper.qml
+singleton NetworkingHelper 1.0 NetworkingHelper.qml
+singleton StringsHelper 1.0 StringsHelper.qml

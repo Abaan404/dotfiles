@@ -97,7 +97,7 @@
     # Using custom singletons is not picked up by qmllint so doing this in order to supply a qmldir
     package = pkgs.symlinkJoin {
       name = "quickshell-localmodule";
-      paths = [ pkgs.quickshell ];
+      paths = [ inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.quickshell ];
       buildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/quickshell \

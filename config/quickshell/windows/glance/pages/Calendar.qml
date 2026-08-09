@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -24,10 +25,10 @@ WrapperRectangle {
 
         WrapperItem {
             margin: 8
+
             Layout.alignment: Qt.AlignHCenter
 
             ColumnLayout {
-
                 spacing: 0
 
                 RowLayout {

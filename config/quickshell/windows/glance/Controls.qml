@@ -17,7 +17,7 @@ import Utils
 WrapperRectangle {
     id: controls
 
-    property string selectedName: "time"
+    property int selectedIdx: 0
     property Region region: Region {
         item: controls
         radius: 20
@@ -28,21 +28,19 @@ WrapperRectangle {
 
     color: Colors.colors_color1
 
-    onSelectedNameChanged: console.log(selectedName)
-
     resizeChild: false
 
     component ControlButton: WrapperMouseArea {
         id: controlButton
 
         required property string source
-        required property string name
+        required property int idx
         property int sourceSize: 20
         property double value: 0
 
         hoverEnabled: true
 
-        onClicked: controls.selectedName = name
+        onClicked: controls.selectedIdx = idx
 
         ProgressBar {
             id: control
@@ -106,76 +104,10 @@ WrapperRectangle {
         ControlButton {
             id: internet
 
-            readonly property WifiDevice wifi: Networking.devices.values.find(dev => dev.type === DeviceType.Wifi && dev.connected) ?? null
-            readonly property WiredDevice wired: Networking.devices.values.find(dev => dev.type === DeviceType.Wired && dev.connected) ?? null
-
-            readonly property WifiNetwork wifiNetwork: wifi?.networks.values.find(n => n.connected) ?? null
-
-            readonly property Network wiredNetwork: wired?.network ?? null // qmllint disable unresolved-type
-
-            name: "internet"
+            idx: 0
             sourceSize: 20
-            value: internet.wifiNetwork?.signalStrength ?? internet.wired.state == ConnectionState.Connected
-
-            source: {
-                const full = Networking.connectivity === NetworkConnectivity.Full;
-
-                if (internet.wifi) {
-                    if (internet.wifi.state == ConnectionState.Connected) {
-                        if (internet.wifi.mode === WifiDeviceMode.AccessPoint) { // qmllint disable unresolved-type
-                            return Quickshell.iconPath("network-wireless-hotspot-symbolic");
-                        }
-
-                        if (!full) {
-                            return Quickshell.iconPath("network-wireless-no-route-symbolic");
-                        }
-
-                        const strength = internet.wifiNetwork?.signalStrength ?? 0;
-
-                        if (strength === 0) {
-                            return Quickshell.iconPath("network-wireless-signal-none-symbolic");
-                        }
-                        // qmlformat off
-                        const icon = StringsHelper.symbolicStrength(internet.wifiNetwork?.signalStrength ?? 0, [
-                            "network-wireless-signal-excellent-symbolic",
-                            "network-wireless-signal-good-symbolic",
-                            "network-wireless-signal-ok-symbolic",
-                            "network-wireless-signal-weak-symbolic",
-                        ], 1);
-                        // qmlformat on
-
-                        return Quickshell.iconPath(icon);
-                    }
-
-                    if (internet.wifi.state == ConnectionState.Connecting) {
-                        return Quickshell.iconPath("network-wireless-acquiring-symbolic");
-                    }
-
-                    return Quickshell.iconPath("network-wireless-offline-symbolic");
-                }
-
-                if (internet.wired) {
-                    if (internet.wired.state == ConnectionState.Connecting) {
-                        return Quickshell.iconPath("network-wired-acquiring-symbolic");
-                    }
-
-                    if (internet.wired.state == ConnectionState.Connected) {
-                        if (!full) {
-                            return Quickshell.iconPath("network-wired-no-route-symbolic");
-                        }
-
-                        return Quickshell.iconPath("network-wired-symbolic");
-                    }
-
-                    if (Networking.connectivity !== NetworkConnectivity.Full) {
-                        return Quickshell.iconPath("network-wireless-no-route-symbolic");
-                    }
-
-                    return Quickshell.iconPath("network-wired-disconnected-symbolic");
-                }
-
-                return Quickshell.iconPath("dialog-warning-symbolic");
-            }
+            value: NetworkingHelper.wifiNetwork?.signalStrength ?? NetworkingHelper.wired?.state == ConnectionState.Connected
+            source: Quickshell.iconPath(NetworkingHelper.defaultIconName)
         }
 
         ControlButton {
@@ -183,9 +115,9 @@ WrapperRectangle {
 
             readonly property BluetoothDevice device: Bluetooth.devices.values.find(dev => dev.connected) ?? null // qmllint disable unresolved-type
 
-            name: "bluetooth"
+            idx: 1
             sourceSize: 26
-            value: device.batteryAvailable ? device.battery : 0
+            value: device?.batteryAvailable ? device.battery : 0
 
             source: {
                 if (!device) {
@@ -202,7 +134,7 @@ WrapperRectangle {
             readonly property UPowerDevice device: UPower.devices.values.find(dev => dev.isLaptopBattery) ?? null
             readonly property real percentage: battery?.device?.percentage ?? 0
 
-            name: "battery"
+            idx: 2
             sourceSize: 26
             value: percentage
 
@@ -241,7 +173,7 @@ WrapperRectangle {
             readonly property real percentage: battery?.device?.percentage ?? 0
             value: parseInt(Qt.formatDateTime(clock.date, "H")) / 24 + parseInt(Qt.formatDateTime(clock.date, "m")) / (24 * 60)
 
-            name: "time"
+            idx: 3
             sourceSize: 20
 
             source: Quickshell.iconPath("timer-symbolic")

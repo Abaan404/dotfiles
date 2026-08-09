@@ -16,6 +16,7 @@ PanelWindow { // qmllint disable uncreatable-type
     visible: true
     exclusionMode: ExclusionMode.Ignore
     mask: widget.region
+    focusable: mouseArea.containsMouse
 
     anchors {
         top: true
@@ -32,7 +33,10 @@ PanelWindow { // qmllint disable uncreatable-type
         WindowState.register("glance", this);
     }
 
-    WrapperItem {
+    WrapperMouseArea {
+        id: mouseArea
+        hoverEnabled: true
+
         y: parent.visible ? 0 : -50
 
         Behavior on y {
@@ -60,6 +64,8 @@ PanelWindow { // qmllint disable uncreatable-type
                 SwipeView {
                     id: view
 
+                    Layout.preferredHeight: 0
+
                     property Region region: Region {
                         item: view
                         radius: 20
@@ -73,7 +79,7 @@ PanelWindow { // qmllint disable uncreatable-type
 
                     clip: true
 
-                    Calendar {}
+                    Network {}
                     Calendar {}
                     Calendar {}
                     Calendar {}
@@ -82,17 +88,7 @@ PanelWindow { // qmllint disable uncreatable-type
                 Controls {
                     id: controls
 
-                    onSelectedNameChanged: () => {
-                        if (selectedName === "internet") {
-                            view.currentIndex = 0;
-                        } else if (selectedName === "bluetooth") {
-                            view.currentIndex = 1;
-                        } else if (selectedName === "battery") {
-                            view.currentIndex = 2;
-                        } else if (selectedName === "time") {
-                            view.currentIndex = 3;
-                        }
-                    }
+                    onSelectedIdxChanged: view.currentIndex = selectedIdx
                 }
             }
         }
