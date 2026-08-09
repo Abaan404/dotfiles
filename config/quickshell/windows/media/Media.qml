@@ -62,6 +62,7 @@ PanelWindow { // qmllint disable uncreatable-type
 
             property Region region: Region {
                 item: widget
+                radius: 10
             }
 
             margin: 20
