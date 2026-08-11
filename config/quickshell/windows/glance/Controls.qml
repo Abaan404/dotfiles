@@ -8,7 +8,6 @@ import QtQuick.Controls.impl 2.15
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Networking
-import Quickshell.Bluetooth
 import Quickshell.Services.UPower
 
 import Colors
@@ -113,19 +112,11 @@ WrapperRectangle {
         ControlButton {
             id: bluetooth
 
-            readonly property BluetoothDevice device: Bluetooth.devices.values.find(dev => dev.connected) ?? null // qmllint disable unresolved-type
-
             idx: 1
             sourceSize: 26
-            value: device?.batteryAvailable ? device.battery : 0
+            value: BluetoothHelper.connected?.batteryAvailable ? BluetoothHelper.connected?.battery : 0
 
-            source: {
-                if (!device) {
-                    return Quickshell.iconPath("network-bluetooth-inactive");
-                }
-
-                return Quickshell.iconPath("network-bluetooth-activated");
-            }
+            source: Quickshell.iconPath(BluetoothHelper.iconName(BluetoothHelper.connected))
         }
 
         ControlButton {

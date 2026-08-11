@@ -80,7 +80,7 @@ PanelWindow { // qmllint disable uncreatable-type
                     clip: true
 
                     Network {}
-                    Calendar {}
+                    Bluetooth {}
                     Calendar {}
                     Calendar {}
                 }
@@ -89,6 +89,7 @@ PanelWindow { // qmllint disable uncreatable-type
                     id: controls
 
                     onSelectedIdxChanged: view.currentIndex = selectedIdx
+                    Component.onCompleted: selectedIdx = view.currentIndex
                 }
             }
         }

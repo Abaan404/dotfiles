@@ -13,151 +13,22 @@ import Colors
 import Utils
 
 WrapperRectangle {
-    id: root
-
     color: Colors.colors_color1
     radius: 20
     margin: 14
 
-    component Button: WrapperMouseArea {
-        id: button
+    component NetworkEntry: PageEntry {
+        id: entry
 
-        property alias childRect: rect.child
-        property color background: Colors.primary
-        property int rectMargin: 8
-        property int rectSideMargin: rectMargin
-
-        hoverEnabled: true
-
-        WrapperRectangle {
-            id: rect
-
-            radius: 10
-            margin: button.rectMargin
-            leftMargin: button.rectSideMargin
-            rightMargin: button.rectSideMargin
-
-            color: ColorHelper.mouse(button.background, button.containsMouse, button.containsPress)
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: 400
-                    easing.type: Easing.OutExpo
-                }
-            }
-        }
-    }
-
-    component NetworkButton: Button {
-        id: networkButton
+        property WifiNetwork network: null
 
         visible: network !== null
 
-        property WifiNetwork network: null
-        property bool showPasswordInput: false
-
         background: network?.connected ? Colors.good : Colors.primary
-        rectSideMargin: 14
-        rectMargin: 12
+        source: Quickshell.iconPath(NetworkingHelper.iconNameWifi(entry.network))
+        text: entry.network?.name ?? "Unknown"
 
-        childRect: ColumnLayout {
-            spacing: 10
-
-            RowLayout {
-                spacing: 18
-
-                ColorImage {
-                    sourceSize {
-                        width: 26
-                        height: 26
-                    }
-
-                    source: Quickshell.iconPath(NetworkingHelper.iconNameWifi(networkButton.network))
-                    color: Colors.text
-                }
-
-                Text {
-                    Layout.fillWidth: true
-
-                    text: networkButton.network?.name ?? "Unknown"
-                    color: Colors.text
-                    elide: Text.ElideRight
-
-                    font {
-                        pixelSize: 20
-                        weight: Font.Bold
-                    }
-                }
-            }
-
-            RowLayout {
-                spacing: 10
-                visible: networkButton.showPasswordInput
-
-                WrapperRectangle {
-                    Layout.fillWidth: true
-
-                    margin: 5
-                    leftMargin: 12
-                    rightMargin: 12
-                    radius: 10
-                    color: Colors.secondary
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-                    }
-
-                    TextInput {
-                        id: input
-
-                        clip: true
-
-                        text: ""
-                        color: Colors.text
-                        passwordMaskDelay: 10
-                        echoMode: TextInput.Password
-
-                        onAccepted: networkButton.network?.connectWithPsk(text)
-
-                        font {
-                            pixelSize: 14
-                            weight: Font.ExtraBold
-                        }
-                    }
-                }
-
-                WrapperMouseArea {
-                    id: button
-
-                    hoverEnabled: true
-
-                    Layout.preferredHeight: parent.height
-                    Layout.preferredWidth: parent.height
-
-                    onClicked: networkButton.network?.connectWithPsk(input.text)
-
-                    WrapperRectangle {
-                        color: ColorHelper.mouseWithColor(Colors.good, Qt.lighter(Colors.good, 0.9), button.containsMouse, button.containsPress)
-                        radius: 10
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-
-                        ColorImage {
-                            source: Quickshell.iconPath("reply-symbolic")
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            color: Colors.text
-                        }
-                    }
-                }
-            }
-        }
+        onClicked: network.connect()
     }
 
     ColumnLayout {
@@ -166,13 +37,11 @@ WrapperRectangle {
         RowLayout {
             spacing: 8
 
-            Button {
-                id: search
-
+            PageButton {
                 background: NetworkingHelper.wifi?.scannerEnabled && Networking.wifiEnabled ? Colors.good : Colors.primary
                 onClicked: NetworkingHelper.wifi.scannerEnabled = !NetworkingHelper.wifi.scannerEnabled
 
-                childRect: ColorImage {
+                ColorImage {
                     sourceSize {
                         width: 24
                         height: 24
@@ -183,13 +52,12 @@ WrapperRectangle {
                 }
             }
 
-            Button {
-                id: flightMode
-
+            PageButton {
+                // rfkill here
                 background: Networking.wifiEnabled ? Colors.primary : Colors.warning
                 onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
 
-                childRect: ColorImage {
+                ColorImage {
                     sourceSize {
                         width: 24
                         height: 24
@@ -200,9 +68,7 @@ WrapperRectangle {
                 }
             }
 
-            Button {
-                id: current
-
+            PageButton {
                 Layout.fillWidth: true
 
                 rectSideMargin: 16
@@ -231,7 +97,7 @@ WrapperRectangle {
                     }
                 }
 
-                childRect: RowLayout {
+                RowLayout {
                     spacing: 14
 
                     ColorImage {
@@ -280,7 +146,7 @@ WrapperRectangle {
             color: Colors.accent
         }
 
-        NetworkButton {
+        NetworkEntry {
             id: selected
 
             property string name: ""
@@ -288,7 +154,75 @@ WrapperRectangle {
             Layout.fillWidth: true
             network: NetworkingHelper.wifi?.networks.values.find(n => n.name === name) ?? null
 
-            showPasswordInput: true
+            hoverEnabled: false
+            onPressed: mouse => mouse.accepted = false
+
+            RowLayout {
+                spacing: 10
+
+                WrapperRectangle {
+                    Layout.fillWidth: true
+
+                    margin: 5
+                    leftMargin: 12
+                    rightMargin: 12
+                    radius: 10
+                    color: Colors.secondary
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
+
+                    TextInput {
+                        id: input
+
+                        clip: true
+
+                        text: ""
+                        color: Colors.text
+                        passwordMaskDelay: 10
+                        echoMode: TextInput.Password
+
+                        onAccepted: selected.network?.connectWithPsk(text)
+
+                        font {
+                            pixelSize: 14
+                            weight: Font.ExtraBold
+                        }
+                    }
+                }
+
+                WrapperMouseArea {
+                    id: button
+
+                    hoverEnabled: true
+
+                    Layout.preferredHeight: parent.height
+                    Layout.preferredWidth: parent.height
+
+                    onClicked: selected.network?.connectWithPsk(input.text)
+
+                    WrapperRectangle {
+                        color: ColorHelper.mouseWithColor(Colors.good, Qt.lighter(Colors.good, 0.9), button.containsMouse, button.containsPress)
+                        radius: 10
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+
+                        ColorImage {
+                            source: Quickshell.iconPath("reply-symbolic")
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            color: Colors.text
+                        }
+                    }
+                }
+            }
         }
 
         ScrollView {
@@ -297,58 +231,7 @@ WrapperRectangle {
 
             clip: true
 
-            ListView {
-                id: view
-
-                spacing: 10
-
-                add: Transition {
-                    NumberAnimation {
-                        properties: "opacity"
-                        from: 0
-                        to: 1
-                        duration: 200
-                        easing.type: Easing.OutExpo
-                    }
-                    NumberAnimation {
-                        properties: "x"
-                        from: -view.width
-                        duration: 200
-                        easing.type: Easing.OutExpo
-                    }
-                }
-
-                remove: Transition {
-                    NumberAnimation {
-                        properties: "opacity"
-                        to: 0
-                        duration: 150
-                        easing.type: Easing.InExpo
-                    }
-                    NumberAnimation {
-                        properties: "x"
-                        to: view.width
-                        duration: 150
-                        easing.type: Easing.InExpo
-                    }
-                }
-
-                move: Transition {
-                    NumberAnimation {
-                        properties: "x,y"
-                        duration: 200
-                        easing.type: Easing.OutExpo
-                    }
-                }
-
-                displaced: Transition {
-                    NumberAnimation {
-                        properties: "x,y"
-                        duration: 200
-                        easing.type: Easing.OutExpo
-                    }
-                }
-
+            PageView {
                 model: ScriptModel {
                     objectProp: "name"
                     values: {
@@ -364,28 +247,27 @@ WrapperRectangle {
                     }
                 }
 
-                delegate: NetworkButton {
+                delegate: WrapperItem {
                     id: item
 
                     required property var modelData
 
-                    network: modelData
                     implicitWidth: ListView.view.width
 
-                    onClicked: network.connect()
+                    NetworkEntry {
+                        network: item.modelData
+                    }
 
                     Connections {
-                        target: item.network
+                        target: item.modelData
 
                         function onConnectionFailed(reason) {
                             if (reason === ConnectionFailReason.NoSecrets) {
-                                selected.name = item.network.name;
+                                selected.name = item.modelData.name;
                             }
                         }
                     }
                 }
-
-                ScrollIndicator.vertical: ScrollIndicator {}
             }
         }
     }
