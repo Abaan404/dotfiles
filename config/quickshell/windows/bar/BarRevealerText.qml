@@ -26,11 +26,9 @@ RowLayout {
         Layout.preferredWidth: root.reveal ? implicitWidth : 0
 
         Behavior on Layout.preferredWidth {
-            SequentialAnimation {
-                NumberAnimation {
-                    duration: 400
-                    easing.type: Easing.OutCubic
-                }
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutCubic
             }
         }
     }

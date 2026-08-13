@@ -3,4 +3,5 @@ singleton BatteryHelper 1.0 BatteryHelper.qml
 singleton ColorHelper 1.0 ColorHelper.qml
 singleton MathHelper 1.0 MathHelper.qml
 singleton NetworkingHelper 1.0 NetworkingHelper.qml
+singleton BluetoothHelper 1.0 BluetoothHelper.qml
 singleton StringsHelper 1.0 StringsHelper.qml

@@ -35,8 +35,6 @@ Process {
             command.push(`--action=${name}=${text}`);
         }
 
-        console.log(command.join(" "));
-
         return command;
     }
 

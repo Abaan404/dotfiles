@@ -10,7 +10,7 @@ import qs.windows
 import qs.windows.glance.pages
 
 PanelWindow { // qmllint disable uncreatable-type
-    implicitWidth: 500
+    implicitWidth: 1000
     color: "transparent"
 
     visible: true
@@ -55,23 +55,35 @@ PanelWindow { // qmllint disable uncreatable-type
             id: widget
 
             property Region region: Region {
-                regions: [controls.region, view.region]
+                regions: [weather.region, controls.region, view.region]
             }
 
             RowLayout {
+                Layout.alignment: Qt.AlignRight
+
                 spacing: 20
+
+                ColumnLayout {
+                    Weather {
+                        id: weather
+                    }
+
+                    // spacer, Qt.AlignTop wasnt working for some reason
+                    Item {
+                        Layout.fillHeight: true
+                    }
+                }
 
                 SwipeView {
                     id: view
-
-                    Layout.preferredHeight: 0
 
                     property Region region: Region {
                         item: view
                         radius: 20
                     }
 
-                    Layout.fillWidth: true
+                    Layout.preferredHeight: 0
+                    Layout.preferredWidth: 350
                     Layout.fillHeight: true
 
                     orientation: Qt.Vertical
