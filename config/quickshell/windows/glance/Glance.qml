@@ -87,20 +87,25 @@ PanelWindow { // qmllint disable uncreatable-type
                     Layout.fillHeight: true
 
                     orientation: Qt.Vertical
-                    currentIndex: 3
+                    currentIndex: 2
 
                     clip: true
 
                     Network {}
                     Bluetooth {}
                     Calendar {}
-                    Calendar {}
                 }
 
                 Controls {
                     id: controls
 
-                    onSelectedIdxChanged: view.currentIndex = selectedIdx
+                    onSelectedIdxChanged: {
+                        if (selectedIdx < 0) {
+                            return;
+                        }
+
+                        view.currentIndex = selectedIdx;
+                    }
                     Component.onCompleted: selectedIdx = view.currentIndex
                 }
             }

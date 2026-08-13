@@ -125,7 +125,7 @@ WrapperRectangle {
             readonly property UPowerDevice device: UPower.devices.values.find(dev => dev.isLaptopBattery) ?? null
             readonly property real percentage: battery?.device?.percentage ?? 0
 
-            idx: 2
+            idx: -1
             sourceSize: 26
             value: percentage
 
@@ -164,7 +164,7 @@ WrapperRectangle {
             readonly property real percentage: battery?.device?.percentage ?? 0
             value: parseInt(Qt.formatDateTime(clock.date, "H")) / 24 + parseInt(Qt.formatDateTime(clock.date, "m")) / (24 * 60)
 
-            idx: 3
+            idx: 2
             sourceSize: 20
 
             source: Quickshell.iconPath("timer-symbolic")
