@@ -32,6 +32,9 @@ WrapperRectangle {
             return Colors.primary;
         }
 
+        // filter out devices with MAC addresses as its name
+        visible: entry.device?.address.replace(/:/g, "-", 5) !== entry.device?.name 
+
         source: Quickshell.iconPath(BluetoothHelper.iconName(entry.device))
         text: entry.device?.name ?? "Unknown"
 

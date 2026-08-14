@@ -12,71 +12,66 @@ import Utils
 
 import qs.windows.bar
 
-Loader {
-    visible: Pipewire.ready
-    active: Pipewire.ready
+BarItem {
+    onClicked: WindowState.toggle("media")
 
-    sourceComponent: BarItem {
-        onClicked: WindowState.toggle("media")
-
-        background: {
-            const node = Pipewire.defaultAudioSink;
-            if (!node) {
-                return Colors.primary;
-            }
-
-            if (node.audio?.muted) {
-                return Colors.bad;
-            }
-
-            if (node.name.startsWith("bluez_output")) {
-                return Colors.bluetooth;
-            }
-
+    background: {
+        const node = Pipewire.defaultAudioSink;
+        if (!node) {
             return Colors.primary;
         }
 
-        RowLayout {
-            spacing: 10
+        if (node.audio?.muted) {
+            return Colors.bad;
+        }
 
-            EndpointWidget {
-                visible: Pipewire.defaultAudioSink !== null
-                node: Pipewire.defaultAudioSink
-                glyph: {
-                    const node = Pipewire.defaultAudioSink;
-                    if (!node) {
-                        return "󰝟 ";
-                    }
+        if (node.name.startsWith("bluez_output")) {
+            return Colors.bluetooth;
+        }
 
-                    if (node.name.startsWith("bluez_output")) {
-                        return " ";
-                    }
+        return Colors.primary;
+    }
 
-                    if (node.audio?.muted || (node.audio?.volume ?? 0) <= 0) {
-                        return "󰝟 ";
-                    }
+    RowLayout {
+        spacing: 10
 
-                    return StringsHelper.symbolicStrength(node.audio?.volume ?? 0, ["󰖀 ", "󰕾 "], 1);
+        EndpointWidget {
+            visible: Pipewire.defaultAudioSink !== null
+            node: Pipewire.defaultAudioSink
+            glyph: {
+                const node = Pipewire.defaultAudioSink;
+                if (!node) {
+                    return "󰝟 ";
                 }
-            }
 
-            EndpointWidget {
-                visible: Pipewire.defaultAudioSource !== null
-                node: Pipewire.defaultAudioSource
-                glyph: {
-                    const node = Pipewire.defaultAudioSource;
-                    if (!node) {
-                        return "";
-                    }
-
-                    return node.audio?.muted ? "" : "";
+                if (node.name.startsWith("bluez_output")) {
+                    return " ";
                 }
+
+                if (node.audio?.muted || (node.audio?.volume ?? 0) <= 0) {
+                    return "󰝟 ";
+                }
+
+                return StringsHelper.symbolicStrength(node.audio?.volume ?? 0, ["󰖀 ", "󰕾 "], 1);
             }
         }
 
-        PwObjectTracker {
-            objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource]
+        EndpointWidget {
+            visible: Pipewire.defaultAudioSource !== null
+            node: Pipewire.defaultAudioSource
+            glyph: {
+                const node = Pipewire.defaultAudioSource;
+                if (!node) {
+                    return "";
+                }
+
+                return node.audio?.muted ? "" : "";
+            }
         }
+    }
+
+    PwObjectTracker {
+        objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource]
     }
 
     component EndpointWidget: WrapperMouseArea {
@@ -91,6 +86,7 @@ Loader {
             if (!node?.audio) {
                 return;
             }
+
             node.audio.muted = !node.audio.muted;
         }
 
@@ -108,6 +104,10 @@ Loader {
 
             ColorImage {
                 source: {
+                    if (!endpoint.node) {
+                        return Quickshell.iconPath("dialog-warning");
+                    }
+
                     if (endpoint.node.isStream) {
                         return Quickshell.iconPath("media-optical-cd-audio-symbolic");
                     }

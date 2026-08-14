@@ -114,7 +114,7 @@ WrapperRectangle {
 
             Image {
                 id: coverArt
-                source: ActivePlayer.player.trackArtUrl
+                source: ActivePlayer.player?.trackArtUrl ?? ""
 
                 visible: false
                 fillMode: Image.PreserveAspectFit

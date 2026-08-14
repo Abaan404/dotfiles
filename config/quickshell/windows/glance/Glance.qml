@@ -147,6 +147,6 @@ PanelWindow { // qmllint disable uncreatable-type
     }
 
     WindowIpc {
-        target: "media"
+        target: "glance"
     }
 }

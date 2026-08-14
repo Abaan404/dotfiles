@@ -63,20 +63,25 @@ ColumnLayout {
 
             ColorImage {
                 source: {
-                    if (button.node.isStream) {
+                    const node = button.node;
+                    if (!node) {
+                        return "";
+                    }
+
+                    if (node.isStream) {
                         return Quickshell.iconPath("media-optical-cd-audio-symbolic");
                     }
 
-                    if (button.node.name.startsWith("bluez_output")) {
+                    if (node.name.startsWith("bluez_output")) {
                         return Quickshell.iconPath("audio-headphones-symbolic");
                     }
 
-                    if (button.node.isSink) {
-                        if (button.node.audio.muted || button.node.audio.volume <= 0) {
+                    if (node.isSink) {
+                        if (node.audio?.muted || (node.audio?.volume ?? 0) <= 0) {
                             return Quickshell.iconPath("audio-volume-muted-symbolic");
                         }
                         // qmlformat off
-                        const icon = StringsHelper.symbolicStrength(button.node.audio.volume , [
+                        const icon = StringsHelper.symbolicStrength(node.audio.volume , [
                             Quickshell.iconPath("audio-volume-low-symbolic"),
                             Quickshell.iconPath("audio-volume-medium-symbolic"),
                             Quickshell.iconPath("audio-volume-high-symbolic"),
@@ -85,11 +90,11 @@ ColumnLayout {
 
                         return icon;
                     } else {
-                        if (button.node.audio.muted || (button.node.audio.volume) <= 0) {
+                        if (node.audio?.muted || (node.audio?.volume ?? 0) <= 0) {
                             return Quickshell.iconPath("audio-input-microphone-muted-symbolic");
                         }
                         // qmlformat off
-                        const icon = StringsHelper.symbolicStrength(button.node.audio.volume, [
+                        const icon = StringsHelper.symbolicStrength(node.audio.volume, [
                             Quickshell.iconPath("audio-input-microphone-low-symbolic"),
                             Quickshell.iconPath("audio-input-microphone-medium-symbolic"),
                             Quickshell.iconPath("audio-input-microphone-high-symbolic"),
@@ -110,11 +115,16 @@ ColumnLayout {
 
             Text {
                 text: {
-                    if (button.node.isStream) {
-                        return StringsHelper.truncate(button.node.properties["media.name"], 40);
+                    const node = button.node;
+                    if (!node) {
+                        return "";
                     }
 
-                    return StringsHelper.truncate(button.node.description, 40);
+                    if (node.isStream) {
+                        return StringsHelper.truncate(node.properties["media.name"], 40);
+                    }
+
+                    return StringsHelper.truncate(node.description, 40);
                 }
 
                 color: Colors.text
@@ -148,13 +158,17 @@ ColumnLayout {
             }
 
             CustomButton {
-                color: root.node.audio.muted || root.node.audio.volume <= 0 ? Colors.bad : Colors.primary
-                onClicked: root.node.audio.muted = !root.node.audio.muted
+                color: root.node?.audio?.muted || (root.node?.audio?.volume ?? 0) <= 0 ? Colors.bad : Colors.primary
+                onClicked: {
+                    if (root.node?.audio) {
+                        root.node.audio.muted = !root.node.audio.muted;
+                    }
+                }
 
                 Layout.alignment: Qt.AlignRight
 
                 Text {
-                    text: `${Math.ceil(root.node.audio.volume * 100)}%`
+                    text: `${Math.ceil((root.node?.audio?.volume ?? 0) * 100)}%`
 
                     color: Colors.text
 
@@ -223,7 +237,11 @@ ColumnLayout {
             }
         }
 
-        onMoved: root.node.audio.volume = value
-        value: root.node.audio.volume
+        onMoved: {
+            if (root.node?.audio) {
+                root.node.audio.vorume = value;
+            }
+        }
+        value: root.node?.audio?.volume ?? 0
     }
 }
