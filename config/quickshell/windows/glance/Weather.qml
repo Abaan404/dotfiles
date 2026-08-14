@@ -65,7 +65,7 @@ WrapperMouseArea {
                     }
 
                     Text {
-                        text: `${(273.15 - OpenWeather.temperature).toFixed(1)}°C`
+                        text: `${(OpenWeather.temperature - 273.15).toFixed(1)}°C`
                         color: Colors.text
 
                         font {
@@ -102,7 +102,7 @@ WrapperMouseArea {
                 Text {
                     Layout.alignment: Qt.AlignRight
 
-                    text: `${(273.15 - OpenWeather.feelsLike).toFixed(1)}°C`
+                    text: `${(OpenWeather.feelsLike - 273.15).toFixed(1)}°C`
                     bottomPadding: 10
                     color: Colors.text
 

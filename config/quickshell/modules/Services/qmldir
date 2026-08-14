@@ -4,3 +4,4 @@ singleton WindowState 1.0 WindowState.qml
 singleton NotificationState 1.0 NotificationState.qml
 singleton Recorder 1.0 Recorder.qml
 singleton OpenWeather 1.0 OpenWeather.qml
+singleton Timeout 1.0 Timeout.qml

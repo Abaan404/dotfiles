@@ -82,7 +82,7 @@ Singleton {
 
         function update() {
             if (root.location === "Unknown") {
-                console.error("location name was not provided, no weather data will be available.");
+                console.error("OPENWEATHER_LOCATION was not set, no weather data will be available");
                 stop();
                 return;
             }

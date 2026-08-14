@@ -36,11 +36,6 @@ WrapperRectangle {
         text: entry.device?.name ?? "Unknown"
 
         onClicked: {
-            console.log("pairing", entry.device?.pairing);
-            console.log("paired", entry.device?.paired);
-            console.log("connected", entry.device?.connected);
-            console.log("trusted", entry.device?.trusted);
-
             if (entry.device?.pairing) {
                 entry.device?.cancelPair();
                 return;

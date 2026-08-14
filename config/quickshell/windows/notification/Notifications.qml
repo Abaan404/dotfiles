@@ -54,11 +54,13 @@ PanelWindow { // qmllint disable uncreatable-type
                 radius: 10
             }
 
-            model: NotificationState.objects.values
+            model: NotificationState.notifying.values
             spacing: 20
             anchors.fill: parent
 
             delegate: WrapperItem {
+                id: item
+
                 required property var modelData
                 readonly property Region region: Region {
                     item: popup
@@ -71,9 +73,9 @@ PanelWindow { // qmllint disable uncreatable-type
                 Popup {
                     id: popup
 
-                    notification: parent.modelData.notification
-                    createdAt: parent.modelData.createdAt
-                    expireAt: parent.modelData.expireAt
+                    notification: item.modelData.notification
+                    createdAt: item.modelData.createdAt
+                    expireAt: item.modelData.expireAt
                 }
             }
 

@@ -51,62 +51,83 @@ PanelWindow { // qmllint disable uncreatable-type
             left: parent.left
         }
 
-        ColumnLayout {
+        RowLayout {
             id: widget
 
             property Region region: Region {
-                regions: [weather.region, controls.region, view.region]
+                regions: [weather.region, controls.region, view.region, notifications.region]
             }
 
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
+            spacing: 20
+
+            // spacer
+            Item {
+                Layout.fillWidth: true
+            }
+
+            ColumnLayout {
+                Weather {
+                    id: weather
+                }
+
+                // spacer
+                Item {
+                    Layout.fillHeight: true
+                }
+            }
+
+            ColumnLayout {
+                Layout.maximumWidth: 500
 
                 spacing: 20
 
-                ColumnLayout {
-                    Weather {
-                        id: weather
-                    }
+                RowLayout {
+                    Layout.alignment: Qt.AlignRight
 
-                    // spacer, Qt.AlignTop wasnt working for some reason
-                    Item {
-                        Layout.fillHeight: true
-                    }
-                }
+                    spacing: 20
 
-                SwipeView {
-                    id: view
+                    SwipeView {
+                        id: view
 
-                    property Region region: Region {
-                        item: view
-                        radius: 20
-                    }
+                        Layout.fillWidth: true
 
-                    Layout.preferredHeight: 0
-                    Layout.preferredWidth: 350
-                    Layout.fillHeight: true
-
-                    orientation: Qt.Vertical
-                    currentIndex: 2
-
-                    clip: true
-
-                    Network {}
-                    Bluetooth {}
-                    Calendar {}
-                }
-
-                Controls {
-                    id: controls
-
-                    onSelectedIdxChanged: {
-                        if (selectedIdx < 0) {
-                            return;
+                        property Region region: Region {
+                            item: view
+                            radius: 20
                         }
 
-                        view.currentIndex = selectedIdx;
+                        Layout.preferredHeight: 0
+                        Layout.fillHeight: true
+
+                        orientation: Qt.Vertical
+                        currentIndex: 2
+
+                        clip: true
+
+                        Network {}
+                        Bluetooth {}
+                        Calendar {}
                     }
-                    Component.onCompleted: selectedIdx = view.currentIndex
+
+                    Controls {
+                        id: controls
+
+                        onSelectedIdxChanged: {
+                            if (selectedIdx < 0) {
+                                return;
+                            }
+
+                            view.currentIndex = selectedIdx;
+                        }
+                        Component.onCompleted: selectedIdx = view.currentIndex
+                    }
+                }
+
+                Notifications {
+                    id: notifications
+
+                    Layout.preferredHeight: view.height * 1.5
+                    Layout.fillWidth: true
                 }
             }
         }

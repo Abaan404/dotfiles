@@ -67,10 +67,6 @@ RowLayout {
                 const current = Date.now() - root.createdAt.getTime();
                 const expire = root.expireAt.getTime() - root.createdAt.getTime();
 
-                if (current > expire) {
-                    root.notification.expire();
-                }
-
                 control.value = MathHelper.clamp(current / expire, 0, 1);
             }
         }
