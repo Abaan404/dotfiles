@@ -6,6 +6,7 @@ import Quickshell.Services.UPower
 import qs.windows.bar
 import qs.windows.mpris
 import qs.windows.media
+import qs.windows.glance
 import qs.windows.notification
 import qs.windows.menus.power
 import qs.windows.menus.replay
@@ -22,6 +23,7 @@ ShellRoot {
     Replay {}
     Mpris {}
     Media {}
+    Glance {}
     Notifications {}
 
     Connections {

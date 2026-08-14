@@ -13,7 +13,7 @@ PanelWindow { // qmllint disable uncreatable-type
     implicitWidth: 1000
     color: "transparent"
 
-    visible: true
+    visible: false
     exclusionMode: ExclusionMode.Ignore
     mask: widget.region
     focusable: mouseArea.containsMouse
@@ -38,6 +38,8 @@ PanelWindow { // qmllint disable uncreatable-type
         hoverEnabled: true
 
         y: parent.visible ? 0 : -50
+
+        onYChanged: widget.region.changed()
 
         Behavior on y {
             NumberAnimation {

@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 
+import Services
 import Colors
 import Utils
 
@@ -14,9 +15,7 @@ import qs.windows.bar
 BarItem {
     id: root
 
-    onClicked: {
-        agsProc.running = true;
-    }
+    onClicked: WindowState.toggle("glance")
 
     RowLayout {
         spacing: 10
@@ -113,10 +112,5 @@ BarItem {
                 precision: SystemClock.Minutes
             }
         }
-    }
-
-    Process {
-        id: agsProc
-        command: ["ags", "request", "window glance"]
     }
 }
