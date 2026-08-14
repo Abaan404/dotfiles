@@ -55,7 +55,7 @@ PanelWindow { // qmllint disable uncreatable-type
             id: widget
 
             property Region region: Region {
-                regions: [weather.region, controls.region, view.region, notifications.region]
+                regions: [powerProfile.region, weather.region, controls.region, view.region, notifications.region]
             }
 
             spacing: 20
@@ -66,8 +66,19 @@ PanelWindow { // qmllint disable uncreatable-type
             }
 
             ColumnLayout {
+                spacing: 20
+
+                PowerProfile {
+                    id: powerProfile
+
+                    Layout.alignment: Qt.AlignRight
+                }
+
+
                 Weather {
                     id: weather
+
+                    Layout.alignment: Qt.AlignRight
                 }
 
                 // spacer

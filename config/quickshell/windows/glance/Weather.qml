@@ -18,6 +18,10 @@ WrapperMouseArea {
 
     hoverEnabled: true
 
+    onClicked: {
+        Quickshell.execDetached(["xdg-open", `https://openweathermap.org/city/${OpenWeather.cityId}`]);
+    }
+
     WrapperRectangle {
         id: rect
 
@@ -86,7 +90,7 @@ WrapperMouseArea {
 
                 Text {
                     text: `${OpenWeather.windspeed.toFixed(1)}km/h`
-                    bottomPadding: 10
+                    bottomPadding: 16
                     color: Colors.text
 
                     font {
@@ -103,7 +107,7 @@ WrapperMouseArea {
                     Layout.alignment: Qt.AlignRight
 
                     text: `${(OpenWeather.feelsLike - 273.15).toFixed(1)}°C`
-                    bottomPadding: 10
+                    bottomPadding: 16
                     color: Colors.text
 
                     font {
