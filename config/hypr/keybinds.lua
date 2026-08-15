@@ -80,8 +80,8 @@ bind({
         ["SHIFT"] = {
             ["LEFT"] = hl.dsp.window.resize({ x = -50, y = 0, relative = true }),
             ["RIGHT"] = hl.dsp.window.resize({ x = 50, y = 0, relative = true }),
-            ["UP"] = hl.dsp.window.resize({ x = 0, y = -50, relative = true }),
-            ["DOWN"] = hl.dsp.window.resize({ x = 0, y = 50, relative = true }),
+            ["UP"] = hl.dsp.window.resize({ x = 0, y = 50, relative = true }),
+            ["DOWN"] = hl.dsp.window.resize({ x = 0, y = -50, relative = true }),
         },
     },
 }, { repeating = true })
@@ -156,5 +156,12 @@ bind({
 bind({
     ["CTRL"] = {
         ["F9"] = hl.dsp.pass({ window = "class:com.obsproject.Studio" }),
+    },
+})
+
+-- dwindle
+bind({
+    ["SUPER"] = {
+        ["V"] = hl.dsp.layout("togglesplit"),
     },
 })
