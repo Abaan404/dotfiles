@@ -1,40 +1,55 @@
-# source: https://github.com/MarwinKreuzig/nixos-config/blob/main/modules/gaming/mcsr/packages/ninjabrainbot/default.nix
-# modified for a minimal package
+# source: https://git.uku3lig.net/uku/mcsr-nixos/src/branch/main/pkgs/ninjabrain-bot.nix#
 
-{ pkgs }:
-pkgs.maven.buildMavenPackage rec {
-  pname = "ninjabrainbot";
-  version = "1.5.1";
+{
+  lib,
+  stdenvNoCC,
+  fetchurl,
+  libx11,
+  libxinerama,
+  libxkbcommon,
+  libxt,
+  makeWrapper,
+  temurin-bin-17,
+  java ? temurin-bin-17,
+  extraJavaArgs ? [ "-Dawt.useSystemAAFontSettings=on" ],
+}:
+stdenvNoCC.mkDerivation (finalAttrs: {
+  pname = "ninjabrain-bot";
+  version = "1.5.2";
 
-  src = pkgs.fetchFromGitHub {
-    owner = "Ninjabrain1";
-    repo = "Ninjabrain-Bot";
-    rev = version;
-    hash = "sha256-r8TpL3VLf2QHwFS+DdjxgxyuZu167fP6/lN7a8e9opM=";
+  src = fetchurl {
+    url = "https://github.com/Ninjabrain1/Ninjabrain-Bot/releases/download/${finalAttrs.version}/Ninjabrain-Bot-${finalAttrs.version}.jar";
+    hash = "sha256-mAmfYyGpDUrOwTQA6G0F96+NYOVjnC84Qn6WjccUUP8=";
   };
-  mvnHash = "sha256-2+p4ReD1M3VuyTu4TmCx9xrFf2QFm/FFBgs7a2eIpZY=";
 
-  mvnDepsParameters = "assembly:single -DskipTests=true";
-  mvnParameters = "assembly:single -DskipTests=true";
+  nativeBuildInputs = [ makeWrapper ];
 
-  nativeBuildInputs = [
-    pkgs.makeWrapper
-  ];
+  dontUnpack = true;
 
   installPhase = ''
-    install -Dm644 target/ninjabrainbot-${version}-jar-with-dependencies.jar $out/share/Ninjabrain-Bot-${version}.jar
+    runHook preInstall
 
-    makeWrapper ${pkgs.jre}/bin/java $out/bin/ninjabrainbot \
-      --prefix LD_LIBRARY_PATH : "${
-        pkgs.lib.makeLibraryPath [
-          pkgs.libxkbcommon
-          pkgs.libx11
-          pkgs.libxt
-          pkgs.libxtst
-          pkgs.libxinerama
-          pkgs.libxcb
-        ]
-      }" \
-      --add-flags "-Dawt.useSystemAAFontSettings=on -jar $out/share/Ninjabrain-Bot-${version}.jar"
+    install -Dm644 $src $out/share/ninjabrain-bot/ninjabrain-bot.jar
+
+    makeWrapper ${lib.getExe java} $out/bin/ninjabrain-bot \
+        --add-flags "${lib.escapeShellArgs extraJavaArgs} -jar $out/share/ninjabrain-bot/ninjabrain-bot.jar" \
+        --prefix LD_LIBRARY_PATH : ${
+          lib.makeLibraryPath [
+            libx11
+            libxinerama
+            libxkbcommon
+            libxt
+          ]
+        }
+
+    runHook postInstall
   '';
-}
+
+  meta = {
+    description = "Stronghold calculator for Minecraft speedrunning";
+    homepage = "https://github.com/Ninjabrain1/Ninjabrain-Bot";
+    license = lib.licenses.gpl3;
+    platforms = lib.platforms.linux;
+    mainProgram = "ninjabrain-bot";
+  };
+})
