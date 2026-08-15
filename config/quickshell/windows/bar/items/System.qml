@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls.impl 2.15
 
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 
 import Services
@@ -28,6 +27,13 @@ BarItem {
             hoverEnabled: true
 
             onPressed: mouse => mouse.accepted = false
+            onWheel: event => {
+                Brightness.devices.forEach(device => {
+                    if (device.type == "backlight") {
+                        device.percentage += event.angleDelta.y / 1000;
+                    }
+                });
+            }
 
             BarRevealerText {
                 text: `${(BatteryHelper.percentage * 100)}%`

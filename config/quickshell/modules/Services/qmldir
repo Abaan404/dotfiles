@@ -5,3 +5,4 @@ singleton NotificationState 1.0 NotificationState.qml
 singleton Recorder 1.0 Recorder.qml
 singleton OpenWeather 1.0 OpenWeather.qml
 singleton Timeout 1.0 Timeout.qml
+singleton Brightness 1.0 Brightness/Brightness.qml
