@@ -53,7 +53,14 @@
     pkgs.tetrio-desktop
     pkgs.mcpelauncher-ui-qt
     pkgs.r2modman
-    pkgs.vesktop
+    # https://github.com/Vencord/Vesktop/issues/161
+    (pkgs.vesktop.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.makeWrapper ];
+      postFixup = (old.postFixup or "") + ''
+        wrapProgram $out/bin/vesktop \
+          --add-flags "--disable-features=WebRtcAllowInputVolumeAdjustment"
+      '';
+    }))
     pkgs.ryubing
     pkgs.waywall
     inputs.local.packages.${pkgs.stdenv.hostPlatform.system}.ninjabrainbot
