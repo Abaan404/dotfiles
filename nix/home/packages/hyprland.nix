@@ -70,28 +70,6 @@
     ];
   };
 
-  programs.ags = {
-    enable = true;
-
-    extraPackages = [
-      pkgs.glib-networking
-      pkgs.libadwaita
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.astal4
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.io
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.apps
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.auth
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.mpris
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.network
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.bluetooth
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.powerprofiles
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.tray
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.wireplumber
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.notifd
-    ];
-  };
-
   programs.quickshell = {
     enable = true;
     # Using custom singletons is not picked up by qmllint so doing this in order to supply a qmldir

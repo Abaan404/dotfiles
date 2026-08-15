@@ -7,18 +7,6 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    # astal/ags
-    astal = {
-      url = "github:aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    ags = {
-      url = "github:aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.astal.follows = "astal";
-    };
-
     # HM config
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -119,7 +107,6 @@
           };
 
           modules = [
-            inputs.ags.homeManagerModules.default
             inputs.nix-flatpak.homeManagerModules.nix-flatpak
 
             ./nix/home/home.nix

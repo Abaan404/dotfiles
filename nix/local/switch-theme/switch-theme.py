@@ -44,7 +44,11 @@ class TemplateWriter:
 
             if conf.is_dir() or not conf.exists():
                 config_path.joinpath(conf.name).mkdir(exist_ok=True)
-                self.write(template_path.joinpath(conf.name), config_path.joinpath(conf.name))
+                try:
+                    self.write(template_path.joinpath(conf.name), config_path.joinpath(conf.name))
+                except:
+                    print(f"couldnt write {template_path.joinpath(conf.name)}")
+
                 continue
 
             with open(conf, "r") as f:
@@ -61,10 +65,6 @@ class TemplateWriter:
     def reload(self):
         self.write(CONFIG["config_template_path"], CONFIG["config_path"])
 
-        color = tuple(int((self.mappings["text"] + "FF")[i : i + 2], 16) for i in (0, 2, 4, 6))
-        path = CONFIG["config_path"].joinpath("ags/assets/")
-        path.mkdir(exist_ok=True)
-
         # rofi
         img = Image.open(self.mappings["wallpaper"])
         box = (*((ax - 512) // 2 for ax in img.size), *((ax + 512) // 2 for ax in img.size))
@@ -76,24 +76,11 @@ class TemplateWriter:
         # qt theme
         subprocess.Popen(["kvantummanager", "--set", "Layan-pywal"], start_new_session=True)
 
-        # ags/astal
-        for file in [
-            Path("~/.dotfiles/assets/playerart.png").expanduser(),
-        ]:
-            img = Image.open(file).convert("RGBA")
-            img.putdata([color if pixel[3] != 0 else pixel for pixel in img.get_flattened_data()])  # pyright: ignore ignoreGeneralTypeIssues
-            img.save(path.joinpath(file.name))
-
         CONFIG["logs"].mkdir(exist_ok=True)
 
         subprocess.run(["quickshell", "kill"])
-        subprocess.run(["ags", "quit"])
-
-        # FIXME: ajs doesnt shutdown cleanly, clear spawned processes
-        subprocess.run(["killall", "gpu-screen-recorder"])
 
         subprocess.Popen(["quickshell", "-d"])
-        subprocess.Popen(["ags", "run", "--log-file", CONFIG["logs"] / Path(f"{datetime.datetime.now().isoformat()}.log")], env=os.environ.copy(), start_new_session=True)
 
         # wvkbd
         subprocess.run(["killall", "wvkbd-abaan404"])
