@@ -108,7 +108,7 @@ vim.keymap.set("n", "zM", ufo.closeAllFolds)
 local dap = require("dap")
 local dapview = require("dap-view")
 
-set("n", "<C-d>", dapview.toggle)
+set("n", "<C-d>", function() dapview.toggle(true) end)
 set("n", "<leader>db", dap.toggle_breakpoint)
 set("n", "<leader>dc", function() dap.toggle_breakpoint(vim.fn.input("Set Condition: ")) end)
 set("n", "<S-CR>", dap.step_into)
